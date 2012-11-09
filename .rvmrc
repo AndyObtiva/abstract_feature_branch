@@ -1,0 +1,1 @@
+rvm use ruby-1.9.3-p286@abstract_feature_branch --create

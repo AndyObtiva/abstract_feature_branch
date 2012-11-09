@@ -1,0 +1,22 @@
+defaults: &defaults
+  features:
+    feature1: true
+    feature2: true
+    feature3: false
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+#    feature2: false
+
+production:
+  <<: *defaults
+  features:
+#    feature1: false
+#    feature2: false
+

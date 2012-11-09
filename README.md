@@ -1,4 +1,4 @@
-AbstractBranch
-==============
+Abstract Feature Branch
+=======================
 
-AbstractBranch is a gem that enables developers to easily branch by abstraction
+abstract_feature_branch is a gem that enables developers to easily branch by abstraction
