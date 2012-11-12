@@ -1,19 +1,8 @@
-require 'rubygems'
-require 'bundler'
-Bundler.setup(:default, :test)
-module Rails
-  def self.root
-    File.join(File.dirname(__FILE__), '..')
-  end
-  def self.env
-    'test'
-  end
-end
-require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')
+require 'spec_helper'
 
 describe 'abstract_feature_branch' do
   describe 'self#feature_branch' do
-    it 'works' do
+    it 'feature branches class level behavior' do
       features_enabled = []
       feature_branch :feature1 do
         features_enabled << :feature1
@@ -30,7 +19,7 @@ describe 'abstract_feature_branch' do
     end
   end
   describe 'feature_branch' do
-    it 'works' do
+    it 'feature branches instance level behavior' do
       class TestObject
         attr_reader :features_enabled
         def initialize
