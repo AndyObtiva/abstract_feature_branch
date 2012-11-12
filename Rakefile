@@ -32,7 +32,14 @@ This gives developers the added benefit of being able to switch a feature off af
 release should big problems arise for a high risk feature.
   TEXT
   gem.authors = ["Annas \"Andy\" Maleh"]
+  gem.files.exclude 'spec/*'
+  gem.files.exclude 'config/*'
+  gem.files.exclude 'Gemfile'
+  gem.files.exclude 'Gemfile.lock'
+  gem.files.exclude 'Rakefile'
+  gem.files.exclude '.rvmrc'
   # dependencies defined in Gemfile
+  gem.add_dependency 'rails_config', '>= 0.3.1'
 end
 Jeweler::RubygemsDotOrgTasks.new
 
