@@ -15,14 +15,17 @@ switched on in production, but do enable them in staging and locally.
 This gives developers the added benefit of being able to switch a feature off after
 release should big problems arise for a high risk feature.
 
+Requirements
+------------
+- Ruby 1.9.x or 1.8.7x
+- Rails 3.x or 2.x
+
 Setup
 -----
 
-In Rails 3.x:
-
-1. Add 'abstract_feature_branch' gem to Gemfile in Rails 3.x or
+- Add 'abstract_feature_branch' gem to Gemfile in Rails 3.x or
 "config.gem 'absract_feature_branch'" to environment.rb in Rails 2.x
-2. Configure config/features.yml in your Rails app directory as follows:
+- Configure config/features.yml in your Rails app directory as follows:
 
 >     defaults: &defaults
 >       features:
@@ -48,10 +51,11 @@ In Rails 3.x:
 
 Notice how the feature "add_business_project" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
-3. feature branch your logic as per this example:
+
+- feature branch your logic as per this example:
 
 >     feature_branch :feature1 do
->       # perform add business logic
+>       # perform logic
 >     end
 
 Recommendations
@@ -84,6 +88,12 @@ simply switching off the URL route to them. Example:
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
 
+Future
+------
+
+- Support the option of having multiple features.yml files, one per environment, as opposed to one for all environments
+- Support general Ruby (non-Rails) use
+- Support contexts of features to group features, once they grow beyond a certain size, in separate files, one per context
 
 Contributing to abstract_feature_branch
 ---------------------------------------
