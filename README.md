@@ -26,9 +26,9 @@ In Rails 3.x:
 
 >     defaults: &defaults
 >       features:
->     #    feature1: true
->     #    feature2: true
->     #    feature3: false
+>         feature1: true
+>         feature2: true
+>         feature3: false
 >     
 >     development:
 >       <<: *defaults
@@ -38,13 +38,13 @@ In Rails 3.x:
 >     
 >     staging:
 >       <<: *defaults
->     #    feature2: false
+>         feature2: false
 >     
 >     production:
 >       <<: *defaults
 >       features:
->     #    feature1: false
->     #    feature2: false
+>         feature1: false
+>         feature2: false
 
 Notice how the feature "add_business_project" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
