@@ -49,7 +49,7 @@ Setup
 >         feature1: false
 >         feature2: false
 
-Notice how the feature "add_business_project" was configured as true (enabled) by default, but
+Notice how the feature "feature1" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
 
 - feature branch your logic as per this example:
@@ -72,7 +72,7 @@ simply switching off the URL route to them. Example:
 >     <% feature_branch :add_business_project do %>
 >       <h2>Submit a Business</h2>
 >       <p>
->         Please submit a business idea for investors to look at.
+>         Please submit a business idea for review.
 >       </p>
 >       <ul>
 >         <% current_user.projects.each do |p| %>
