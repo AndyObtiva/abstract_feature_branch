@@ -23,65 +23,63 @@ In Rails 3.x:
 1. Add 'abstract_feature_branch' gem to Gemfile in Rails 3.x or
 "config.gem 'absract_feature_branch'" to environment.rb in Rails 2.x
 2. Configure config/features.yml in your Rails app directory as follows:
-\*
-    defaults: &defaults
-      features:
-    #    feature1: true
-    #    feature2: true
-    #    feature3: false
 
-    development:
-      <<: *defaults
+>     defaults: &defaults
+>       features:
+>     #    feature1: true
+>     #    feature2: true
+>     #    feature3: false
+>     
+>     development:
+>       <<: *defaults
+>     
+>     test:
+>       <<: *defaults
+>     
+>     staging:
+>       <<: *defaults
+>     #    feature2: false
+>     
+>     production:
+>       <<: *defaults
+>       features:
+>     #    feature1: false
+>     #    feature2: false
 
-    test:
-      <<: *defaults
-
-    staging:
-      <<: *defaults
-    #    feature2: false
-
-    production:
-      <<: *defaults
-      features:
-    #    feature1: false
-    #    feature2: false
-\*
 Notice how the feature "add_business_project" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
 3. feature branch your logic as per this example:
-\*
-    feature_branch :feature1 do
-      # perform add business logic
-    end
-\*
+
+>     feature_branch :feature1 do
+>       # perform add business logic
+>     end
 
 Recommendations
 ---------------
 - Wrap routes in routes.rb with feature blocks to disable entire MVC feature elements by
 simply switching off the URL route to them. Example:
-\*
-    feature_branch :add_business_project do
-      resources :projects
-    end
-\*
+
+>     feature_branch :add_business_project do
+>       resources :projects
+>     end
 
 - Wrap visual links to these routes in ERB views. Example:
-\*
-    <% feature_branch :add_business_project do %>
-      <h2>Submit a Business</h2>
-      <p>
-        Please submit a business idea for investors to look at.
-      </p>
-      <ul>
-        <% current_user.projects.each do |p| %>
-        <li><%= link_to p.business_campaign_name, project_path(p) %></li>
-        <% end %>
-      </ul>
-      <h4>
-        <%= link_to('Start', new_project_path, :id => "business_background_invitation", :class => 'button') %>
-      </h4>
-    <% end %>
-\*
+
+>     <% feature_branch :add_business_project do %>
+>       <h2>Submit a Business</h2>
+>       <p>
+>         Please submit a business idea for investors to look at.
+>       </p>
+>       <ul>
+>         <% current_user.projects.each do |p| %>
+>         <li><%= link_to p.business_campaign_name, project_path(p) %></li>
+>         <% end %>
+>       </ul>
+>       <h4>
+>         <%= link_to('Start', new_project_path, :id => "business_background_invitation", :class => 'button') %>
+>       </h4>
+>     <% end %>
+
 - Once a feature has been released and switched on in production, and it has worked well for a while,
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
