@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
     "LICENSE.txt",
     "README.md",
     "VERSION",
+    "abstract_feature_branch.gemspec",
     "lib/abstract_feature_branch.rb",
     "lib/ext/feature_branch.rb"
   ]
