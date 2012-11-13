@@ -88,12 +88,14 @@ simply switching off the URL route to them. Example:
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
 
-Future
-------
+Upcoming
+--------
 
 - Support the option of having multiple features.yml files, one per environment, as opposed to one for all environments
 - Support general Ruby (non-Rails) use
 - Support contexts of features to group features, once they grow beyond a certain size, in separate files, one per context
+- Simplify features.yml requirement to have a features header under each environment
+- Support an "else" block to execute when a feature is off
 
 Contributing to abstract_feature_branch
 ---------------------------------------
