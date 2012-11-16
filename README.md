@@ -96,6 +96,8 @@ Upcoming
 - Support contexts of features to group features, once they grow beyond a certain size, in separate files, one per context
 - Simplify features.yml requirement to have a features header under each environment
 - Support an "else" block to execute when a feature is off
+- Support ability to check if a feature is enabled or not
+- Add rake task to reorder feature entries in feature.yml alphabetically
 
 Contributing to abstract_feature_branch
 ---------------------------------------
