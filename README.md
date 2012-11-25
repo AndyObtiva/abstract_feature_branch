@@ -1,5 +1,5 @@
-Abstract Feature Branch
-=======================
+Abstract Feature Branch 0.2.0
+=============================
 
 abstract_feature_branch is a Rails gem that enables developers to easily branch by
 abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html
@@ -52,14 +52,36 @@ Setup
 Notice how the feature "feature1" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
 
-- feature branch your logic as per this example:
+Instructions
+------------
+
+- declaratively feature branch logic to only run when feature1 is enabled:
 
 >     feature_branch :feature1 do
 >       # perform logic
 >     end
 
+- declaratively feature branch two paths of logic, one that runs when feature1 is enabled and one that runs when it is disabled:
+
+>     feature_branch :feature1,
+>                    :true => lambda {
+>                      # perform logic
+>                    },
+>                    :false => lambda {
+>                      # perform alternate logic
+>                    }
+
+- imperatively check if a feature is enabled or not:
+
+>     if feature_enabled?(:feature1)
+>       # perform logic
+>     else
+>       # perform alternate logic
+>     end
+
 Recommendations
 ---------------
+
 - Wrap routes in routes.rb with feature blocks to disable entire MVC feature elements by
 simply switching off the URL route to them. Example:
 
@@ -88,6 +110,14 @@ simply switching off the URL route to them. Example:
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
 
+Release Notes
+-------------
+
+Version 0.2.0:
+
+- Support an "else" block to execute when a feature is off (via :true and :false lambda arguments)
+- Support ability to check if a feature is enabled or not (via feature_enabled?)
+
 Upcoming
 --------
 
@@ -95,8 +125,6 @@ Upcoming
 - Support general Ruby (non-Rails) use
 - Support contexts of features to group features, once they grow beyond a certain size, in separate files, one per context
 - Simplify features.yml requirement to have a features header under each environment
-- Support an "else" block to execute when a feature is off
-- Support ability to check if a feature is enabled or not
 - Add rake task to reorder feature entries in feature.yml alphabetically
 
 Contributing to abstract_feature_branch
