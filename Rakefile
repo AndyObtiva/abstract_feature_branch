@@ -39,7 +39,6 @@ release should big problems arise for a high risk feature.
   gem.files.exclude 'Rakefile'
   gem.files.exclude '.rvmrc'
   # dependencies defined in Gemfile
-  gem.add_dependency 'rails_config', '>= 0.3.1'
 end
 Jeweler::RubygemsDotOrgTasks.new
 
