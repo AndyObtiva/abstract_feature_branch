@@ -111,10 +111,13 @@ for better maintenance as the need is not longer there for feature branching at 
 Release Notes
 -------------
 
+Version 0.3.1:
+
+- Removed dependency on the rails_config gem
+
 Version 0.3.0:
 
 - Simplified features.yml requirement to have a features header under each environment
-- Removed dependency on the rails_config gem
 - Moved feature storage from Settings object to AbstractFeatureBranch::FEATURES
 
 Version 0.2.0:
