@@ -28,10 +28,9 @@ Setup
 - Configure config/features.yml in your Rails app directory as follows:
 
 >     defaults: &defaults
->       features:
->         feature1: true
->         feature2: true
->         feature3: false
+>       feature1: true
+>       feature2: true
+>       feature3: false
 >     
 >     development:
 >       <<: *defaults
@@ -41,13 +40,12 @@ Setup
 >     
 >     staging:
 >       <<: *defaults
->         feature2: false
+>       feature2: false
 >     
 >     production:
 >       <<: *defaults
->       features:
->         feature1: false
->         feature2: false
+>       feature1: false
+>       feature2: false
 
 Notice how the feature "feature1" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
@@ -113,6 +111,12 @@ for better maintenance as the need is not longer there for feature branching at 
 Release Notes
 -------------
 
+Version 0.3.0:
+
+- Simplified features.yml requirement to have a features header under each environment
+- Removed dependency on the rails_config gem
+- Moved feature storage from Settings object to AbstractFeatureBranch::FEATURES
+
 Version 0.2.0:
 
 - Support an "else" block to execute when a feature is off (via :true and :false lambda arguments)
@@ -124,7 +128,6 @@ Upcoming
 - Support the option of having multiple features.yml files, one per environment, as opposed to one for all environments
 - Support general Ruby (non-Rails) use
 - Support contexts of features to group features, once they grow beyond a certain size, in separate files, one per context
-- Simplify features.yml requirement to have a features header under each environment
 - Add rake task to reorder feature entries in feature.yml alphabetically
 
 Contributing to abstract_feature_branch
