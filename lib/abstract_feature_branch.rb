@@ -10,7 +10,9 @@ rescue Bundler::BundlerError => e
 end
 
 module AbstractFeatureBranch
-  FEATURES = YAML.load_file(File.join(Rails.root, 'config', 'features.yml'))
+  def self.features
+    @features ||= YAML.load_file(File.join(Rails.root, 'config', 'features.yml'))
+  end
 end
 
 require File.join(File.dirname(__FILE__), 'ext', 'feature_branch')

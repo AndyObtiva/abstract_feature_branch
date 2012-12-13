@@ -111,17 +111,17 @@ for better maintenance as the need is not longer there for feature branching at 
 Release Notes
 -------------
 
-Version 0.3.1:
+Version 0.3.2:
+- Added AbstractFeatureBranch.features to delay YAML load until Rails.root has been established
 
+Version 0.3.1:
 - Removed dependency on the rails_config gem
 
 Version 0.3.0:
-
 - Simplified features.yml requirement to have a features header under each environment
 - Moved feature storage from Settings object to AbstractFeatureBranch::FEATURES
 
 Version 0.2.0:
-
 - Support an "else" block to execute when a feature is off (via :true and :false lambda arguments)
 - Support ability to check if a feature is enabled or not (via feature_enabled?)
 
