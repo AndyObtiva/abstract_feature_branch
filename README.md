@@ -1,5 +1,5 @@
-Abstract Feature Branch 0.2.0
-=============================
+Abstract Feature Branch
+=======================
 
 abstract_feature_branch is a Rails gem that enables developers to easily branch by
 abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html
@@ -110,6 +110,9 @@ for better maintenance as the need is not longer there for feature branching at 
 
 Release Notes
 -------------
+
+Version 0.3.3:
+- Removed version from README title
 
 Version 0.3.2:
 - Added AbstractFeatureBranch.features to delay YAML load until Rails.root has been established
