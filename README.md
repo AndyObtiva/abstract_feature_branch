@@ -107,6 +107,35 @@ simply switching off the URL route to them. Example:
 >       </h4>
 >     <% end %>
 
+- In Rails 4, wrap newly added strong parameters in controllers for data security. Example:
+
+>     params.require(:project).permit(
+>       feature_branch(:project_gallery) {:exclude_display},
+>       :name,
+>       :description,
+>       :website
+>     )
+
+- In Rails 4 and 3.1+ with the asset pipeline, wrap newly added CSS or JavaScript using .erb format. Example (renamed projects.css.scss to projects.css.scss.erb and wrapped CSS with an abstract feature branch block):
+
+>     <% feature_branch :project_gallery do %>
+>     .exclude_display {
+>       margin-left: auto;
+>       margin-right: auto;
+>       label {
+>         font-size: 1em;
+>         text-align: center;
+>       }
+>       height: 47px;
+>     }
+>     <% end %>
+>     label {
+>       font-size: 1.5em;
+>       margin-bottom: -15px;
+>       margin-top: 3px;
+>       display: inline;
+>     }
+
 - Once a feature has been released and switched on in production, and it has worked well for a while,
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
