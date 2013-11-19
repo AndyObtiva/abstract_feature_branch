@@ -61,4 +61,4 @@ DEPENDENCIES
   jeweler (= 1.8.8)
   rdoc (= 3.12.2)
   rspec (= 2.11.0)
-  rubygems-update
+  rubygems-update (= 2.1.11)
