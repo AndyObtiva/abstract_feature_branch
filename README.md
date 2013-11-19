@@ -24,7 +24,7 @@ Setup
 -----
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.3.5'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.3.6'</pre>
    - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch'</pre>
 2. Generate config/features.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 
@@ -66,6 +66,8 @@ multi-line logic:
 single-line logic:
 >     feature_branch(:feature1) { # perform logic }
 
+Note that feature_branch returns nil and does not execute the block if the feature is disabled or non-existent.
+
 - Declaratively feature branch two paths of logic, one that runs when feature1 is enabled and one that runs when it is disabled:
 
 >     feature_branch :feature1,
@@ -76,6 +78,8 @@ single-line logic:
 >                      # perform alternate logic
 >                    }
 
+Note that feature_branch executes the false branch if the feature is non-existent.
+
 - Imperatively check if a feature is enabled or not:
 
 >     if feature_enabled?(:feature1)
@@ -83,6 +87,8 @@ single-line logic:
 >     else
 >       # perform alternate logic
 >     end
+
+Note that feature_enabled? returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
 
 Recommendations
 ---------------
@@ -146,6 +152,9 @@ for better maintenance as the need is not longer there for feature branching at 
 
 Release Notes
 -------------
+
+Version 0.3.6:
+- Fixed feature_branch issue with invalid feature name, preventing block execution and returning nil instead
 
 Version 0.3.5:
 - Fixed issue with generator not allowing consuming client app to start Rails server successfully

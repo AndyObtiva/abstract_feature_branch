@@ -17,7 +17,13 @@ describe 'abstract_feature_branch' do
       features_enabled.should include(:feature2)
       features_enabled.should_not include(:feature3)
     end
-    it 'supports an off branch of behavior for turned off features' do
+    it 'returns nil and does not execute block for an invalid feature name' do
+      return_value = feature_branch :invalid_feature_that_does_not_exist do
+        fail 'feature branch block must have not executed'
+      end
+      return_value.should be_nil
+    end
+    it 'supports an alternate branch of behavior for turned off features' do
       feature_behaviors = []
       feature_branch :feature1,
                      :true => lambda {feature_behaviors << :feature1_true},
@@ -30,11 +36,20 @@ describe 'abstract_feature_branch' do
       feature_behaviors.should_not include(:feature3_true)
       feature_behaviors.should include(:feature3_false)
     end
+    it 'executes alternate branch for an invalid feature name' do
+      feature_behaviors = []
+      feature_branch :invalid_feature_that_does_not_exist,
+                     :true => lambda {feature_behaviors << :main_branch},
+                     :false => lambda {feature_behaviors << :alternate_branch}
+      feature_behaviors.should_not include(:main_branch)
+      feature_behaviors.should include(:alternate_branch)
+    end
   end
   describe 'self#feature_branch' do
     after do
       Object.send(:remove_const, :TestObject)
     end
+    # No need to retest all instance test cases, just a spot check due to implementation reuse
     it 'feature branches instance level behavior' do
       class TestObject
         def self.features_enabled
@@ -64,11 +79,15 @@ describe 'abstract_feature_branch' do
       feature_enabled?(:feature2).should == true
       feature_enabled?(:feature3).should == false
     end
+    it 'returns nil for an invalid feature name' do
+      feature_enabled?(:invalid_feature_that_does_not_exist).should be_nil
+    end
   end
   describe 'self#feature_enabled?' do
     after do
       Object.send(:remove_const, :TestObject)
     end
+    # No need to retest all instance test cases, just a spot check due to implementation reuse
     it 'determines whether a feature is enabled or not in features configuration' do
       class TestObject
         def self.hit_me

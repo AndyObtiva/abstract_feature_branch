@@ -3,7 +3,7 @@ class Object
   def self.feature_branch(feature_name, branches = {}, &feature_work)
     branches[:true] ||= feature_work
     branches[:false] ||= lambda {}
-    feature_status = AbstractFeatureBranch.features[Rails.env.to_s][feature_name.to_s].to_s.to_sym
+    feature_status = (AbstractFeatureBranch.features[Rails.env.to_s][feature_name.to_s] || false).to_s.to_sym
     branches[feature_status].call
   end
 
