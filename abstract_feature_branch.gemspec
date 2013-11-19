@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "abstract_feature_branch"
-  s.version = "0.3.4"
+  s.version = "0.3.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Annas \"Andy\" Maleh"]
@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
     "abstract_feature_branch.gemspec",
     "lib/abstract_feature_branch.rb",
     "lib/ext/feature_branch.rb",
-    "lib/generators/install_generator.rb",
+    "lib/generators/abstract_feature_branch/install_generator.rb",
     "lib/generators/templates/config/features.yml"
   ]
   s.homepage = "http://github.com/AndyObtiva/abstract_feature_branch"
@@ -37,18 +37,15 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<rspec>, ["= 2.11.0"])
       s.add_development_dependency(%q<rdoc>, ["= 3.12.2"])
-      s.add_development_dependency(%q<rubygems-update>, ["= 2.1.11"])
       s.add_development_dependency(%q<jeweler>, ["= 1.8.8"])
     else
       s.add_dependency(%q<rspec>, ["= 2.11.0"])
       s.add_dependency(%q<rdoc>, ["= 3.12.2"])
-      s.add_dependency(%q<rubygems-update>, ["= 2.1.11"])
       s.add_dependency(%q<jeweler>, ["= 1.8.8"])
     end
   else
     s.add_dependency(%q<rspec>, ["= 2.11.0"])
     s.add_dependency(%q<rdoc>, ["= 3.12.2"])
-    s.add_dependency(%q<rubygems-update>, ["= 2.1.11"])
     s.add_dependency(%q<jeweler>, ["= 1.8.8"])
   end
 end
