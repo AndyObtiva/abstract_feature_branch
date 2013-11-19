@@ -24,7 +24,7 @@ Setup
 -----
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.3.4'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.3.5'</pre>
    - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch'</pre>
 2. Generate config/features.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 
@@ -113,6 +113,9 @@ for better maintenance as the need is not longer there for feature branching at 
 
 Release Notes
 -------------
+
+Version 0.3.5:
+- Fixed issue with generator not allowing consuming client app to start Rails server successfully
 
 Version 0.3.4:
 - Added abstract_feature_branch:install generator to easily get started with a sample config/features.yml

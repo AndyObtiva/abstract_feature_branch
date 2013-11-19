@@ -52,7 +52,6 @@ GEM
     rspec-expectations (2.11.3)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.11.3)
-    rubygems-update (2.1.11)
 
 PLATFORMS
   ruby
@@ -61,4 +60,3 @@ DEPENDENCIES
   jeweler (= 1.8.8)
   rdoc (= 3.12.2)
   rspec (= 2.11.0)
-  rubygems-update (= 2.1.11)
