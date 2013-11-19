@@ -37,7 +37,8 @@ release should big problems arise for a high risk feature.
   gem.files.exclude 'Gemfile'
   gem.files.exclude 'Gemfile.lock'
   gem.files.exclude 'Rakefile'
-  gem.files.exclude '.rvmrc'
+  gem.files.exclude '.ruby-gemset'
+  gem.files.exclude '.ruby-version'
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new

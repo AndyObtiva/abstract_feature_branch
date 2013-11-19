@@ -16,3 +16,4 @@ module AbstractFeatureBranch
 end
 
 require File.join(File.dirname(__FILE__), 'ext', 'feature_branch')
+require File.join(File.dirname(__FILE__), 'generators', 'install_generator')

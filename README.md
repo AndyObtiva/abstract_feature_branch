@@ -17,37 +17,40 @@ release should big problems arise for a high risk feature.
 
 Requirements
 ------------
-- Ruby 1.9.x or 1.8.7x
-- Rails 3.x or 2.x
+- Ruby ~> 2.0.0, ~> 1.9 or ~> 1.8.7
+- Rails ~> 4.0.0, ~> 3.0 or ~> 2.0
 
 Setup
 -----
 
-- Add 'abstract_feature_branch' gem to Gemfile in Rails 3.x or
-"config.gem 'absract_feature_branch'" to environment.rb in Rails 2.x
-- Configure config/features.yml in your Rails app directory as follows:
+1. Configure Rubygem
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.3.4'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch'</pre>
+2. Generate config/features.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
+
+Here are the contents of the generated sample config/features.yml, which you can modify with your own features.
 
 >     defaults: &defaults
 >       feature1: true
 >       feature2: true
 >       feature3: false
->     
+>
 >     development:
 >       <<: *defaults
->     
+>
 >     test:
 >       <<: *defaults
->     
+>
 >     staging:
 >       <<: *defaults
 >       feature2: false
->     
+>
 >     production:
 >       <<: *defaults
 >       feature1: false
 >       feature2: false
 
-Notice how the feature "feature1" was configured as true (enabled) by default, but
+Notice in the sample file how the feature "feature1" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
 
 Instructions
@@ -111,6 +114,9 @@ for better maintenance as the need is not longer there for feature branching at 
 Release Notes
 -------------
 
+Version 0.3.4:
+- Added abstract_feature_branch:install generator to easily get started with a sample config/features.yml
+
 Version 0.3.3:
 - Removed version from README title
 
@@ -150,6 +156,6 @@ Contributing to abstract_feature_branch
 Copyright
 ---------------------------------------
 
-Copyright (c) 2012 Annas "Andy" Maleh. See LICENSE.txt for
+Copyright (c) 2013 Annas "Andy" Maleh. See LICENSE.txt for
 further details.
 
