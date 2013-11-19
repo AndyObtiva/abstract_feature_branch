@@ -56,13 +56,17 @@ overridden as false (disabled) in production. This is a recommended practice.
 Instructions
 ------------
 
-- declaratively feature branch logic to only run when feature1 is enabled:
+- Declaratively feature branch logic to only run when feature1 is enabled:
 
+multi-line logic:
 >     feature_branch :feature1 do
 >       # perform logic
 >     end
 
-- declaratively feature branch two paths of logic, one that runs when feature1 is enabled and one that runs when it is disabled:
+single-line logic:
+>     feature_branch(:feature1) { # perform logic }
+
+- Declaratively feature branch two paths of logic, one that runs when feature1 is enabled and one that runs when it is disabled:
 
 >     feature_branch :feature1,
 >                    :true => lambda {
@@ -72,7 +76,7 @@ Instructions
 >                      # perform alternate logic
 >                    }
 
-- imperatively check if a feature is enabled or not:
+- Imperatively check if a feature is enabled or not:
 
 >     if feature_enabled?(:feature1)
 >       # perform logic
