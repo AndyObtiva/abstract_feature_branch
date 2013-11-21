@@ -25,7 +25,7 @@ Setup
 
 1. Configure Rubygem
    - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.3.6'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.3.6'</pre>
 2. Generate config/features.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 
 Here are the contents of the generated sample config/features.yml, which you can modify with your own features.
