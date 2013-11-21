@@ -185,10 +185,15 @@ Recommendation:
 It is recommended that you use environment variable overrides on Heroku only as an emergency or temporary measure.
 Afterward, make the change officially in config/features.yml, deploy, and remove the environment variable override for the long term.
 
-Note on abstract feature branching in CSS and JS files:
+Gotcha with abstract feature branching in CSS and JS files:
 
-If you've used abstract feature branching in a css or js file via erb, make sure to run asset compilation in addition to 
-setting an environment variable override. To do so, simply run <pre>heroku run rake asset:precompile</pre>
+If you've used abstract feature branching in CSS or JS files via ERB, setting environment variable overrides won't
+affect them as you need asset recompilation in addition to it, which can only be triggered by changing a CSS or JS
+file and redeploying on Heroku (hint: even if it's just a minor change to force it). In any case, environment variable
+overrides have been recommended above as an emergency or temporary measure. If there is a need to rely on environment
+variable overrides to alter the style or JavaScript behavior of a page back and forth without a redeploy, one solution
+is to do additional abstract feature branching in HTML templates (e.g. ERB or HAML templates) to link to different
+CSS classes or invoke different JavaScript methods per branch of HTML for example.
 
 Release Notes
 -------------
