@@ -91,38 +91,6 @@ Note that feature_branch executes the false branch if the feature is non-existen
 
 Note that feature_enabled? returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
 
-Environment Variable Overrides
-------------------------------
-
-You can override feature configuration with environment variables by setting an environment variable with
-a name matching this convention (case-insensitive):
-ABSTRACT_FEATURE_BRANCH_[feature_name] and giving it the case-insensitive value "TRUE" or "FALSE"
-
-Examples:
-
-- export ABSTRACT_FEATURE_BRANCH_FEATURE1=TRUE
-- export abstract_feature_branch_feature2=false
-
-Heroku
-------
-
-Environment variable overrides can be extremely helpful on Heroku as they allow developers to enable/disable features
-at runtime without a redeploy.
-
-Examples:
-
-Enabling a new feature without a redeploy:
-<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE3=true -a heroku_application_name</pre>
-
-Disabling a buggy recently deployed feature without a redeploy:
-<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE2=false -a heroku_application_name</pre>
-
-Removing an environment variable override:
-<pre>heroku config:remove ABSTRACT_FEATURE_BRANCH_FEATURE2 -a heroku_application_name</pre>
-
-Note that it is recommended to use environment variables as an emergency or temporary measure, make the change
-officially in config/features.yml afterward, deploy, and finally remove the environment variable override for the long term.
-
 Recommendations
 ---------------
 
@@ -177,11 +145,50 @@ simply switching off the URL route to them. Example:
 >       margin-bottom: -15px;
 >       margin-top: 3px;
 >       display: inline;
->     }
+>     }H
 
 - Once a feature has been released and switched on in production, and it has worked well for a while,
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
+
+Environment Variable Overrides
+------------------------------
+
+You can override feature configuration with environment variables by setting an environment variable with
+a name matching this convention (case-insensitive):
+ABSTRACT_FEATURE_BRANCH_[feature_name] and giving it the case-insensitive value "TRUE" or "FALSE"
+
+Examples:
+
+- export ABSTRACT_FEATURE_BRANCH_FEATURE1=TRUE
+- export abstract_feature_branch_feature2=false
+
+Heroku
+------
+
+Environment variable overrides can be extremely helpful on Heroku as they allow developers to enable/disable features
+at runtime without a redeploy.
+
+Examples:
+
+Enabling a new feature without a redeploy:
+<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE3=true -a heroku_application_name</pre>
+
+Disabling a buggy recently deployed feature without a redeploy:
+<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE2=false -a heroku_application_name</pre>
+
+Removing an environment variable override:
+<pre>heroku config:remove ABSTRACT_FEATURE_BRANCH_FEATURE2 -a heroku_application_name</pre>
+
+Recommendation:
+
+It is recommended that you use environment variable overrides on Heroku only as an emergency or temporary measure.
+Afterward, make the change officially in config/features.yml, deploy, and remove the environment variable override for the long term.
+
+Note on abstract feature branching in CSS and JS files:
+
+If you've used abstract feature branching in a css or js file via erb, make sure to run asset compilation in addition to 
+setting an environment variable override. To do so, simply run <pre>heroku run rake asset:precompile</pre>
 
 Release Notes
 -------------
