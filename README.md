@@ -91,32 +91,37 @@ Note that feature_branch executes the false branch if the feature is non-existen
 
 Note that feature_enabled? returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
 
-Additionally, you can override the configuration with environment variables by setting an environment variable with
+Environment Variable Overrides
+------------------------------
+
+You can override feature configuration with environment variables by setting an environment variable with
 a name matching this convention (case-insensitive):
-ABSTRACT_FEATURE_BRANCH_[feature_name] and giving it the case-insensitive value "true" or "false"
+ABSTRACT_FEATURE_BRANCH_[feature_name] and giving it the case-insensitive value "TRUE" or "FALSE"
+
 Examples:
-- ABSTRACT_FEATURE_BRANCH_FEATURE1=TRUE
-- abstract_feature_branch_feature2=false
+
+- export ABSTRACT_FEATURE_BRANCH_FEATURE1=TRUE
+- export abstract_feature_branch_feature2=false
 
 Heroku
 ------
 
-Overrides via environment variables can be extremely helpful on Heroku as they allow developers to enable/disable features
+Environment variable overrides can be extremely helpful on Heroku as they allow developers to enable/disable features
 at runtime without a redeploy.
 
 Examples:
 
 Enabling a new feature without a redeploy:
-<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE3=true -a application_name</pre>
+<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE3=true -a heroku_application_name</pre>
 
 Disabling a buggy recently deployed feature without a redeploy:
-<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE2=false -a application_name</pre>
+<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE2=false -a heroku_application_name</pre>
 
-Removing environment variable override:
-<pre>heroku config:remove ABSTRACT_FEATURE_BRANCH_FEATURE2 -a application_name</pre>
+Removing an environment variable override:
+<pre>heroku config:remove ABSTRACT_FEATURE_BRANCH_FEATURE2 -a heroku_application_name</pre>
 
 Note that it is recommended to use environment variables as an emergency or temporary measure, make the change
-officially in config/features.yml afterward, and finally remove the environment variable override for the long term.
+officially in config/features.yml afterward, deploy, and finally remove the environment variable override for the long term.
 
 Recommendations
 ---------------
@@ -182,7 +187,7 @@ Release Notes
 -------------
 
 Version 0.4.0:
-- Added support for overwriting feature values with environment variables. Very useful on Heroku to avoid a redeploy.
+- Added support for overwriting feature configuration with environment variable overrides. Very useful on Heroku to quickly enable/disable features without a redeploy.
 
 Version 0.3.6:
 - Fixed feature_branch issue with invalid feature name, preventing block execution and returning nil instead
