@@ -24,11 +24,15 @@ Setup
 -----
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.3.6'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.3.6'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.4.0'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.4.0'</pre>
 2. Generate config/features.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 
-Here are the contents of the generated sample config/features.yml, which you can modify with your own features.
+Instructions
+------------
+
+Here are the contents of the generated sample config/features.yml, which you can modify with your own features, each
+enabled (true) or disabled (false) per environment (e.g. production).
 
 >     defaults: &defaults
 >       feature1: true
@@ -52,9 +56,6 @@ Here are the contents of the generated sample config/features.yml, which you can
 
 Notice in the sample file how the feature "feature1" was configured as true (enabled) by default, but
 overridden as false (disabled) in production. This is a recommended practice.
-
-Instructions
-------------
 
 - Declaratively feature branch logic to only run when feature1 is enabled:
 
@@ -89,6 +90,33 @@ Note that feature_branch executes the false branch if the feature is non-existen
 >     end
 
 Note that feature_enabled? returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
+
+Additionally, you can override the configuration with environment variables by setting an environment variable with
+a name matching this convention (case-insensitive):
+ABSTRACT_FEATURE_BRANCH_[feature_name] and giving it the case-insensitive value "true" or "false"
+Examples:
+- ABSTRACT_FEATURE_BRANCH_FEATURE1=TRUE
+- abstract_feature_branch_feature2=false
+
+Heroku
+------
+
+Overrides via environment variables can be extremely helpful on Heroku as they allow developers to enable/disable features
+at runtime without a redeploy.
+
+Examples:
+
+Enabling a new feature without a redeploy:
+<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE3=true -a application_name</pre>
+
+Disabling a buggy recently deployed feature without a redeploy:
+<pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE2=false -a application_name</pre>
+
+Removing environment variable override:
+<pre>heroku config:remove ABSTRACT_FEATURE_BRANCH_FEATURE2 -a application_name</pre>
+
+Note that it is recommended to use environment variables as an emergency or temporary measure, make the change
+officially in config/features.yml afterward, and finally remove the environment variable override for the long term.
 
 Recommendations
 ---------------
@@ -152,6 +180,9 @@ for better maintenance as the need is not longer there for feature branching at 
 
 Release Notes
 -------------
+
+Version 0.4.0:
+- Added support for overwriting feature values with environment variables. Very useful on Heroku to avoid a redeploy.
 
 Version 0.3.6:
 - Fixed feature_branch issue with invalid feature name, preventing block execution and returning nil instead

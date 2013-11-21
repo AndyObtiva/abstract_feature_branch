@@ -2,6 +2,16 @@ require 'spec_helper'
 
 describe 'abstract_feature_branch' do
   describe 'feature_branch' do
+    before do
+      puts 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
+      puts 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
+      puts 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
+    end
+    after do
+      ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
+      ENV.delete('Abstract_Feature_Branch_Feature2')
+      ENV.delete('abstract_feature_branch_feature3')
+    end
     it 'feature branches class level behavior' do
       features_enabled = []
       feature_branch :feature1 do
@@ -43,6 +53,60 @@ describe 'abstract_feature_branch' do
                      :false => lambda {feature_behaviors << :alternate_branch}
       feature_behaviors.should_not include(:main_branch)
       feature_behaviors.should include(:alternate_branch)
+    end
+    it 'allows environment variables (case-insensitive booleans) to override configuration file' do
+      features_enabled = []
+      ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
+      ENV['Abstract_Feature_Branch_Feature2'] = 'False'
+      ENV['abstract_feature_branch_feature3'] = 'true'
+      feature_branch :feature1 do
+        features_enabled << :feature1
+      end
+      feature_branch :feature2 do
+        features_enabled << :feature2
+      end
+      feature_branch :feature3 do
+        features_enabled << :feature3
+      end
+      features_enabled.should_not include(:feature1)
+      features_enabled.should_not include(:feature2)
+      features_enabled.should include(:feature3)
+    end
+    it 'allows environment variables (case-insensitive on/off switches) to override configuration file' do
+      features_enabled = []
+      ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'OFF'
+      ENV['Abstract_Feature_Branch_Feature2'] = 'Off'
+      ENV['abstract_feature_branch_feature3'] = 'on'
+      feature_branch :feature1 do
+        features_enabled << :feature1
+      end
+      feature_branch :feature2 do
+        features_enabled << :feature2
+      end
+      feature_branch :feature3 do
+        features_enabled << :feature3
+      end
+      features_enabled.should_not include(:feature1)
+      features_enabled.should_not include(:feature2)
+      features_enabled.should include(:feature3)
+    end
+    it 'allows environment variables (case-insensitive yes/no) to override configuration file' do
+      features_enabled = []
+      ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'NO'
+      ENV['Abstract_Feature_Branch_Feature2'] = 'No'
+      ENV['abstract_feature_branch_feature3'] = 'yes'
+      feature_branch :feature1 do
+        features_enabled << :feature1
+      end
+      feature_branch :feature2 do
+        features_enabled << :feature2
+      end
+      feature_branch :feature3 do
+        features_enabled << :feature3
+      end
+      features_enabled.should_not include(:feature1)
+      features_enabled.should_not include(:feature2)
+      features_enabled.should include(:feature3)
     end
   end
   describe 'self#feature_branch' do
