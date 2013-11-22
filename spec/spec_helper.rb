@@ -12,7 +12,10 @@ module Rails
     File.join(File.dirname(__FILE__), '..')
   end
   def self.env
-    'test'
+    @env ||= 'test'
+  end
+  def self.env=(environment)
+    @env = environment
   end
 end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')

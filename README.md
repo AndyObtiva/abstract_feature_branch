@@ -24,12 +24,16 @@ Setup
 -----
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.4.0'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.4.0'</pre>
-2. Generate config/features.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.5.0'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.5.0'</pre>
+2. Generate config/features.yml and config/features.local.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 
 Instructions
 ------------
+
+config/features.yml contains the main configuration for the application features.
+config/features.local.yml contains local overrides for the configuration, ignored by git, thus useful for temporary
+local feature switching for development/testing/troubleshooting purposes.
 
 Here are the contents of the generated sample config/features.yml, which you can modify with your own features, each
 enabled (true) or disabled (false) per environment (e.g. production).
@@ -151,6 +155,13 @@ simply switching off the URL route to them. Example:
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
 
+- When working on a new feature locally that the developer does not want others on the team to see yet, the feature
+can be enabled in config/features.local.yml only as it is git ignored, and disabled in config/features.yml
+
+- When troubleshooting a deployed feature by simulating a non-development environment (e.g. staging or production) locally,
+the developer can disable it temporarily in config/features.local.yml (git ignored) under the non-development environment,
+perform tests on the feature, and then remove the local configuration once done.
+
 Environment Variable Overrides
 ------------------------------
 
@@ -197,6 +208,9 @@ CSS classes or invoke different JavaScript methods per branch of HTML for exampl
 
 Release Notes
 -------------
+
+Version 0.5.0:
+- Added support for local configuration feature ignored by git + some performance optimizations via configuration caching and better algorithms.
 
 Version 0.4.0:
 - Added support for overwriting feature configuration with environment variable overrides. Very useful on Heroku to quickly enable/disable features without a redeploy.

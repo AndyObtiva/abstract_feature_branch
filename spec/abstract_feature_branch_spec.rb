@@ -1,18 +1,22 @@
 require 'spec_helper'
 
 describe 'abstract_feature_branch' do
+  before do
+    @rails_env_backup = Rails.env
+    puts 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
+    puts 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
+    puts 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
+  end
+  after do
+    ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
+    ENV.delete('Abstract_Feature_Branch_Feature2')
+    ENV.delete('abstract_feature_branch_feature3')
+    AbstractFeatureBranch.load_environment_variable_overrides
+    AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
+    Rails.env = @rails_env_backup
+  end
   describe 'feature_branch' do
-    before do
-      puts 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
-      puts 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
-      puts 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
-    end
-    after do
-      ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
-      ENV.delete('Abstract_Feature_Branch_Feature2')
-      ENV.delete('abstract_feature_branch_feature3')
-    end
-    it 'feature branches class level behavior' do
+    it 'feature branches class level behavior (case-insensitive feature names)' do
       features_enabled = []
       feature_branch :feature1 do
         features_enabled << :feature1
@@ -55,10 +59,12 @@ describe 'abstract_feature_branch' do
       feature_behaviors.should include(:alternate_branch)
     end
     it 'allows environment variables (case-insensitive booleans) to override configuration file' do
-      features_enabled = []
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'
       ENV['abstract_feature_branch_feature3'] = 'true'
+      AbstractFeatureBranch.load_environment_variable_overrides
+      AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
+      features_enabled = []
       feature_branch :feature1 do
         features_enabled << :feature1
       end
@@ -72,41 +78,16 @@ describe 'abstract_feature_branch' do
       features_enabled.should_not include(:feature2)
       features_enabled.should include(:feature3)
     end
-    it 'allows environment variables (case-insensitive on/off switches) to override configuration file' do
+    it 'allows local configuration file to override main configuration file' do
       features_enabled = []
-      ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'OFF'
-      ENV['Abstract_Feature_Branch_Feature2'] = 'Off'
-      ENV['abstract_feature_branch_feature3'] = 'on'
-      feature_branch :feature1 do
-        features_enabled << :feature1
+      feature_branch :feature4 do
+        features_enabled << :feature4
       end
-      feature_branch :feature2 do
-        features_enabled << :feature2
+      feature_branch :feature5 do
+        features_enabled << :feature5
       end
-      feature_branch :feature3 do
-        features_enabled << :feature3
-      end
-      features_enabled.should_not include(:feature1)
-      features_enabled.should_not include(:feature2)
-      features_enabled.should include(:feature3)
-    end
-    it 'allows environment variables (case-insensitive yes/no) to override configuration file' do
-      features_enabled = []
-      ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'NO'
-      ENV['Abstract_Feature_Branch_Feature2'] = 'No'
-      ENV['abstract_feature_branch_feature3'] = 'yes'
-      feature_branch :feature1 do
-        features_enabled << :feature1
-      end
-      feature_branch :feature2 do
-        features_enabled << :feature2
-      end
-      feature_branch :feature3 do
-        features_enabled << :feature3
-      end
-      features_enabled.should_not include(:feature1)
-      features_enabled.should_not include(:feature2)
-      features_enabled.should include(:feature3)
+      features_enabled.should_not include(:feature4)
+      features_enabled.should include(:feature5)
     end
   end
   describe 'self#feature_branch' do
@@ -114,7 +95,7 @@ describe 'abstract_feature_branch' do
       Object.send(:remove_const, :TestObject)
     end
     # No need to retest all instance test cases, just a spot check due to implementation reuse
-    it 'feature branches instance level behavior' do
+    it 'feature branches instance level behavior (case-insensitive feature names)' do
       class TestObject
         def self.features_enabled
           @features_enabled ||= []
@@ -145,6 +126,25 @@ describe 'abstract_feature_branch' do
     end
     it 'returns nil for an invalid feature name' do
       feature_enabled?(:invalid_feature_that_does_not_exist).should be_nil
+    end
+    it 'allows environment variables (case-insensitive booleans) to override configuration file' do
+      ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
+      ENV['Abstract_Feature_Branch_Feature2'] = 'False'
+      ENV['abstract_feature_branch_feature3'] = 'true'
+      AbstractFeatureBranch.load_environment_variable_overrides
+      AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
+      feature_enabled?(:feature1).should == false
+      feature_enabled?(:feature2).should == false
+      feature_enabled?(:feature3).should == true
+    end
+    it 'allows local configuration file to override main configuration file in test environment' do
+      feature_enabled?(:feature4).should == false
+      feature_enabled?(:feature5).should == true
+    end
+    it 'no local configuration in production environment' do
+      Rails.env = 'production'
+      feature_enabled?(:feature4).should == true
+      feature_enabled?(:feature5).should be_nil
     end
   end
   describe 'self#feature_enabled?' do

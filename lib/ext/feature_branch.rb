@@ -3,15 +3,13 @@ class Object
   def self.feature_branch(feature_name, branches = {}, &feature_work)
     branches[:true] ||= feature_work
     branches[:false] ||= lambda {}
-    feature_status = abstract_feature_branch_environment_value(feature_name)
-    feature_status = AbstractFeatureBranch.features[Rails.env.to_s][feature_name.to_s] if feature_status.nil?
-    feature_status = false if feature_status.nil?
-    branches[feature_status.to_s.to_sym].call
+    feature_branch_symbol_value = (!!feature_enabled?(feature_name)).to_s.to_sym
+    branches[feature_branch_symbol_value].call
   end
 
   raise 'Abstract feature branch conflicts with another Ruby library' if respond_to?(:feature_enabled?)
   def self.feature_enabled?(feature_name)
-    AbstractFeatureBranch.features[Rails.env.to_s][feature_name.to_s]
+    AbstractFeatureBranch.environment_features(Rails.env.to_s)[feature_name.to_s]
   end
 
   raise 'Abstract feature branch conflicts with another Ruby library' if Object.new.respond_to?(:feature_branch)
@@ -22,16 +20,5 @@ class Object
   raise 'Abstract feature branch conflicts with another Ruby library' if Object.new.respond_to?(:feature_enabled?)
   def feature_enabled?(feature_name)
     Object.feature_enabled?(feature_name.to_s)
-  end
-
-  private
-
-  ABSTRACT_FEATURE_BRANCH_POSITIVE_VALUES = ['true', 'on', 'yes']
-
-  raise 'Abstract feature branch conflicts with another Ruby library' if respond_to?(:abstract_feature_branch_environment_value)
-  def self.abstract_feature_branch_environment_value(feature_name)
-    downcased_env = Hash[ENV.map {|k, v| [k.downcase, v]}]
-    value = downcased_env["abstract_feature_branch_#{feature_name.to_s.downcase}"]
-    value && ABSTRACT_FEATURE_BRANCH_POSITIVE_VALUES.include?(value.downcase)
   end
 end
