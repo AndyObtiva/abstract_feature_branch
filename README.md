@@ -26,13 +26,14 @@ Setup
 1. Configure Rubygem
    - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.5.0'</pre>
    - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.5.0'</pre>
-2. Generate config/features.yml and config/features.local.yml in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
+2. Generate <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 
 Instructions
 ------------
 
-config/features.yml contains the main configuration for the application features.
-config/features.local.yml contains local overrides for the configuration, ignored by git, thus useful for temporary
+<code>config/features.yml</code> contains the main configuration for the application features.
+
+<code>config/features.local.yml</code> contains local overrides for the configuration, ignored by git, thus useful for temporary
 local feature switching for development/testing/troubleshooting purposes.
 
 Here are the contents of the generated sample config/features.yml, which you can modify with your own features, each
@@ -71,7 +72,7 @@ multi-line logic:
 single-line logic:
 >     feature_branch(:feature1) { # perform logic }
 
-Note that feature_branch returns nil and does not execute the block if the feature is disabled or non-existent.
+Note that <code>feature_branch</code> returns nil and does not execute the block if the feature is disabled or non-existent.
 
 - Declaratively feature branch two paths of logic, one that runs when feature1 is enabled and one that runs when it is disabled:
 
@@ -83,7 +84,7 @@ Note that feature_branch returns nil and does not execute the block if the featu
 >                      # perform alternate logic
 >                    }
 
-Note that feature_branch executes the false branch if the feature is non-existent.
+Note that <code>feature_branch</code> executes the false branch if the feature is non-existent.
 
 - Imperatively check if a feature is enabled or not:
 
@@ -93,7 +94,7 @@ Note that feature_branch executes the false branch if the feature is non-existen
 >       # perform alternate logic
 >     end
 
-Note that feature_enabled? returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
+Note that <code>feature_enabled?</code> returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
 
 Recommendations
 ---------------
@@ -149,17 +150,17 @@ simply switching off the URL route to them. Example:
 >       margin-bottom: -15px;
 >       margin-top: 3px;
 >       display: inline;
->     }H
+>     }
 
 - Once a feature has been released and switched on in production, and it has worked well for a while,
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
 
 - When working on a new feature locally that the developer does not want others on the team to see yet, the feature
-can be enabled in config/features.local.yml only as it is git ignored, and disabled in config/features.yml
+can be enabled in <code>config/features.local.yml</code> only as it is git ignored, and disabled in <code>config/features.yml</code>
 
 - When troubleshooting a deployed feature by simulating a non-development environment (e.g. staging or production) locally,
-the developer can disable it temporarily in config/features.local.yml (git ignored) under the non-development environment,
+the developer can disable it temporarily in <code>config/features.local.yml</code> (git ignored) under the non-development environment,
 perform tests on the feature, and then remove the local configuration once done.
 
 Environment Variable Overrides
@@ -169,10 +170,21 @@ You can override feature configuration with environment variables by setting an 
 a name matching this convention (case-insensitive):
 ABSTRACT_FEATURE_BRANCH_[feature_name] and giving it the case-insensitive value "TRUE" or "FALSE"
 
-Examples:
+Example:
 
-- export ABSTRACT_FEATURE_BRANCH_FEATURE1=TRUE
-- export abstract_feature_branch_feature2=false
+>     export ABSTRACT_FEATURE_BRANCH_FEATURE1=TRUE
+>     rails s
+
+The first command adds an environment variable override for <code>feature1</code> that enables it regardless of any
+feature configuration, and the second command starts the rails server with <code>feature1</code> enabled.
+
+To remove environment variable override, you may run:
+
+>     unset ABSTRACT_FEATURE_BRANCH_FEATURE1
+>     rails s
+
+This can be done more easily via <code>config/features.local.yml</code> mentioned above. However, environment variable overrides are
+implemented to support overriding feature configuration for a Heroku deployed application more easily.
 
 Heroku
 ------
