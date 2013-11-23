@@ -11,6 +11,15 @@ end
 require 'deep_merge' unless {}.respond_to?(:deep_merge!)
 
 module AbstractFeatureBranch
+  def self.application_root
+    @application_root ||= initialize_application_root
+  end
+  def self.initialize_application_root
+    @application_root = Rails.root
+  end
+  def self.application_root=(path)
+    @application_root = path
+  end
   def self.environment_variable_overrides
     @environment_variable_overrides ||= load_environment_variable_overrides
   end
@@ -22,20 +31,24 @@ module AbstractFeatureBranch
   end
   def self.load_local_features
     @local_features = {}
-    Dir.glob(File.join(Rails.root, 'config', 'features', '**', '*.local.yml')).each do |feature_configuration_file|
+    Dir.glob(File.join(application_root, 'config', 'features', '**', '*.local.yml')).each do |feature_configuration_file|
       @local_features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
     end
-    @local_features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(File.join(Rails.root, 'config', 'features.local.yml'))))
+    main_local_features_file = File.join(application_root, 'config', 'features.local.yml')
+    @local_features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(main_local_features_file))) if File.exists?(main_local_features_file)
+    @local_features
   end
   def self.features
     @features ||= load_features
   end
   def self.load_features
     @features = {}
-    Dir.glob(File.join(Rails.root, 'config', 'features', '**', '*.yml')).each do |feature_configuration_file|
+    Dir.glob(File.join(application_root, 'config', 'features', '**', '*.yml')).each do |feature_configuration_file|
       @features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
     end
-    @features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(File.join(Rails.root, 'config', 'features.yml'))))
+    main_features_file = File.join(application_root, 'config', 'features.yml')
+    @features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(main_features_file))) if File.exists?(main_features_file)
+    @features
   end
   # performance optimization via caching of feature values resolved through environment variable overrides and local features
   def self.environment_features(environment)
@@ -43,6 +56,8 @@ module AbstractFeatureBranch
     @environment_features[environment] ||= load_environment_features(environment)
   end
   def self.load_environment_features(environment)
+    features[environment] ||= {}
+    local_features[environment] ||= {}
     @environment_features[environment] = features[environment].merge(local_features[environment]).merge(environment_variable_overrides)
   end
 

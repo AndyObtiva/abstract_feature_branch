@@ -31,8 +31,8 @@ Setup
 -----
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.6.2'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.6.2'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.6.3'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.6.3'</pre>
 2. Generate <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre>
 
@@ -253,7 +253,10 @@ the former if overlap in features occurs:
 Release Notes
 -------------
 
-Version 0.6.2:
+Version 0.6.1 - 0.6.3:
+- Fixed issues including making feature configuration files optional (in case one wants to get rid of <code>features.local.yml</code> or even <code>features.yml</code>)
+
+Version 0.6.0:
 - Added a context generator and support for reading feature configuration from context files <code>config/features/**/*.yml</code> and <code>config/features/**/*.local.yml</code>
 
 Version 0.5.0:

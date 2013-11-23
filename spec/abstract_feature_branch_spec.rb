@@ -11,7 +11,10 @@ describe 'abstract_feature_branch' do
     ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
+    AbstractFeatureBranch.initialize_application_root
     AbstractFeatureBranch.load_environment_variable_overrides
+    AbstractFeatureBranch.load_features
+    AbstractFeatureBranch.load_local_features
     AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
     Rails.env = @rails_env_backup
   end
@@ -39,7 +42,7 @@ describe 'abstract_feature_branch' do
     end
     it 'returns nil and does not execute block for an invalid feature name' do
       return_value = feature_branch :invalid_feature_that_does_not_exist do
-        fail 'feature branch block must have not executed'
+        fail 'feature branch block must not execute, but did.'
       end
       return_value.should be_nil
     end
@@ -106,6 +109,15 @@ describe 'abstract_feature_branch' do
       features_enabled.should include(:admin_feature3)
       features_enabled.should include(:public_feature3)
       features_enabled.should include(:wiki_feature3)
+    end
+    it 'works with an application that has no configuration files' do
+      AbstractFeatureBranch.application_root = File.join(Rails.root, 'spec', 'application_no_config')
+      AbstractFeatureBranch.load_features
+      AbstractFeatureBranch.load_local_features
+      AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
+      feature_branch :feature1 do
+        fail 'feature branch block must not execute, but did.'
+      end
     end
   end
   describe 'self#feature_branch' do
