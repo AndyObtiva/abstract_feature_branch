@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "abstract_feature_branch"
-  s.version = "0.6.2"
+  s.version = "0.6.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Annas \"Andy\" Maleh"]
@@ -32,7 +32,8 @@ Gem::Specification.new do |s|
     "lib/generators/abstract_feature_branch/install_generator.rb",
     "lib/generators/templates/config/features.example.yml",
     "lib/generators/templates/config/features.local.yml",
-    "lib/generators/templates/config/features.yml"
+    "lib/generators/templates/config/features.yml",
+    "spec/application_no_config/no_config"
   ]
   s.homepage = "http://github.com/AndyObtiva/abstract_feature_branch"
   s.licenses = ["MIT"]
