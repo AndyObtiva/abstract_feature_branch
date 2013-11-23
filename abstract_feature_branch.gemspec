@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "abstract_feature_branch"
-  s.version = "0.6.3"
+  s.version = "0.6.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Annas \"Andy\" Maleh"]
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/AndyObtiva/abstract_feature_branch"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "2.0.6"
+  s.rubygems_version = "2.0.7"
   s.summary = "abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html"
 
   if s.respond_to? :specification_version then
