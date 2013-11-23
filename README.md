@@ -1,5 +1,6 @@
 Abstract Feature Branch
 =======================
+[![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 
 abstract_feature_branch is a Rails gem that enables developers to easily branch by
 abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html
