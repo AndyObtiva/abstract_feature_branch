@@ -254,7 +254,7 @@ Release Notes
 -------------
 
 Version 0.6.2:
-- Added a context generator and support for reading feature configuration from context files config/features/**/*.yml and config/features/**/*.local.yml
+- Added a context generator and support for reading feature configuration from context files <code>config/features/**/*.yml</code> and <code>config/features/**/*.local.yml</code>
 
 Version 0.5.0:
 - Added support for local configuration feature ignored by git + some performance optimizations via configuration caching and better algorithms.
@@ -269,24 +269,24 @@ Version 0.3.5:
 - Fixed issue with generator not allowing consuming client app to start Rails server successfully
 
 Version 0.3.4:
-- Added abstract_feature_branch:install generator to easily get started with a sample config/features.yml
+- Added <code>abstract_feature_branch:install</code> generator to easily get started with a sample <code>config/features.yml</code>
 
 Version 0.3.3:
 - Removed version from README title
 
 Version 0.3.2:
-- Added AbstractFeatureBranch.features to delay YAML load until Rails.root has been established
+- Added <code>AbstractFeatureBranch.features</code> to delay YAML load until <code>Rails.root</code> has been established
 
 Version 0.3.1:
 - Removed dependency on the rails_config gem
 
 Version 0.3.0:
-- Simplified features.yml requirement to have a features header under each environment
-- Moved feature storage from Settings object to AbstractFeatureBranch::FEATURES
+- Simplified <code>features.yml</code> requirement to have a features header under each environment
+- Moved feature storage from Settings object to <code>AbstractFeatureBranch::FEATURES</code>
 
 Version 0.2.0:
-- Support an "else" block to execute when a feature is off (via :true and :false lambda arguments)
-- Support ability to check if a feature is enabled or not (via feature_enabled?)
+- Support an "else" block to execute when a feature is off (via <code>:true</code> and <code>:false</code> lambda arguments)
+- Support ability to check if a feature is enabled or not (via <code>feature_enabled?</code>)
 
 Upcoming
 --------
