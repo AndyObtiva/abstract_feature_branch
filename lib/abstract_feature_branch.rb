@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler'
 require 'yaml'
+YAML::ENGINE.yamler = "syck"
 begin
   Bundler.setup(:default)
 rescue Bundler::BundlerError => e
@@ -74,11 +75,11 @@ module AbstractFeatureBranch
   end
 
   def self.booleanize_values(hash)
-    Hash[hash.map {|k, v| [k, v.downcase == 'true']}]
+    Hash[hash.map {|k, v| [k, v.to_s.downcase == 'true']}]
   end
 
   def self.downcase_keys(hash)
-    Hash[hash.map {|k, v| [k.downcase, v]}]
+    Hash[hash.map {|k, v| [k.to_s.downcase, v]}]
   end
 
   def self.downcase_feature_hash_keys(hash)
