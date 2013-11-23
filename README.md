@@ -19,7 +19,7 @@ This gives developers the added benefit of being able to switch a feature off af
 release should big problems arise for a high risk feature.
 
 abstract_feature_branch additionally supports [DDD](http://www.domaindrivendesign.org)'s pattern of
-[bounded contexts](http://dddcommunity.org/uncategorized/bounded-context/), but allowing developers to configure
+[bounded contexts](http://dddcommunity.org/uncategorized/bounded-context/) by allowing developers to configure
 context-specific feature files if needed.
 
 Requirements
