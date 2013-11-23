@@ -1,4 +1,7 @@
 defaults: &defaults
+  admin_feature1: true
+  admin_feature2: false
+  admin_feature3: false
 
 development:
   <<: *defaults

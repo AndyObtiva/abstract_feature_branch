@@ -8,6 +8,7 @@ rescue Bundler::BundlerError => e
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
 end
+require 'deep_merge' unless {}.respond_to?(:deep_merge!)
 
 module AbstractFeatureBranch
   def self.environment_variable_overrides
@@ -17,12 +18,24 @@ module AbstractFeatureBranch
     @environment_variable_overrides = featureize_keys(select_feature_keys(booleanize_values(downcase_keys(ENV))))
   end
   def self.local_features
-    @local_features ||= Hash[YAML.load_file(File.join(Rails.root, 'config', 'features.local.yml')).map {|k, v| [k, v && downcase_keys(v)]}]
-    @local_features
+    @local_features ||= load_local_features
+  end
+  def self.load_local_features
+    @local_features = {}
+    Dir.glob(File.join(Rails.root, 'config', 'features', '**', '*.local.yml')).each do |feature_configuration_file|
+      @local_features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
+    end
+    @local_features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(File.join(Rails.root, 'config', 'features.local.yml'))))
   end
   def self.features
-    @features ||= Hash[YAML.load_file(File.join(Rails.root, 'config', 'features.yml')).map {|k, v| [k, v && downcase_keys(v)]}]
-    @features
+    @features ||= load_features
+  end
+  def self.load_features
+    @features = {}
+    Dir.glob(File.join(Rails.root, 'config', 'features', '**', '*.yml')).each do |feature_configuration_file|
+      @features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
+    end
+    @features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(File.join(Rails.root, 'config', 'features.yml'))))
   end
   # performance optimization via caching of feature values resolved through environment variable overrides and local features
   def self.environment_features(environment)
@@ -51,6 +64,10 @@ module AbstractFeatureBranch
 
   def self.downcase_keys(hash)
     Hash[hash.map {|k, v| [k.downcase, v]}]
+  end
+
+  def self.downcase_feature_hash_keys(hash)
+    Hash[hash.map {|k, v| [k, v && downcase_keys(v)]}]
   end
 end
 

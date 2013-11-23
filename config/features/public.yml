@@ -1,4 +1,7 @@
 defaults: &defaults
+  public_feature1: true
+  public_feature2: false
+  public_feature3: false
 
 development:
   <<: *defaults

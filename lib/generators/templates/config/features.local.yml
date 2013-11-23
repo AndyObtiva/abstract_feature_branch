@@ -1,5 +1,5 @@
 # This file allows you to override any feature configuration locally without it being committed to git
-# It is recommended to use this file only for temporary overrides. Once done, make final change in config/features.yml
+# It is recommended to use this file only for temporary overrides. Once done, make final change in main .yml
 defaults: &defaults
 
 development:

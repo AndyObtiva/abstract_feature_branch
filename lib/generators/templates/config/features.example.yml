@@ -1,9 +1,7 @@
 defaults: &defaults
-  FEATURE1: true
-  Feature2: true
+  feature1: true
+  feature2: true
   feature3: false
-  feature4: true
-  feature4a: true
 
 development:
   <<: *defaults
@@ -13,10 +11,9 @@ test:
 
 staging:
   <<: *defaults
-#  feature2: false
+  feature2: false
 
 production:
   <<: *defaults
-#  feature1: false
-#  feature2: false
-
+  feature1: false
+  feature2: false

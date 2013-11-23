@@ -1,4 +1,5 @@
 defaults: &defaults
+  public_feature3: true
 
 development:
   <<: *defaults

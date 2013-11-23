@@ -4,6 +4,9 @@ Abstract Feature Branch
 abstract_feature_branch is a Rails gem that enables developers to easily branch by
 abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html
 
+It is a productivity and fault tolerance enhancing team practice that has been utilized by professional software development
+teams at large corporations, such as Sears and Groupon.
+
 It gives ability to wrap blocks of code with an abstract feature branch name, and then
 specify which features to be switched on or off in a configuration file.
 
@@ -15,6 +18,10 @@ switched on in production, but do enable them in staging and locally.
 This gives developers the added benefit of being able to switch a feature off after
 release should big problems arise for a high risk feature.
 
+abstract_feature_branch additionally supports [DDD](http://www.domaindrivendesign.org)'s pattern of
+[bounded contexts](http://dddcommunity.org/uncategorized/bounded-context/), but allowing developers to configure
+context-specific feature files if needed.
+
 Requirements
 ------------
 - Ruby ~> 2.0.0, ~> 1.9 or ~> 1.8.7
@@ -24,9 +31,10 @@ Setup
 -----
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.5.0'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.5.0'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.6.0'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'absract_feature_branch', :version => '0.6.0'</pre>
 2. Generate <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
+3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre>
 
 Instructions
 ------------
@@ -35,6 +43,14 @@ Instructions
 
 <code>config/features.local.yml</code> contains local overrides for the configuration, ignored by git, thus useful for temporary
 local feature switching for development/testing/troubleshooting purposes.
+
+Optional context specific <code>config/features/[context_path].yml</code> contain feature configuration for specific application contexts.
+For example: admin, public, or even internal/wiki. Useful for better organization especially once <code>config/features.yml</code> grows too big (e.g. 20+ features)
+
+Optional context specific <code>config/features/[context_path].local.yml</code> contain local overrides for context-specific feature configuration.
+These files are rarely necessary as any feature (even a context feature) can be overridden in <code>config/features.local.yml</code>,
+so these additional <code>*.local.yml</code> files are only recommended to be utilized once <code>config/features.local.yml</code> grows
+too big (e.g. 20+ features).
 
 Here are the contents of the generated sample config/features.yml, which you can modify with your own features, each
 enabled (true) or disabled (false) per environment (e.g. production).
@@ -156,6 +172,9 @@ simply switching off the URL route to them. Example:
 it is recommended that its feature branching code is plucked out of the code base to simplify the code
 for better maintenance as the need is not longer there for feature branching at that point.
 
+- Split <code>config/features.yml</code> into multiple context-specific feature files once it grows too big (e.g. 20+ features) by
+utilizing the context generator mentioned above: <pre>rails g abstract_feature_branch:context context_path</pre>
+
 - When working on a new feature locally that the developer does not want others on the team to see yet, the feature
 can be enabled in <code>config/features.local.yml</code> only as it is git ignored, and disabled in <code>config/features.yml</code>
 
@@ -178,13 +197,14 @@ Example:
 The first command adds an environment variable override for <code>feature1</code> that enables it regardless of any
 feature configuration, and the second command starts the rails server with <code>feature1</code> enabled.
 
-To remove environment variable override, you may run:
+To remove an environment variable override, you may run:
 
 >     unset ABSTRACT_FEATURE_BRANCH_FEATURE1
 >     rails s
 
-This can be done more easily via <code>config/features.local.yml</code> mentioned above. However, environment variable overrides are
-implemented to support overriding feature configuration for a Heroku deployed application more easily.
+The benefits can be achieved more easily via <code>config/features.local.yml</code> mentioned above.
+However, environment variable overrides are implemented to support overriding feature configuration for a Heroku deployed
+application more easily.
 
 Heroku
 ------
@@ -218,8 +238,23 @@ variable overrides to alter the style or JavaScript behavior of a page back and 
 is to do additional abstract feature branching in HTML templates (e.g. ERB or HAML templates) to link to different
 CSS classes or invoke different JavaScript methods per branch of HTML for example.
 
+Feature Configuration Load Order
+--------------------------------
+
+For better knowledge and clarity, here is the order in which feature configuration is loaded, with the latter sources overriding
+the former if overlap in features occurs:
+
+1. Context-specific feature files: <code>config/features/**/*.yml</code>
+2. Main feature file: <code>config/features.yml</code>
+3. Context-specific local feature file overrides: <code>config/features/**/*.local.yml</code>
+4. Main local feature file override: <code>config/features.local.yml</code>
+5. Environment variable overrides
+
 Release Notes
 -------------
+
+Version 0.6.0:
+- Added a context generator and support for reading feature configuration from context files config/features/**/*.yml and config/features/**/*.local.yml
 
 Version 0.5.0:
 - Added support for local configuration feature ignored by git + some performance optimizations via configuration caching and better algorithms.
@@ -256,10 +291,10 @@ Version 0.2.0:
 Upcoming
 --------
 
-- Support the option of having multiple features.yml files, one per environment, as opposed to one for all environments
 - Support general Ruby (non-Rails) use
-- Support contexts of features to group features, once they grow beyond a certain size, in separate files, one per context
 - Add rake task to reorder feature entries in feature.yml alphabetically
+- Support runtime read of features yml in development for easy testing purposes (trading off performance)
+- Support configuring per environment whether features yml is read at runtime or not (given performance trade-off)
 
 Contributing to abstract_feature_branch
 ---------------------------------------

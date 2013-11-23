@@ -1,4 +1,7 @@
 defaults: &defaults
+  wiki_feature1: true
+  wiki_feature2: false
+  wiki_feature3: false
 
 development:
   <<: *defaults

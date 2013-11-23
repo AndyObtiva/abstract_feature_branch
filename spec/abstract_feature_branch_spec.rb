@@ -16,20 +16,26 @@ describe 'abstract_feature_branch' do
     Rails.env = @rails_env_backup
   end
   describe 'feature_branch' do
-    it 'feature branches class level behavior (case-insensitive feature names)' do
-      features_enabled = []
-      feature_branch :feature1 do
-        features_enabled << :feature1
+    context 'class level behavior (case-insensitive feature names)' do
+      {
+        :feature1 => true,
+        :feature2 => true,
+        :feature3 => false,
+        :admin_feature1 => true,
+        :admin_feature2 => false,
+        :public_feature1 => true,
+        :public_feature2 => false,
+        :wiki_feature1 => true,
+        :wiki_feature2 => false,
+      }.each do |feature_name, expected_branch_run|
+        it "feature branches correctly for feature #{feature_name} with expected branch run #{expected_branch_run}" do
+          feature_branch_run = false
+          feature_branch feature_name do
+            feature_branch_run = true
+          end
+          feature_branch_run.should == expected_branch_run
+        end
       end
-      feature_branch :feature2 do
-        features_enabled << :feature2
-      end
-      feature_branch :feature3 do
-        features_enabled << :feature3
-      end
-      features_enabled.should include(:feature1)
-      features_enabled.should include(:feature2)
-      features_enabled.should_not include(:feature3)
     end
     it 'returns nil and does not execute block for an invalid feature name' do
       return_value = feature_branch :invalid_feature_that_does_not_exist do
@@ -86,8 +92,20 @@ describe 'abstract_feature_branch' do
       feature_branch :feature5 do
         features_enabled << :feature5
       end
+      feature_branch :admin_feature3 do
+        features_enabled << :admin_feature3
+      end
+      feature_branch :public_feature3 do
+        features_enabled << :public_feature3
+      end
+      feature_branch :wiki_feature3 do
+        features_enabled << :wiki_feature3
+      end
       features_enabled.should_not include(:feature4)
       features_enabled.should include(:feature5)
+      features_enabled.should include(:admin_feature3)
+      features_enabled.should include(:public_feature3)
+      features_enabled.should include(:wiki_feature3)
     end
   end
   describe 'self#feature_branch' do
@@ -136,6 +154,7 @@ describe 'abstract_feature_branch' do
       feature_enabled?(:feature1).should == false
       feature_enabled?(:feature2).should == false
       feature_enabled?(:feature3).should == true
+      feature_enabled?(:feature4a).should == true #not overridden
     end
     it 'allows local configuration file to override main configuration file in test environment' do
       feature_enabled?(:feature4).should == false
