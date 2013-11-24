@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler'
 require 'yaml'
-YAML::ENGINE.yamler = "syck" if RUBY_VERSION < '2.0.0'
+YAML::ENGINE.yamler = "syck" if RUBY_VERSION.start_with?('1.9')
 begin
   Bundler.setup(:default)
 rescue Bundler::BundlerError => e
