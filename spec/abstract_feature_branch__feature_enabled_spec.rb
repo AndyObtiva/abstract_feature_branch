@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'abstract_feature_branch' do
   before do
-    @rails_env_backup = Rails.env
+    @app_env_backup = AbstractFeatureBranch.application_environment
     puts 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     puts 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
     puts 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
@@ -12,16 +12,13 @@ describe 'abstract_feature_branch' do
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
     AbstractFeatureBranch.initialize_application_root
-    AbstractFeatureBranch.load_environment_variable_overrides
-    AbstractFeatureBranch.load_features
-    AbstractFeatureBranch.load_local_features
-    AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
-    Rails.env = @rails_env_backup
+    AbstractFeatureBranch.reload_application_features
+    AbstractFeatureBranch.application_environment = @app_env_backup
   end
   describe 'feature_enabled?' do
-    it 'determines whether a feature is enabled or not in features configuration' do
-      feature_enabled?(:feature1).should == true
-      feature_enabled?(:feature2).should == true
+    it 'determines whether a feature is enabled or not in features configuration (case-insensitive string or symbol feature names)' do
+      feature_enabled?('Feature1').should == true
+      feature_enabled?(:FEATURE2).should == true
       feature_enabled?(:feature3).should == false
     end
     it 'returns nil for an invalid feature name' do
@@ -31,8 +28,7 @@ describe 'abstract_feature_branch' do
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'
       ENV['abstract_feature_branch_feature3'] = 'true'
-      AbstractFeatureBranch.load_environment_variable_overrides
-      AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
+      AbstractFeatureBranch.reload_application_features
       feature_enabled?(:feature1).should == false
       feature_enabled?(:feature2).should == false
       feature_enabled?(:feature3).should == true
@@ -43,8 +39,29 @@ describe 'abstract_feature_branch' do
       feature_enabled?(:feature5).should == true
     end
     it 'no local configuration in production environment' do
-      Rails.env = 'production'
+      AbstractFeatureBranch.application_environment = 'production'
       feature_enabled?(:feature4).should == true
+      feature_enabled?(:feature5).should be_nil
+    end
+    it 'works with Rails environment' do
+      Object.class_eval do
+        module Rails
+          def self.root
+            File.expand_path(File.join(__FILE__, '..', 'application_rails_config'))
+          end
+          def self.env
+            'staging'
+          end
+        end
+      end
+      AbstractFeatureBranch.initialize_application_root
+      AbstractFeatureBranch.initialize_application_environment
+      AbstractFeatureBranch.reload_application_features
+      feature_enabled?(:feature1).should == true
+      feature_enabled?(:feature2).should == false
+      feature_enabled?(:feature3).should == false
+      feature_enabled?(:feature4).should be_nil
+      feature_enabled?(:feature4a).should be_nil
       feature_enabled?(:feature5).should be_nil
     end
   end

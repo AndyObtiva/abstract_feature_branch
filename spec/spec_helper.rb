@@ -1,3 +1,4 @@
+ENV['APP_ENV'] = 'test'
 require 'rubygems'
 require 'bundler'
 begin
@@ -6,16 +7,5 @@ rescue Bundler::BundlerError => e
   $stderr.puts e.message
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
-end
-module Rails
-  def self.root
-    File.join(File.dirname(__FILE__), '..')
-  end
-  def self.env
-    @env ||= 'test'
-  end
-  def self.env=(environment)
-    @env = environment
-  end
 end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')

@@ -1,0 +1,15 @@
+defaults: &defaults
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+  feature3: false
+
+production:
+  <<: *defaults
+

@@ -1,0 +1,20 @@
+defaults: &defaults
+  FEATURE1: true
+  Feature2: true
+  feature3: true
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+  feature1: true
+  feature2: false
+  feature3: true
+
+production:
+  <<: *defaults
+

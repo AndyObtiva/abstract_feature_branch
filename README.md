@@ -3,8 +3,8 @@ Abstract Feature Branch
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 
-abstract_feature_branch is a Rails gem that enables developers to easily branch by
-abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html
+abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
+http://paulhammant.com/blog/branch_by_abstraction.html
 
 It is a productivity and fault tolerance enhancing team practice that has been utilized by professional software development
 teams at large corporations, such as Sears and Groupon.
@@ -12,13 +12,13 @@ teams at large corporations, such as Sears and Groupon.
 It gives ability to wrap blocks of code with an abstract feature branch name, and then
 specify which features to be switched on or off in a configuration file.
 
-The goal is to build out future features with full integration into the codebase, thus
-ensuring no delay in integration in the future, while releasing currently done features
-at the same time. Developers then disable future features until they are ready to be
-switched on in production, but do enable them in staging and locally.
+The goal is to build out upcoming features in the same source code repository branch, regardless of whether all are
+completed by the next release date or not, thus increasing team productivity by preventing integration delays.
+Developers then disable in-progress features until they are ready to be switched on in production, yet enable them
+locally and in staging environments for in-progress testing.
 
-This gives developers the added benefit of being able to switch a feature off after
-release should big problems arise for a high risk feature.
+This gives developers the added benefit of being able to switch a feature off after release should big problems arise
+for a high risk feature.
 
 abstract_feature_branch additionally supports [DDD](http://www.domaindrivendesign.org)'s pattern of
 [bounded contexts](http://dddcommunity.org/uncategorized/bounded-context/) by allowing developers to configure
@@ -27,16 +27,27 @@ context-specific feature files if needed.
 Requirements
 ------------
 - Ruby ~> 2.0.0, ~> 1.9 or ~> 1.8.7
-- Rails ~> 4.0.0, ~> 3.0 or ~> 2.0
+- (Optional) Rails ~> 4.0.0, ~> 3.0 or ~> 2.0
 
 Setup
 -----
 
+Rails Application
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.6.4'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.6.4'</pre>
-2. Generate <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
-3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.7.0'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.7.0'</pre>
+2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
+3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under **instructions**)
+4. (Optional and rarely needed) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application or troubleshooting a specific Rails environment feature configuration)
+
+Ruby Application (general)
+1. <pre>gem install abstract_feature_branch -v 0.7.0</pre>
+2. Add code <code>require 'abstract_feature_branch'</code>
+3. (Optional) Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> (it defaults to <code>'.'</code>)
+4. (Optional) Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set ENV['APP_ENV'] before the <code>require</code> statement or an an external environment variable.
+5. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under **instructions**.
+6. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under **instructions**)
+7. (Optional) Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under **instructions**)
 
 Instructions
 ------------
@@ -54,7 +65,7 @@ These files are rarely necessary as any feature (even a context feature) can be 
 so these additional <code>*.local.yml</code> files are only recommended to be utilized once <code>config/features.local.yml</code> grows
 too big (e.g. 20+ features).
 
-Here are the contents of the generated sample config/features.yml, which you can modify with your own features, each
+Here are the contents of the generated sample <code>config/features.yml</code>, which you can modify with your own features, each
 enabled (true) or disabled (false) per environment (e.g. production).
 
 >     defaults: &defaults
@@ -114,6 +125,17 @@ Note that <code>feature_branch</code> executes the false branch if the feature i
 
 Note that <code>feature_enabled?</code> returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
 
+Initializer
+-----------
+
+Here is the content of the generated initializer (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize:
+
+>     # Application root where config/features.yml or config/features/ is found
+>     AbstractFeatureBranch.application_root = Rails.root
+>
+>     # Application environment (e.g. "development", "staging" or "production")
+>     AbstractFeatureBranch.application_environment = Rails.env.to_s
+
 Recommendations
 ---------------
 
@@ -170,9 +192,9 @@ simply switching off the URL route to them. Example:
 >       display: inline;
 >     }
 
-- Once a feature has been released and switched on in production, and it has worked well for a while,
-it is recommended that its feature branching code is plucked out of the code base to simplify the code
-for better maintenance as the need is not longer there for feature branching at that point.
+- Once a feature has been released and switched on in production, and it has worked well for a while (e.g. for two consecutive releases),
+it is recommended that its feature branching code is plucked out of the codebase to simplify and improve
+future maintainability given that it is no longer needed at that point.
 
 - Split <code>config/features.yml</code> into multiple context-specific feature files once it grows too big (e.g. 20+ features) by
 utilizing the context generator mentioned above: <pre>rails g abstract_feature_branch:context context_path</pre>
@@ -255,6 +277,9 @@ the former if overlap in features occurs:
 Release Notes
 -------------
 
+Version 0.7.0:
+- Added support for general Ruby use (without Rails) by externalizing AbstractFeatureBranch.application_root and AbstractFeatureBranch.application_environment. Added initializer to optionally configure them. Supported case-insensitive feature names.
+
 Version 0.6.1 - 0.6.4:
 - Fixed issues including making feature configuration files optional (in case one wants to get rid of <code>features.local.yml</code> or even <code>features.yml</code>)
 
@@ -296,7 +321,6 @@ Version 0.2.0:
 Upcoming
 --------
 
-- Support general Ruby (non-Rails) use
 - Add rake task to reorder feature entries in feature.yml alphabetically
 - Support runtime read of features yml in development for easy testing purposes (trading off performance)
 - Support configuring per environment whether features yml is read at runtime or not (given performance trade-off)
