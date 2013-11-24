@@ -9,7 +9,7 @@ class Object
 
   raise 'Abstract feature branch conflicts with another Ruby library' if respond_to?(:feature_enabled?)
   def self.feature_enabled?(feature_name)
-    AbstractFeatureBranch.environment_features(Rails.env.to_s)[feature_name.to_s]
+    AbstractFeatureBranch.application_features[feature_name.to_s.downcase]
   end
 
   raise 'Abstract feature branch conflicts with another Ruby library' if Object.new.respond_to?(:feature_branch)

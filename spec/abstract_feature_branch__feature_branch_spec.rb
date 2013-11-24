@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'abstract_feature_branch' do
   before do
-    @rails_env_backup = Rails.env
+    @app_env_backup = AbstractFeatureBranch.application_environment
     puts 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     puts 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
     puts 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
@@ -12,17 +12,14 @@ describe 'abstract_feature_branch' do
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
     AbstractFeatureBranch.initialize_application_root
-    AbstractFeatureBranch.load_environment_variable_overrides
-    AbstractFeatureBranch.load_features
-    AbstractFeatureBranch.load_local_features
-    AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
-    Rails.env = @rails_env_backup
+    AbstractFeatureBranch.reload_application_features
+    AbstractFeatureBranch.application_environment = @app_env_backup
   end
   describe 'feature_branch' do
-    context 'class level behavior (case-insensitive feature names)' do
+    context 'class level behavior (case-insensitive string or symbol feature names)' do
       {
-        :feature1 => true,
-        :feature2 => true,
+        'Feature1' => true,
+        :FEATURE2 => true,
         :feature3 => false,
         :admin_feature1 => true,
         :admin_feature2 => false,
@@ -71,8 +68,7 @@ describe 'abstract_feature_branch' do
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'
       ENV['abstract_feature_branch_feature3'] = 'true'
-      AbstractFeatureBranch.load_environment_variable_overrides
-      AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
+      AbstractFeatureBranch.reload_application_features
       features_enabled = []
       feature_branch :feature1 do
         features_enabled << :feature1
@@ -111,10 +107,8 @@ describe 'abstract_feature_branch' do
       features_enabled.should include(:wiki_feature3)
     end
     it 'works with an application that has no configuration files' do
-      AbstractFeatureBranch.application_root = File.join(Rails.root, 'spec', 'application_no_config')
-      AbstractFeatureBranch.load_features
-      AbstractFeatureBranch.load_local_features
-      AbstractFeatureBranch.load_environment_features(Rails.env.to_s)
+      AbstractFeatureBranch.application_root = File.join(__FILE__, 'application_no_config')
+      AbstractFeatureBranch.reload_application_features
       feature_branch :feature1 do
         fail 'feature branch block must not execute, but did.'
       end

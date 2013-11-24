@@ -5,6 +5,7 @@ module AbstractFeatureBranch
 
       desc "Installs Abstract Feature Branch by generating basic configuration files, including git ignored local one."
       def copy_config
+        template "config/initializers/abstract_feature_branch.rb", "config/initializers/abstract_feature_branch.rb"
         template "config/features.example.yml", "config/features.yml"
         template "config/features.local.yml", "config/features.local.yml"
         append_to_file '.gitignore', <<-GIT_IGNORE_CONTENT

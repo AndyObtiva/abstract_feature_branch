@@ -15,11 +15,20 @@ module AbstractFeatureBranch
   def self.application_root
     @application_root ||= initialize_application_root
   end
-  def self.initialize_application_root
-    @application_root = Rails.root
-  end
   def self.application_root=(path)
     @application_root = path
+  end
+  def self.initialize_application_root
+    self.application_root = defined?(Rails) ? Rails.root : '.'
+  end
+  def self.application_environment
+    @application_environment ||= initialize_application_environment
+  end
+  def self.application_environment=(environment)
+    @application_environment = environment
+  end
+  def self.initialize_application_environment
+    self.application_environment = defined?(Rails) ? Rails.env.to_s : ENV['APP_ENV'] || 'development'
   end
   def self.environment_variable_overrides
     @environment_variable_overrides ||= load_environment_variable_overrides
@@ -60,6 +69,15 @@ module AbstractFeatureBranch
     features[environment] ||= {}
     local_features[environment] ||= {}
     @environment_features[environment] = features[environment].merge(local_features[environment]).merge(environment_variable_overrides)
+  end
+  def self.application_features
+    environment_features(application_environment())
+  end
+  def self.reload_application_features
+    AbstractFeatureBranch.load_environment_variable_overrides
+    AbstractFeatureBranch.load_features
+    AbstractFeatureBranch.load_local_features
+    AbstractFeatureBranch.load_environment_features(application_environment)
   end
 
   private
