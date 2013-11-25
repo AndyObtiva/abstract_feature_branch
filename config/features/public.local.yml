@@ -12,3 +12,4 @@ staging:
 
 production:
   <<: *defaults
+

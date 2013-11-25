@@ -6,11 +6,10 @@ development:
 
 test:
   <<: *defaults
-  feature4: false
-  feature5: true
 
 staging:
   <<: *defaults
+  feature3: false
 
 production:
   <<: *defaults

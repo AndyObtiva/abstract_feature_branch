@@ -9,4 +9,5 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')
+AbstractFeatureBranch.logger.level = Logger::WARN
 AbstractFeatureBranch.load_application_features
