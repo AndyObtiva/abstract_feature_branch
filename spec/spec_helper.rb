@@ -9,3 +9,4 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')
+AbstractFeatureBranch.load_application_features
