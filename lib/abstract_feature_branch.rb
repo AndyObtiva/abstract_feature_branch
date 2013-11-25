@@ -19,7 +19,7 @@ module AbstractFeatureBranch
     @application_root = path
   end
   def self.initialize_application_root
-    self.application_root = defined?(Rails) ? Rails.root : '.'
+    self.application_root = Object.const_defined?(:Rails) ? Rails.root : '.'
   end
   def self.application_environment
     @application_environment ||= initialize_application_environment
@@ -28,7 +28,7 @@ module AbstractFeatureBranch
     @application_environment = environment
   end
   def self.initialize_application_environment
-    self.application_environment = defined?(Rails) ? Rails.env.to_s : ENV['APP_ENV'] || 'development'
+    self.application_environment = Object.const_defined?(:Rails) ? Rails.env.to_s : ENV['APP_ENV'] || 'development'
   end
   def self.environment_variable_overrides
     @environment_variable_overrides ||= load_environment_variable_overrides
