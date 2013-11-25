@@ -50,6 +50,7 @@ Setup
 5. (Optional) Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under **instructions**)
 6. (Optional) Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> to configure the location of feature files (it defaults to <code>'.'</code>)
 7. (Optional) Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set <code>ENV['APP_ENV']</code> before the <code>require</code> statement or an an external environment variable.
+8. (Optional) Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
 
 Instructions
 ------------
@@ -137,6 +138,9 @@ Here is the content of the generated initializer (<code>config/initializers/abst
 >
 >     # Application environment (e.g. "development", "staging" or "production")
 >     AbstractFeatureBranch.application_environment = Rails.env.to_s
+>
+>     # Pre-loads application features to improve performance of first web-page hit
+>     AbstractFeatureBranch.load_application_features
 
 Recommendations
 ---------------

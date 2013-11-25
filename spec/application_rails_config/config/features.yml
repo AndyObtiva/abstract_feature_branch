@@ -11,8 +11,8 @@ test:
 
 staging:
   <<: *defaults
-  feature1: true
-  feature2: false
+  FEATURE1: true
+  Feature2: false
   feature3: true
 
 production:

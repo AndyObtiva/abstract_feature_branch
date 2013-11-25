@@ -12,7 +12,7 @@ describe 'abstract_feature_branch' do
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
     AbstractFeatureBranch.initialize_application_root
-    AbstractFeatureBranch.reload_application_features
+    AbstractFeatureBranch.load_application_features
     AbstractFeatureBranch.application_environment = @app_env_backup
   end
   describe 'feature_branch' do
@@ -68,7 +68,7 @@ describe 'abstract_feature_branch' do
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'
       ENV['abstract_feature_branch_feature3'] = 'true'
-      AbstractFeatureBranch.reload_application_features
+      AbstractFeatureBranch.load_application_features
       features_enabled = []
       feature_branch :feature1 do
         features_enabled << :feature1
@@ -108,7 +108,7 @@ describe 'abstract_feature_branch' do
     end
     it 'works with an application that has no configuration files' do
       AbstractFeatureBranch.application_root = File.join(__FILE__, 'application_no_config')
-      AbstractFeatureBranch.reload_application_features
+      AbstractFeatureBranch.load_application_features
       feature_branch :feature1 do
         fail 'feature branch block must not execute, but did.'
       end

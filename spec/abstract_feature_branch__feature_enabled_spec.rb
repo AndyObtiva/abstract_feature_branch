@@ -12,7 +12,7 @@ describe 'abstract_feature_branch' do
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
     AbstractFeatureBranch.initialize_application_root
-    AbstractFeatureBranch.reload_application_features
+    AbstractFeatureBranch.load_application_features
     AbstractFeatureBranch.application_environment = @app_env_backup
   end
   describe 'feature_enabled?' do
@@ -28,7 +28,7 @@ describe 'abstract_feature_branch' do
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'
       ENV['abstract_feature_branch_feature3'] = 'true'
-      AbstractFeatureBranch.reload_application_features
+      AbstractFeatureBranch.load_application_features
       feature_enabled?(:feature1).should == false
       feature_enabled?(:feature2).should == false
       feature_enabled?(:feature3).should == true
@@ -56,7 +56,7 @@ describe 'abstract_feature_branch' do
       end
       AbstractFeatureBranch.initialize_application_root
       AbstractFeatureBranch.initialize_application_environment
-      AbstractFeatureBranch.reload_application_features
+      AbstractFeatureBranch.load_application_features
       feature_enabled?(:feature1).should == true
       feature_enabled?(:feature2).should == false
       feature_enabled?(:feature3).should == false
