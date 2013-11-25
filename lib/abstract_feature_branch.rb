@@ -71,9 +71,9 @@ module AbstractFeatureBranch
     @environment_features[environment] = features[environment].merge(local_features[environment]).merge(environment_variable_overrides)
   end
   def self.application_features
-    environment_features(application_environment())
+    environment_features(application_environment)
   end
-  def self.reload_application_features
+  def self.load_application_features
     AbstractFeatureBranch.load_environment_variable_overrides
     AbstractFeatureBranch.load_features
     AbstractFeatureBranch.load_local_features
