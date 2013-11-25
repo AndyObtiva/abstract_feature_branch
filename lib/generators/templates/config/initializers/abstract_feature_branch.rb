@@ -4,5 +4,8 @@ AbstractFeatureBranch.application_root = Rails.root
 # Application environment (e.g. "development", "staging" or "production")
 AbstractFeatureBranch.application_environment = Rails.env.to_s
 
+# Abstract Feature Branch logger
+AbstractFeatureBranch.logger = Rails.logger
+
 # Pre-loads application features to improve performance of first web-page hit
 AbstractFeatureBranch.load_application_features

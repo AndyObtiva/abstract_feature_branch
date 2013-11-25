@@ -9,6 +9,7 @@ rescue Bundler::BundlerError => e
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
 end
+require 'logger' unless defined?(Rails) && Rails.logger
 require 'deep_merge' unless {}.respond_to?(:deep_merge!)
 
 module AbstractFeatureBranch
@@ -19,7 +20,7 @@ module AbstractFeatureBranch
     @application_root = path
   end
   def self.initialize_application_root
-    self.application_root = Object.const_defined?(:Rails) ? Rails.root : '.'
+    self.application_root = defined?(Rails) ? Rails.root : '.'
   end
   def self.application_environment
     @application_environment ||= initialize_application_environment
@@ -28,7 +29,16 @@ module AbstractFeatureBranch
     @application_environment = environment
   end
   def self.initialize_application_environment
-    self.application_environment = Object.const_defined?(:Rails) ? Rails.env.to_s : ENV['APP_ENV'] || 'development'
+    self.application_environment = defined?(Rails) ? Rails.env.to_s : ENV['APP_ENV'] || 'development'
+  end
+  def self.logger
+    @logger ||= initialize_logger
+  end
+  def self.logger=(logger)
+    @logger = logger
+  end
+  def self.initialize_logger
+    self.logger = defined?(Rails) && Rails.logger ? Rails.logger : Logger.new(STDOUT)
   end
   def self.environment_variable_overrides
     @environment_variable_overrides ||= load_environment_variable_overrides
@@ -102,8 +112,9 @@ module AbstractFeatureBranch
   end
 
   def self.downcase_feature_hash_keys(hash)
-    Hash[hash.map {|k, v| [k, v && downcase_keys(v)]}]
+    Hash[(hash || {}).map {|k, v| [k, v && downcase_keys(v)]}]
   end
 end
 
 require File.join(File.dirname(__FILE__), 'ext', 'feature_branch')
+require File.join(File.dirname(__FILE__), 'abstract_feature_branch', 'file_beautifier')

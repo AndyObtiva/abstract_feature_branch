@@ -7,10 +7,10 @@ abstract_feature_branch is a Rails gem that enables developers to easily branch 
 http://paulhammant.com/blog/branch_by_abstraction.html
 
 It is a productivity and fault tolerance enhancing team practice that has been utilized by professional software development
-teams at large corporations, such as Sears and Groupon.
+teams at large corporations, such as [Sears](http://www.sears.com) and [Groupon](http://www.groupon.com).
 
-It gives ability to wrap blocks of code with an abstract feature branch name, and then
-specify which features to be switched on or off in a configuration file.
+It provides the ability to wrap blocks of code with an abstract feature branch name, and then
+specify in a configuration file which features to be switched on or off.
 
 The goal is to build out upcoming features in the same source code repository branch, regardless of whether all are
 completed by the next release date or not, thus increasing team productivity by preventing integration delays.
@@ -21,7 +21,7 @@ This gives developers the added benefit of being able to switch a feature off af
 for a high risk feature.
 
 abstract_feature_branch additionally supports [DDD](http://www.domaindrivendesign.org)'s pattern of
-[bounded contexts](http://dddcommunity.org/uncategorized/bounded-context/) by allowing developers to configure
+[Bounded Contexts](http://dddcommunity.org/uncategorized/bounded-context/) by allowing developers to configure
 context-specific feature files if needed.
 
 Requirements
@@ -32,25 +32,26 @@ Requirements
 Setup
 -----
 
-### Rails Application
+### Rails Application Use
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.7.1'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.7.1'</pre>
-2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
-3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under **instructions**)
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.8.0'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.8.0'</pre>
+2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
+3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. (Optional and rarely needed) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application or troubleshooting a specific Rails environment feature configuration)
 
-### Ruby Application (general use)
+### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 0.7.1</pre>
+1. <pre>gem install abstract_feature_branch -v 0.8.0</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
-3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under **instructions**.
-4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under **instructions**)
-5. (Optional) Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under **instructions**)
+3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
+4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
+5. (Optional) Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under [**instructions**](#instructions))
 6. (Optional) Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> to configure the location of feature files (it defaults to <code>'.'</code>)
 7. (Optional) Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set <code>ENV['APP_ENV']</code> before the <code>require</code> statement or an an external environment variable.
-8. (Optional) Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
+8. (Optional) Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
+9. (Optional) Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
 
 Instructions
 ------------
@@ -128,20 +129,6 @@ Note that <code>feature_branch</code> executes the false branch if the feature i
 
 Note that <code>feature_enabled?</code> returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
 
-Initializer
------------
-
-Here is the content of the generated initializer (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize:
-
->     # Application root where config/features.yml or config/features/ is found
->     AbstractFeatureBranch.application_root = Rails.root
->
->     # Application environment (e.g. "development", "staging" or "production")
->     AbstractFeatureBranch.application_environment = Rails.env.to_s
->
->     # Pre-loads application features to improve performance of first web-page hit
->     AbstractFeatureBranch.load_application_features
-
 Recommendations
 ---------------
 
@@ -199,11 +186,11 @@ simply switching off the URL route to them. Example:
 >     }
 
 - Once a feature has been released and switched on in production, and it has worked well for a while (e.g. for two consecutive releases),
-it is recommended that its feature branching code is plucked out of the codebase to simplify and improve
+it is **strongly recommended** that its feature branching code is plucked out of the codebase to simplify and improve
 future maintainability given that it is no longer needed at that point.
 
-- Split <code>config/features.yml</code> into multiple context-specific feature files once it grows too big (e.g. 20+ features) by
-utilizing the context generator mentioned above: <pre>rails g abstract_feature_branch:context context_path</pre>
+- Once <code>config/features.yml</code> grows too big (e.g. 20+ features), it is **strongly recommended* to split it into
+multiple context-specific feature files by utilizing the context generator mentioned above: <pre>rails g abstract_feature_branch:context context_path</pre>
 
 - When working on a new feature locally that the developer does not want others on the team to see yet, the feature
 can be enabled in <code>config/features.local.yml</code> only as it is git ignored, and disabled in <code>config/features.yml</code>
@@ -262,11 +249,12 @@ Gotcha with abstract feature branching in CSS and JS files:
 
 If you've used abstract feature branching in CSS or JS files via ERB, setting environment variable overrides won't
 affect them as you need asset recompilation in addition to it, which can only be triggered by changing a CSS or JS
-file and redeploying on Heroku (hint: even if it's just a minor change to force it). In any case, environment variable
+file and redeploying on Heroku (even if it's just a minor change to force it). In any case, environment variable
 overrides have been recommended above as an emergency or temporary measure. If there is a need to rely on environment
-variable overrides to alter the style or JavaScript behavior of a page back and forth without a redeploy, one solution
-is to do additional abstract feature branching in HTML templates (e.g. ERB or HAML templates) to link to different
-CSS classes or invoke different JavaScript methods per branch of HTML for example.
+variable overrides to alter the style or JavaScript behavior of a page back and forth without a redeploy, **one solution**
+is to do additional abstract feature branching in HTML templates (e.g. ERB or [HAML](http://haml.info) to
+link to different stylesheets and JS files, use different CSS classes, or invoke different JavaScript methods per branch
+of HTML for example.
 
 Feature Configuration Load Order
 --------------------------------
@@ -280,8 +268,118 @@ the former if overlap in features occurs:
 4. Main local feature file override: <code>config/features.local.yml</code>
 5. Environment variable overrides
 
+Rails Initializer
+-----------------
+
+Here is the content of the generated initializer (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize via [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection):
+
+>     # Application root where config/features.yml or config/features/ is found
+>     AbstractFeatureBranch.application_root = Rails.root
+>
+>     # Application environment (e.g. "development", "staging" or "production")
+>     AbstractFeatureBranch.application_environment = Rails.env.to_s
+>
+>     # Abstract Feature Branch logger
+>     AbstractFeatureBranch.logger = Rails.logger
+>
+>     # Pre-loads application features to improve performance of first web-page hit
+>     AbstractFeatureBranch.load_application_features
+
+Rake Task
+---------
+
+Abstract Feature Branch comes with a rake task to beautify feature files that have grown unorganized by sorting features
+by name and getting rid of extra empty lines. It does so per section, without affecting the order of the sections
+themselves.
+
+For example, here is content before and after beautification.
+
+Before:
+
+>     defaults: &defaults
+>
+>
+>       gallery: true
+>
+>       carousel: true
+>
+>       third_party_integration: false
+>       caching: true
+>
+>     development:
+>       <<: *defaults
+>
+>     test:
+>       <<: *defaults
+>
+>       caching: false
+>
+>     staging:
+>       <<: *defaults
+>       third_party_integration: true
+>       caching: true
+>
+>     production:
+>       <<: *defaults
+>       third_party_integration: false
+>
+>       caching: false
+
+After:
+
+>     defaults: &defaults
+>       caching: true
+>       carousel: true
+>       gallery: true
+>       third_party_integration: false
+>
+>     development:
+>       <<: *defaults
+>
+>     test:
+>       <<: *defaults
+>       caching: false
+>
+>     staging:
+>       <<: *defaults
+>       caching: true
+>       third_party_integration: true
+>
+>     production:
+>       <<: *defaults
+>       caching: false
+>       third_party_integration: false
+
+This is very useful in bigger applications that have scores of features since it allows a developer to quickly scan
+for alphabetical sorted feature names. Although file find is an alternative solution, having tidy organized feature
+names can help increase overall team productivity in the long term.
+
+For Rails application use, the rake task is generated under <code>lib/tasks/abstract_feature_branch.rake</code>.
+
+For Ruby application general use, here is the content of the rake task:
+
+>     namespace :abstract_feature_branch do
+>
+>       desc "Beautify YAML of specified feature file via file_path argument or all feature files when no argument specified (config/features.yml, config/features.local.yml, and config/features/**/*.yml) by sorting features by name and eliminating extra empty lines"
+>       task :beautify_files, :file_path do |_, args|
+>         AbstractFeatureBranch::FileBeautifier.process(args[:file_path])
+>       end
+>
+>     end
+
+The rake task may be invoked in a number of ways:
+- <code>rake abstract_feature_branch:beautify_files</code> beautifies all feature files under [application_root]/config
+- <code>rake abstract_feature_branch:beautify_files[file_path]</code> beautifies a single feature file
+- <code>rake abstract_feature_branch:beautify_files[directory_path]</code> beautifies all feature files under directory path recursively
+
+Verify after the task has been invoked that your feature file contents are to your satisfaction before committing the
+task changes.
+
 Release Notes
 -------------
+
+Version 0.8.0:
+- Added rake task for beautifying feature files, sorting feature names within environment sections and eliminating extra empty lines. Added support for externalized logger.
 
 Version 0.7.1:
 - Fixed undefined method issue with using <code>AbstractFeatureBranch.load_application_features</code> to improve first use performance
@@ -330,7 +428,6 @@ Version 0.2.0:
 Upcoming
 --------
 
-- Add rake task to reorder feature entries in feature.yml alphabetically
 - Support runtime read of features yml in development for easy testing purposes (trading off performance)
 - Support configuring per environment whether features yml is read at runtime or not (given performance trade-off)
 
@@ -352,6 +449,10 @@ Committers
 Contributors
 ---------------------------------------
 [Christian Nennemann](https://github.com/XORwell)
+
+Feedback and Idea Providers
+---------------------------------------
+[Ben Downey](https://github.com/bnd5k)
 
 Copyright
 ---------------------------------------

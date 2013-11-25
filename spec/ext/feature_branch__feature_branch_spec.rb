@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe 'abstract_feature_branch' do
+describe 'feature_branch object extensions' do
   before do
     @app_env_backup = AbstractFeatureBranch.application_environment
-    puts 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
-    puts 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
-    puts 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
+    AbstractFeatureBranch.logger.warn 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
+    AbstractFeatureBranch.logger.warn 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
+    AbstractFeatureBranch.logger.warn 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
   end
   after do
     ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
@@ -15,7 +15,7 @@ describe 'abstract_feature_branch' do
     AbstractFeatureBranch.load_application_features
     AbstractFeatureBranch.application_environment = @app_env_backup
   end
-  describe 'feature_branch' do
+  describe '#feature_branch' do
     context 'class level behavior (case-insensitive string or symbol feature names)' do
       {
         'Feature1' => true,
@@ -107,7 +107,7 @@ describe 'abstract_feature_branch' do
       features_enabled.should include(:wiki_feature3)
     end
     it 'works with an application that has no configuration files' do
-      AbstractFeatureBranch.application_root = File.join(__FILE__, 'application_no_config')
+      AbstractFeatureBranch.application_root = File.join(__FILE__, '..', '..', 'fixtures', 'application_no_config')
       AbstractFeatureBranch.load_application_features
       feature_branch :feature1 do
         fail 'feature branch block must not execute, but did.'

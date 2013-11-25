@@ -1,0 +1,52 @@
+# This file allows you to override any feature configuration locally without it being committed to git
+# It is recommended to use this file only for temporary overrides. Once done, make final change in main .yml
+
+defaults: &defaults
+
+  feature4a: true
+  FEATURE1: true
+  feature4: true
+# Some comment in between features (will get deleted by beautifier)
+  feature3: false
+
+  # another comment in between features (will get deleted by beautifier)
+  Feature2: true
+
+development:
+    # yet another comment in between features (will get deleted by beautifier)
+  <<: *defaults
+  FEATURE1: true
+
+  feature4a: true
+  feature4: true
+  feature3: false
+  Feature2: true
+
+test:
+  <<: *defaults
+  FEATURE1: true
+  feature4: true
+
+  feature4a: true
+  feature3: false
+  Feature2: true
+
+staging:
+  <<: *defaults
+  FEATURE1: true
+  feature4: true
+  feature3: false
+
+  feature4a: true
+  Feature2: true
+
+production:
+  <<: *defaults
+  FEATURE1: true
+  feature4: true
+  feature3: false
+  Feature2: true
+
+  feature4a: true
+
+    # absolutely deleted by beautifier

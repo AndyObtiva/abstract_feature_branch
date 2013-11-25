@@ -5,6 +5,7 @@ module AbstractFeatureBranch
 
       desc "Installs Abstract Feature Branch by generating basic configuration files, including git ignored local one."
       def copy_config
+        template "lib/tasks/abstract_feature_branch.rake", "lib/tasks/abstract_feature_branch.rake"
         template "config/initializers/abstract_feature_branch.rb", "config/initializers/abstract_feature_branch.rb"
         template "config/features.example.yml", "config/features.yml"
         template "config/features.local.yml", "config/features.local.yml"

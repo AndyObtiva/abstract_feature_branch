@@ -20,16 +20,26 @@ Jeweler::Tasks.new do |gem|
   gem.summary = %Q{abstract_feature_branch is a Rails gem that enables developers to easily branch by
   abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html}
   gem.description = <<-TEXT
-It gives ability to wrap blocks of code with an abstract feature branch name, and then
-specify which features to be switched on or off in a configuration file.
+abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
+http://paulhammant.com/blog/branch_by_abstraction.html
 
-The goal is to build out future features with full integration into the codebase, thus
-ensuring no delay in integration in the future, while releasing currently done features
-at the same time. Developers then disable future features until they are ready to be
-switched on in production, but do enable them in staging and locally.
+It is a productivity and fault tolerance enhancing team practice that has been utilized by professional software development
+teams at large corporations, such as Sears and Groupon.
 
-This gives developers the added benefit of being able to switch a feature off after
-release should big problems arise for a high risk feature.
+It provides the ability to wrap blocks of code with an abstract feature branch name, and then
+specify in a configuration file which features to be switched on or off.
+
+The goal is to build out upcoming features in the same source code repository branch, regardless of whether all are
+completed by the next release date or not, thus increasing team productivity by preventing integration delays.
+Developers then disable in-progress features until they are ready to be switched on in production, yet enable them
+locally and in staging environments for in-progress testing.
+
+This gives developers the added benefit of being able to switch a feature off after release should big problems arise
+for a high risk feature.
+
+abstract_feature_branch additionally supports DDD's pattern of
+Bounded Contexts by allowing developers to configure
+context-specific feature files if needed.
   TEXT
   gem.authors = ["Annas \"Andy\" Maleh"]
   gem.files.exclude 'spec/*'
@@ -58,3 +68,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+$LOAD_PATH << 'lib'
+load 'lib/generators/templates/lib/tasks/abstract_feature_branch.rake'
