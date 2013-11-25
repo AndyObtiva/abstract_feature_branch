@@ -5,17 +5,18 @@
 
 Gem::Specification.new do |s|
   s.name = "abstract_feature_branch"
-  s.version = "0.6.4"
+  s.version = "0.7.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Annas \"Andy\" Maleh"]
-  s.date = "2013-11-23"
+  s.date = "2013-11-25"
   s.description = "It gives ability to wrap blocks of code with an abstract feature branch name, and then\nspecify which features to be switched on or off in a configuration file.\n\nThe goal is to build out future features with full integration into the codebase, thus\nensuring no delay in integration in the future, while releasing currently done features\nat the same time. Developers then disable future features until they are ready to be\nswitched on in production, but do enable them in staging and locally.\n\nThis gives developers the added benefit of being able to switch a feature off after\nrelease should big problems arise for a high risk feature.\n"
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
   ]
   s.files = [
+    ".travis.yml",
     "LICENSE.txt",
     "README.md",
     "VERSION",
@@ -33,12 +34,15 @@ Gem::Specification.new do |s|
     "lib/generators/templates/config/features.example.yml",
     "lib/generators/templates/config/features.local.yml",
     "lib/generators/templates/config/features.yml",
-    "spec/application_no_config/no_config"
+    "lib/generators/templates/config/initializers/abstract_feature_branch.rb",
+    "spec/application_no_config/no_config",
+    "spec/application_rails_config/config/features.local.yml",
+    "spec/application_rails_config/config/features.yml"
   ]
   s.homepage = "http://github.com/AndyObtiva/abstract_feature_branch"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "2.0.7"
+  s.rubygems_version = "2.0.6"
   s.summary = "abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html"
 
   if s.respond_to? :specification_version then
