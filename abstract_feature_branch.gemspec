@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = "abstract_feature_branch"
-  s.version = "0.7.1"
+  s.version = "0.8.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Annas \"Andy\" Maleh"]
   s.date = "2013-11-25"
-  s.description = "It gives ability to wrap blocks of code with an abstract feature branch name, and then\nspecify which features to be switched on or off in a configuration file.\n\nThe goal is to build out future features with full integration into the codebase, thus\nensuring no delay in integration in the future, while releasing currently done features\nat the same time. Developers then disable future features until they are ready to be\nswitched on in production, but do enable them in staging and locally.\n\nThis gives developers the added benefit of being able to switch a feature off after\nrelease should big problems arise for a high risk feature.\n"
+  s.description = "abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:\nhttp://paulhammant.com/blog/branch_by_abstraction.html\n\nIt is a productivity and fault tolerance enhancing team practice that has been utilized by professional software development\nteams at large corporations, such as Sears and Groupon.\n\nIt provides the ability to wrap blocks of code with an abstract feature branch name, and then\nspecify in a configuration file which features to be switched on or off.\n\nThe goal is to build out upcoming features in the same source code repository branch, regardless of whether all are\ncompleted by the next release date or not, thus increasing team productivity by preventing integration delays.\nDevelopers then disable in-progress features until they are ready to be switched on in production, yet enable them\nlocally and in staging environments for in-progress testing.\n\nThis gives developers the added benefit of being able to switch a feature off after release should big problems arise\nfor a high risk feature.\n\nabstract_feature_branch additionally supports DDD's pattern of\nBounded Contexts by allowing developers to configure\ncontext-specific feature files if needed.\n"
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
     "config/features/public.local.yml",
     "config/features/public.yml",
     "lib/abstract_feature_branch.rb",
+    "lib/abstract_feature_branch/file_beautifier.rb",
     "lib/ext/feature_branch.rb",
     "lib/generators/abstract_feature_branch/context_generator.rb",
     "lib/generators/abstract_feature_branch/install_generator.rb",
@@ -35,9 +36,26 @@ Gem::Specification.new do |s|
     "lib/generators/templates/config/features.local.yml",
     "lib/generators/templates/config/features.yml",
     "lib/generators/templates/config/initializers/abstract_feature_branch.rb",
-    "spec/application_no_config/no_config",
-    "spec/application_rails_config/config/features.local.yml",
-    "spec/application_rails_config/config/features.yml"
+    "lib/generators/templates/lib/tasks/abstract_feature_branch.rake",
+    "spec/abstract_feature_branch/file_beautifier_spec.rb",
+    "spec/ext/feature_branch__feature_branch_spec.rb",
+    "spec/ext/feature_branch__feature_enabled_spec.rb",
+    "spec/fixtures/application_no_config/no_config",
+    "spec/fixtures/application_rails_config/config/features.local.yml",
+    "spec/fixtures/application_rails_config/config/features.yml",
+    "spec/fixtures/application_ugly_config_reference/config/another_application_configuration.yml",
+    "spec/fixtures/application_ugly_config_reference/config/database.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features.local.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/admin.local.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/admin.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/empty.local.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/feature_empty_config.local.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/including_comments.local.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/internal/wiki.local.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/internal/wiki.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/public.local.yml",
+    "spec/fixtures/application_ugly_config_reference/config/features/public.yml"
   ]
   s.homepage = "http://github.com/AndyObtiva/abstract_feature_branch"
   s.licenses = ["MIT"]
@@ -50,20 +68,17 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<deep_merge>, ["= 1.0.0"])
-      s.add_development_dependency(%q<rspec>, ["= 2.11.0"])
-      s.add_development_dependency(%q<rdoc>, ["= 3.12.2"])
       s.add_development_dependency(%q<jeweler>, ["= 1.8.8"])
+      s.add_development_dependency(%q<rspec>, ["= 2.14.1"])
     else
       s.add_dependency(%q<deep_merge>, ["= 1.0.0"])
-      s.add_dependency(%q<rspec>, ["= 2.11.0"])
-      s.add_dependency(%q<rdoc>, ["= 3.12.2"])
       s.add_dependency(%q<jeweler>, ["= 1.8.8"])
+      s.add_dependency(%q<rspec>, ["= 2.14.1"])
     end
   else
     s.add_dependency(%q<deep_merge>, ["= 1.0.0"])
-    s.add_dependency(%q<rspec>, ["= 2.11.0"])
-    s.add_dependency(%q<rdoc>, ["= 3.12.2"])
     s.add_dependency(%q<jeweler>, ["= 1.8.8"])
+    s.add_dependency(%q<rspec>, ["= 2.14.1"])
   end
 end
 
