@@ -35,15 +35,15 @@ Setup
 ### Rails Application
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.7.0'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.7.0'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.7.1'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.7.1'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under **instructions**)
 4. (Optional and rarely needed) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application or troubleshooting a specific Rails environment feature configuration)
 
 ### Ruby Application (general use)
 
-1. <pre>gem install abstract_feature_branch -v 0.7.0</pre>
+1. <pre>gem install abstract_feature_branch -v 0.7.1</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under **instructions**.
 4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under **instructions**)
@@ -282,6 +282,9 @@ the former if overlap in features occurs:
 
 Release Notes
 -------------
+
+Version 0.7.1:
+- Fixed undefined method issue with using <code>AbstractFeatureBranch.load_application_features</code> to improve first use performance
 
 Version 0.7.0:
 - Added support for general Ruby use (without Rails) by externalizing AbstractFeatureBranch.application_root and AbstractFeatureBranch.application_environment. Added initializer to optionally configure them. Supported case-insensitive feature names.
