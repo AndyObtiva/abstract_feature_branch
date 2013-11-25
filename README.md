@@ -32,7 +32,8 @@ Requirements
 Setup
 -----
 
-Rails Application
+### Rails Application
+
 1. Configure Rubygem
    - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.7.0'</pre>
    - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.7.0'</pre>
@@ -40,14 +41,15 @@ Rails Application
 3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under **instructions**)
 4. (Optional and rarely needed) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application or troubleshooting a specific Rails environment feature configuration)
 
-Ruby Application (general)
+### Ruby Application (general use)
+
 1. <pre>gem install abstract_feature_branch -v 0.7.0</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
-3. (Optional) Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> (it defaults to <code>'.'</code>)
-4. (Optional) Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set ENV['APP_ENV'] before the <code>require</code> statement or an an external environment variable.
-5. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under **instructions**.
-6. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under **instructions**)
-7. (Optional) Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under **instructions**)
+3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under **instructions**.
+4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under **instructions**)
+5. (Optional) Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under **instructions**)
+6. (Optional) Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> to configure the location of feature files (it defaults to <code>'.'</code>)
+7. (Optional) Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set <code>ENV['APP_ENV']</code> before the <code>require</code> statement or an an external environment variable.
 
 Instructions
 ------------
