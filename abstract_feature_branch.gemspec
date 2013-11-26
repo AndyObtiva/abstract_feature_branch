@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "abstract_feature_branch"
-  s.version = "0.9.0"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Annas \"Andy\" Maleh"]
@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
     ".travis.yml",
     "LICENSE.txt",
     "README.md",
+    "RELEASE_NOTES.md",
     "VERSION",
     "abstract_feature_branch.gemspec",
     "config/features/admin.local.yml",
@@ -39,6 +40,7 @@ Gem::Specification.new do |s|
     "lib/generators/templates/config/initializers/abstract_feature_branch.rb",
     "lib/generators/templates/lib/tasks/abstract_feature_branch.rake",
     "ruby187.Gemfile",
+    "ruby187.Gemfile.lock",
     "spec/abstract_feature_branch/file_beautifier_spec.rb",
     "spec/ext/feature_branch__feature_branch_spec.rb",
     "spec/ext/feature_branch__feature_enabled_spec.rb",
