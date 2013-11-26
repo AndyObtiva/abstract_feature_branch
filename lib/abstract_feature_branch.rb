@@ -40,6 +40,20 @@ module AbstractFeatureBranch
   def self.initialize_logger
     self.logger = defined?(Rails) && Rails.logger ? Rails.logger : Logger.new(STDOUT)
   end
+  def self.cacheable
+    @cacheable ||= initialize_cacheable
+  end
+  def self.cacheable=(cacheable)
+    @cacheable = cacheable
+  end
+  def self.initialize_cacheable
+    self.cacheable = {
+      :development => false,
+      :test => true,
+      :staging => true,
+      :production => true
+    }
+  end
   def self.environment_variable_overrides
     @environment_variable_overrides ||= load_environment_variable_overrides
   end
@@ -98,7 +112,9 @@ module AbstractFeatureBranch
     @environment_features = nil
   end
   def self.cacheable?
-    application_environment != 'development'
+    value = downcase_keys(cacheable)[application_environment]
+    value = (application_environment != 'development') if value.nil?
+    value
   end
 
   private

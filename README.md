@@ -36,15 +36,15 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.9.0'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.9.0'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '1.0.0'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.0.0'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. (Optional and rarely needed) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application or troubleshooting a specific Rails environment feature configuration)
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 0.9.0</pre>
+1. <pre>gem install abstract_feature_branch -v 1.0.0</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -52,7 +52,8 @@ Setup
 6. (Optional) Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> to configure the location of feature files (it defaults to <code>'.'</code>)
 7. (Optional) Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set <code>ENV['APP_ENV']</code> before the <code>require</code> statement or an an external environment variable.
 8. (Optional) Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
-9. (Optional) Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
+9. (Optional) Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
+10. (Optional) Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
 
 Instructions
 ------------
@@ -283,8 +284,17 @@ Here is the content of the generated initializer (<code>config/initializers/abst
 >     # Abstract Feature Branch logger
 >     AbstractFeatureBranch.logger = Rails.logger
 >
->     # Pre-loads application features to improve performance of first web-page hit
->     AbstractFeatureBranch.load_application_features
+>     # Cache feature files once read or re-read them at runtime on every use (helps development).
+>     # Defaults to true if environment not specified, except for development, which defaults to false.
+>     AbstractFeatureBranch.cacheable = {
+>       :development => false,
+>       :test => true,
+>       :staging => true,
+>       :production => true
+>     }
+>
+>     # Pre-load application features to improve performance of first web-page hit
+>     AbstractFeatureBranch.load_application_features unless Rails.env.development?
 
 Rake Task
 ---------
@@ -374,66 +384,9 @@ The rake task may be invoked in a number of ways:
 - <code>rake abstract_feature_branch:beautify_files[file_path]</code> beautifies a single feature file
 - <code>rake abstract_feature_branch:beautify_files[directory_path]</code> beautifies all feature files under directory path recursively
 
-Verify after the task has been invoked that your feature file contents are to your satisfaction before committing the
+Note that the beautifier ignores comments at the top, but deletes entire line comments in the middle of a YAML file, so
+after invoking the rake task, **verify** that your feature file contents are to your satisfaction before committing the
 task changes.
-
-Release Notes
--------------
-
-Version 0.9.0:
-- Added support for runtime read of feature files in development to ease local testing (trading off performance)
-
-Version 0.8.0:
-- Added rake task for beautifying feature files, sorting feature names within environment sections and eliminating extra empty lines. Added support for externalized logger.
-
-Version 0.7.1:
-- Fixed undefined method issue with using <code>AbstractFeatureBranch.load_application_features</code> to improve first use performance
-
-Version 0.7.0:
-- Added support for general Ruby use (without Rails) by externalizing AbstractFeatureBranch.application_root and AbstractFeatureBranch.application_environment. Added initializer to optionally configure them. Supported case-insensitive feature names.
-
-Version 0.6.1 - 0.6.4:
-- Fixed issues including making feature configuration files optional (in case one wants to get rid of <code>features.local.yml</code> or even <code>features.yml</code>)
-
-Version 0.6.0:
-- Added a context generator and support for reading feature configuration from context files <code>config/features/**/*.yml</code> and <code>config/features/**/*.local.yml</code>
-
-Version 0.5.0:
-- Added support for local configuration feature ignored by git + some performance optimizations via configuration caching and better algorithms.
-
-Version 0.4.0:
-- Added support for overwriting feature configuration with environment variable overrides. Very useful on Heroku to quickly enable/disable features without a redeploy.
-
-Version 0.3.6:
-- Fixed feature_branch issue with invalid feature name, preventing block execution and returning nil instead
-
-Version 0.3.5:
-- Fixed issue with generator not allowing consuming client app to start Rails server successfully
-
-Version 0.3.4:
-- Added <code>abstract_feature_branch:install</code> generator to easily get started with a sample <code>config/features.yml</code>
-
-Version 0.3.3:
-- Removed version from README title
-
-Version 0.3.2:
-- Added <code>AbstractFeatureBranch.features</code> to delay YAML load until <code>Rails.root</code> has been established
-
-Version 0.3.1:
-- Removed dependency on the rails_config gem
-
-Version 0.3.0:
-- Simplified <code>features.yml</code> requirement to have a features header under each environment
-- Moved feature storage from Settings object to <code>AbstractFeatureBranch::FEATURES</code>
-
-Version 0.2.0:
-- Support an "else" block to execute when a feature is off (via <code>:true</code> and <code>:false</code> lambda arguments)
-- Support ability to check if a feature is enabled or not (via <code>feature_enabled?</code>)
-
-Upcoming
---------
-
-- Support configuring per environment whether features yml is read at runtime or not (given performance trade-off)
 
 Contributing to abstract_feature_branch
 ---------------------------------------
