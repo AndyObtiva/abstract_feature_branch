@@ -35,15 +35,15 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.8.0'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.8.0'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '0.9.0'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '0.9.0'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. (Optional and rarely needed) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application or troubleshooting a specific Rails environment feature configuration)
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 0.8.0</pre>
+1. <pre>gem install abstract_feature_branch -v 0.9.0</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -379,6 +379,9 @@ task changes.
 Release Notes
 -------------
 
+Version 0.9.0:
+- Added support for runtime read of feature files in development to ease local testing (trading off performance)
+
 Version 0.8.0:
 - Added rake task for beautifying feature files, sorting feature names within environment sections and eliminating extra empty lines. Added support for externalized logger.
 
@@ -429,7 +432,6 @@ Version 0.2.0:
 Upcoming
 --------
 
-- Support runtime read of features yml in development for easy testing purposes (trading off performance)
 - Support configuring per environment whether features yml is read at runtime or not (given performance trade-off)
 
 Contributing to abstract_feature_branch

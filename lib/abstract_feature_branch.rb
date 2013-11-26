@@ -14,7 +14,7 @@ require 'deep_merge' unless {}.respond_to?(:deep_merge!)
 
 module AbstractFeatureBranch
   def self.application_root
-    @application_root = @application_root || initialize_application_root
+    @application_root ||= initialize_application_root
   end
   def self.application_root=(path)
     @application_root = path
@@ -23,7 +23,7 @@ module AbstractFeatureBranch
     self.application_root = defined?(Rails) ? Rails.root : '.'
   end
   def self.application_environment
-    @application_environment = @application_environment || initialize_application_environment
+    @application_environment ||= initialize_application_environment
   end
   def self.application_environment=(environment)
     @application_environment = environment
@@ -32,7 +32,7 @@ module AbstractFeatureBranch
     self.application_environment = defined?(Rails) ? Rails.env.to_s : ENV['APP_ENV'] || 'development'
   end
   def self.logger
-    @logger = @logger || initialize_logger
+    @logger ||= initialize_logger
   end
   def self.logger=(logger)
     @logger = logger
@@ -41,13 +41,13 @@ module AbstractFeatureBranch
     self.logger = defined?(Rails) && Rails.logger ? Rails.logger : Logger.new(STDOUT)
   end
   def self.environment_variable_overrides
-    @environment_variable_overrides = (cacheable? && @environment_variable_overrides) || load_environment_variable_overrides
+    @environment_variable_overrides ||= load_environment_variable_overrides
   end
   def self.load_environment_variable_overrides
     @environment_variable_overrides = featureize_keys(select_feature_keys(booleanize_values(downcase_keys(ENV))))
   end
   def self.local_features
-    @local_features = (cacheable? && @local_features) || load_local_features
+    @local_features ||= load_local_features
   end
   def self.load_local_features
     @local_features = {}
@@ -59,7 +59,7 @@ module AbstractFeatureBranch
     @local_features
   end
   def self.features
-    @features = (cacheable? && @features) || load_features
+    @features ||= load_features
   end
   def self.load_features
     @features = {}
@@ -72,31 +72,17 @@ module AbstractFeatureBranch
   end
   # performance optimization via caching of feature values resolved through environment variable overrides and local features
   def self.environment_features(environment)
-    @environment_features = (cacheable? && @environment_features) || {}
-    @environment_features[environment] = (cacheable? && @environment_features[environment]) || load_environment_features(environment)
+    @environment_features ||= {}
+    @environment_features[environment] ||= load_environment_features(environment)
   end
   def self.load_environment_features(environment)
-    @environment_features = (cacheable? && @environment_features) || {}
-    puts '-1. @environment_features.inspect'
-    puts @environment_features.inspect
-    puts '0. environment'
-    puts environment.inspect
-    puts '1. features[environment]'
-    puts features[environment].inspect
-    features[environment] = (cacheable? && features[environment]) || {}
-    puts '1a cacheable?.inspect'
-    puts cacheable?.inspect
-    puts '2. features[environment]'
-    puts features[environment].inspect
-    local_features[environment] = (cacheable? && local_features[environment]) || {}
-
-    puts 'local_features.inspect'
-    puts local_features.inspect
-    puts 'environment_variable_overrides.inspect'
-    puts environment_variable_overrides.inspect
+    @environment_features ||= {}
+    features[environment] ||= {}
+    local_features[environment] ||= {}
     @environment_features[environment] = features[environment].merge(local_features[environment]).merge(environment_variable_overrides)
   end
   def self.application_features
+    unload_application_features unless cacheable?
     environment_features(application_environment)
   end
   def self.load_application_features
@@ -104,6 +90,12 @@ module AbstractFeatureBranch
     AbstractFeatureBranch.load_features
     AbstractFeatureBranch.load_local_features
     AbstractFeatureBranch.load_environment_features(application_environment)
+  end
+  def self.unload_application_features
+    @environment_variable_overrides = nil
+    @features = nil
+    @local_features = nil
+    @environment_features = nil
   end
   def self.cacheable?
     application_environment != 'development'
