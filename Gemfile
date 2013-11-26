@@ -8,5 +8,5 @@ group :development, :test do
 end
 
 group :test do
-  gem 'coveralls'
+  gem 'coveralls', '0.7.0', :require => false
 end

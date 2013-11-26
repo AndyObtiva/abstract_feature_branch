@@ -358,6 +358,7 @@ For Rails application use, the rake task is generated under <code>lib/tasks/abst
 
 For Ruby application general use, here is the content of the rake task:
 
+>     require 'abstract_feature_branch'
 >     namespace :abstract_feature_branch do
 >
 >       desc "Beautify YAML of specified feature file via file_path argument or all feature files when no argument specified (config/features.yml, config/features.local.yml, and config/features/**/*.yml) by sorting features by name and eliminating extra empty lines"
