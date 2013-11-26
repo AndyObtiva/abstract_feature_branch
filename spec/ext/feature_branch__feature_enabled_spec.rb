@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'feature_branch object extensions' do
   before do
     @app_env_backup = AbstractFeatureBranch.application_environment
+    @app_root_backup = AbstractFeatureBranch.application_root
     AbstractFeatureBranch.logger.warn 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     AbstractFeatureBranch.logger.warn 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
     AbstractFeatureBranch.logger.warn 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
@@ -11,9 +12,9 @@ describe 'feature_branch object extensions' do
     ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
-    AbstractFeatureBranch.initialize_application_root
-    AbstractFeatureBranch.load_application_features
-    AbstractFeatureBranch.application_environment = @app_env_backup #TODO use initialize_application_environment instead
+    AbstractFeatureBranch.application_root = @app_root_backup
+    AbstractFeatureBranch.application_environment = @app_env_backup
+    AbstractFeatureBranch.unload_application_features
   end
   describe '#feature_enabled?' do
     it 'determines whether a feature is enabled or not in features configuration (case-insensitive string or symbol feature names)' do
@@ -71,14 +72,13 @@ describe 'feature_branch object extensions' do
         @feature_file_reference_path = File.join(@development_application_root, 'config', 'features.reference.yml')
         @feature_file_path = File.join(@development_application_root, 'config', 'features.yml')
         FileUtils.cp(@feature_file_reference_path, @feature_file_path)
+        AbstractFeatureBranch.application_root = @development_application_root
       end
       after do
         FileUtils.rm(@feature_file_path)
       end
       it 'refreshes features at runtime in development (without forcing load of application features again)' do
-        AbstractFeatureBranch.application_root = @development_application_root
         AbstractFeatureBranch.application_environment = 'development'
-        AbstractFeatureBranch.load_application_features
         feature_enabled?(:feature1).should == false
         feature_enabled?(:feature2).should == true
         File.open(@feature_file_path, 'w+') do |file|
@@ -111,7 +111,6 @@ production:
       end
       %w(test staging production).each do |environment|
         it "does not refresh features at runtime in #{environment} (without forcing load of application features again)" do
-          AbstractFeatureBranch.application_root = @development_application_root
           AbstractFeatureBranch.application_environment = environment
           AbstractFeatureBranch.load_application_features
           feature_enabled?(:feature1).should == false

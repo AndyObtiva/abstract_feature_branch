@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'feature_branch object extensions' do
   before do
     @app_env_backup = AbstractFeatureBranch.application_environment
+    @app_root_backup = AbstractFeatureBranch.application_root
     AbstractFeatureBranch.logger.warn 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     AbstractFeatureBranch.logger.warn 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
     AbstractFeatureBranch.logger.warn 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
@@ -11,9 +12,9 @@ describe 'feature_branch object extensions' do
     ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
-    AbstractFeatureBranch.initialize_application_root
-    AbstractFeatureBranch.load_application_features
+    AbstractFeatureBranch.application_root = @app_root_backup
     AbstractFeatureBranch.application_environment = @app_env_backup
+    AbstractFeatureBranch.unload_application_features
   end
   describe '#feature_branch' do
     context 'class level behavior (case-insensitive string or symbol feature names)' do
