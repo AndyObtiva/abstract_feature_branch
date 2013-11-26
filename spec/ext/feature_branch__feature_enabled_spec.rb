@@ -109,6 +109,7 @@ production:
         feature_enabled?(:feature1).should == true
         feature_enabled?(:feature2).should == false
       end
+
       %w(test staging production).each do |environment|
         it "does not refresh features at runtime in #{environment} (without forcing load of application features again)" do
           AbstractFeatureBranch.application_environment = environment
@@ -142,6 +143,77 @@ production:
           end
           feature_enabled?(:feature1).should == false
           feature_enabled?(:feature2).should == true
+        end
+      end
+
+      it 'does not refresh features at runtime in development when overridden' do
+        AbstractFeatureBranch.application_environment = 'development'
+        AbstractFeatureBranch.cacheable = {:development => true}
+        AbstractFeatureBranch.load_application_features
+        feature_enabled?(:feature1).should == false
+        feature_enabled?(:feature2).should == true
+        File.open(@feature_file_path, 'w+') do |file|
+          file << <<-CONTENT
+defaults: &defaults
+
+development:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+
+test:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+
+staging:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+
+production:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+            CONTENT
+          end
+        feature_enabled?(:feature1).should == false
+        feature_enabled?(:feature2).should == true
+      end
+
+      %w(test staging production).each do |environment|
+        it "does refresh features at runtime in #{environment} (without forcing load of application features again)" do
+          AbstractFeatureBranch.application_environment = environment
+          AbstractFeatureBranch.cacheable = {:test => false, :staging => false, :production => false}
+          feature_enabled?(:feature1).should == false
+          feature_enabled?(:feature2).should == true
+          File.open(@feature_file_path, 'w+') do |file|
+            file << <<-CONTENT
+defaults: &defaults
+
+development:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+
+test:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+
+staging:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+
+production:
+  <<: *defaults
+  FEATURE1: true
+  Feature2: false
+            CONTENT
+          end
+          feature_enabled?(:feature1).should == true
+          feature_enabled?(:feature2).should == false
         end
       end
     end
