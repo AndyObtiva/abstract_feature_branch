@@ -21,7 +21,7 @@ matrix:
     - rvm: ree
       gemfile: Gemfile
     - rvm: jruby-18mode
-      gemfile: ruby187.Gemfile
+      gemfile: Gemfile
     - rvm: jruby-19mode
       gemfile: ruby187.Gemfile
     - rvm: rbx-2.1.1
