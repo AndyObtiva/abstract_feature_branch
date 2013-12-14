@@ -26,3 +26,4 @@ matrix:
       gemfile: ruby187.Gemfile
     - rvm: rbx-2.1.1
       gemfile: Gemfile
+before_install: gem install rdoc -v4.0.1 --no-ri --no-rdoc
