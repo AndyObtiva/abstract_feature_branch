@@ -167,7 +167,7 @@ simply switching off the URL route to them. Example:
 >       :website
 >     )
 
-- In Rails 4 and 3.1+ with the asset pipeline, wrap newly added CSS or JavaScript using .erb format. Example (renamed projects.css.scss to projects.css.scss.erb and wrapped CSS with an abstract feature branch block):
+- [Beware of Gotcha](https://github.com/AndyObtiva/abstract_feature_branch/edit/master/README.md#gotcha-with-abstract-feature-branching-in-css-and-js-files) In Rails 4 and 3.1+ with the asset pipeline, wrap newly added CSS or JavaScript using .erb format. Example (renamed projects.css.scss to projects.css.scss.erb and wrapped CSS with an abstract feature branch block):
 
 >     <% feature_branch :project_gallery do %>
 >     .exclude_display {
@@ -191,11 +191,11 @@ simply switching off the URL route to them. Example:
 it is **strongly recommended** that its feature branching code is plucked out of the codebase to simplify and improve
 future maintainability given that it is no longer needed at that point.
 
-- Once <code>config/features.yml</code> grows too big (e.g. 20+ features), it is **strongly recommended* to split it into
+- Once <code>config/features.yml</code> grows too big (e.g. 20+ features), it is **strongly recommended** to split it into
 multiple context-specific feature files by utilizing the context generator mentioned above: <pre>rails g abstract_feature_branch:context context_path</pre>
 
 - When working on a new feature locally that the developer does not want others on the team to see yet, the feature
-can be enabled in <code>config/features.local.yml</code> only as it is git ignored, and disabled in <code>config/features.yml</code>
+can be enabled in <code>config/features.local.yml</code> only as it is git ignored while the feature is disabled in <code>config/features.yml</code>
 
 - When troubleshooting a deployed feature by simulating a non-development environment (e.g. staging or production) locally,
 the developer can disable it temporarily in <code>config/features.local.yml</code> (git ignored) under the non-development environment,
@@ -231,7 +231,7 @@ Heroku
 Environment variable overrides can be extremely helpful on Heroku as they allow developers to enable/disable features
 at runtime without a redeploy.
 
-Examples:
+### Examples
 
 Enabling a new feature without a redeploy:
 <pre>heroku config:add ABSTRACT_FEATURE_BRANCH_FEATURE3=true -a heroku_application_name</pre>
@@ -242,12 +242,12 @@ Disabling a buggy recently deployed feature without a redeploy:
 Removing an environment variable override:
 <pre>heroku config:remove ABSTRACT_FEATURE_BRANCH_FEATURE2 -a heroku_application_name</pre>
 
-Recommendation:
+### Recommendation
 
 It is recommended that you use environment variable overrides on Heroku only as an emergency or temporary measure.
 Afterward, make the change officially in config/features.yml, deploy, and remove the environment variable override for the long term.
 
-Gotcha with abstract feature branching in CSS and JS files:
+### Gotcha with abstract feature branching in CSS and JS files
 
 If you've used abstract feature branching in CSS or JS files via ERB, setting environment variable overrides won't
 affect them as you need asset recompilation in addition to it, which can only be triggered by changing a CSS or JS
@@ -256,7 +256,7 @@ overrides have been recommended above as an emergency or temporary measure. If t
 variable overrides to alter the style or JavaScript behavior of a page back and forth without a redeploy, **one solution**
 is to do additional abstract feature branching in HTML templates (e.g. ERB or [HAML](http://haml.info) to
 link to different stylesheets and JS files, use different CSS classes, or invoke different JavaScript methods per branch
-of HTML for example.
+of HTML for example.)
 
 Feature Configuration Load Order
 --------------------------------
