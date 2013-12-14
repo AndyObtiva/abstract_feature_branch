@@ -1,8 +1,8 @@
 Release Notes
 -------------
 
-Version 0.9.0:
-- Added configuration support for feature cacheability
+Version 1.0.0:
+- Added configuration support for feature cacheability. Completed documentation, adding more details.
 
 Version 0.9.0:
 - Added support for runtime read of feature files in development to ease local testing (trading off performance)
