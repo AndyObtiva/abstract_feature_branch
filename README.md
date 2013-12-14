@@ -167,7 +167,7 @@ simply switching off the URL route to them. Example:
 >       :website
 >     )
 
-- [Beware of Gotcha](https://github.com/AndyObtiva/abstract_feature_branch/edit/master/README.md#gotcha-with-abstract-feature-branching-in-css-and-js-files) In Rails 4 and 3.1+ with the asset pipeline, wrap newly added CSS or JavaScript using .erb format. Example (renamed projects.css.scss to projects.css.scss.erb and wrapped CSS with an abstract feature branch block):
+- In Rails 4 and 3.1+ with the asset pipeline, wrap newly added CSS or JavaScript using .erb format ([gotcha and alternative solution](#gotcha-with-abstract-feature-branching-in-css-and-js-files)). Example (renamed projects.css.scss to projects.css.scss.erb and wrapped CSS with an abstract feature branch block):
 
 >     <% feature_branch :project_gallery do %>
 >     .exclude_display {
