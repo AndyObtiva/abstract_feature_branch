@@ -388,6 +388,16 @@ Note that the beautifier ignores comments at the top, but deletes entire line co
 after invoking the rake task, **verify** that your feature file contents are to your satisfaction before committing the
 task changes.
 
+Feature Branches vs Branch by Abstraction
+---------
+
+Although feature branches and branching by abstraction are similar, there are different situations that recommend each approach.  
+
+Feature branching leverages your version control software (VCS) to create a branch that is independent of your main branch.  Once you write your feature, you integrate it with the rest of your code base. Featuring branching is ideal for developing features that can be completed within the one or two iterations.  But it can become cumbersome with larger features due to the fact your code is isolated and quickly falls out of sync with your main branch.  You will have to regularly rebase with your main branch or devote substantial time to resolving merge conflicts.   
+
+Branching by abstraction, on the other hand, is ideal for substantial features, i.e. ones which take many iterations to complete.  This approach to branching takes place outside of your VCS.  Instead, you build your feature, but wrap the code inside configurable flags.  These configuration flags will allow for different behavior, depending on the runtime environment.  For example, a feature would be set to "on" when your app runs in development mode, but "off" when running in "production" mode.  This approach avoids the pain of constantly rebasing or resolving a myriad of merge conflict when you do attempt to integrate your feature into the larger app.
+
+
 Contributing to abstract_feature_branch
 ---------------------------------------
 
