@@ -406,9 +406,6 @@ Committers
 Contributors
 ---------------------------------------
 [Christian Nennemann](https://github.com/XORwell)
-
-Feedback and Idea Providers
----------------------------------------
 [Ben Downey](https://github.com/bnd5k)
 
 Copyright
