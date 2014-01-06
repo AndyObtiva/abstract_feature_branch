@@ -411,12 +411,12 @@ Contributing to abstract_feature_branch
 
 Committers
 ---------------------------------------
-[Annas "Andy" Maleh (Author)](https://github.com/AndyObtiva)
+* [Annas "Andy" Maleh (Author)](https://github.com/AndyObtiva)
 
 Contributors
 ---------------------------------------
-[Christian Nennemann](https://github.com/XORwell)
-[Ben Downey](https://github.com/bnd5k)
+* [Christian Nennemann](https://github.com/XORwell)
+* [Ben Downey](https://github.com/bnd5k)
 
 Copyright
 ---------------------------------------
