@@ -16,3 +16,4 @@ rerun.txt
 pickle-email-*.html
 .idea
 pkg
+test/dummy/log/development.log

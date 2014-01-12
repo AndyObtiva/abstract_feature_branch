@@ -1,3 +1,5 @@
+require "abstract_feature_branch/engine"
+
 module AbstractFeatureBranch::FileBeautifier
   def self.process(file_path=nil)
     if file_path.nil?
