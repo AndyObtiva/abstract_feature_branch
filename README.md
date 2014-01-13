@@ -109,18 +109,6 @@ single-line logic:
 
 Note that <code>feature_branch</code> returns nil and does not execute the block if the feature is disabled or non-existent.
 
-- Declaratively feature branch two paths of logic, one that runs when feature1 is enabled and one that runs when it is disabled:
-
->     feature_branch :feature1,
->                    :true => lambda {
->                      # perform logic
->                    },
->                    :false => lambda {
->                      # perform alternate logic
->                    }
-
-Note that <code>feature_branch</code> executes the false branch if the feature is non-existent.
-
 - Imperatively check if a feature is enabled or not:
 
 >     if feature_enabled?(:feature1)
@@ -275,6 +263,11 @@ Rails Initializer
 
 Here is the content of the generated initializer (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize via [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection):
 
+>     require 'redis'
+>
+>     # Storage for user features, customizable over here (right now, only a Redis client is supported)
+>     AbstractFeatureBranch.user_features_storage = Redis.new
+>
 >     # Application root where config/features.yml or config/features/ is found
 >     AbstractFeatureBranch.application_root = Rails.root
 >

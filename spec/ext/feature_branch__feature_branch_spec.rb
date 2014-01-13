@@ -44,27 +44,6 @@ describe 'feature_branch object extensions' do
       end
       return_value.should be_nil
     end
-    it 'supports an alternate branch of behavior for turned off features' do
-      feature_behaviors = []
-      feature_branch :feature1,
-                     :true => lambda {feature_behaviors << :feature1_true},
-                     :false => lambda {feature_behaviors << :feature1_false}
-      feature_branch :feature3,
-                     :true => lambda {feature_behaviors << :feature3_true},
-                     :false => lambda {feature_behaviors << :feature3_false}
-      feature_behaviors.should include(:feature1_true)
-      feature_behaviors.should_not include(:feature1_false)
-      feature_behaviors.should_not include(:feature3_true)
-      feature_behaviors.should include(:feature3_false)
-    end
-    it 'executes alternate branch for an invalid feature name' do
-      feature_behaviors = []
-      feature_branch :invalid_feature_that_does_not_exist,
-                     :true => lambda {feature_behaviors << :main_branch},
-                     :false => lambda {feature_behaviors << :alternate_branch}
-      feature_behaviors.should_not include(:main_branch)
-      feature_behaviors.should include(:alternate_branch)
-    end
     it 'allows environment variables (case-insensitive booleans) to override configuration file' do
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'

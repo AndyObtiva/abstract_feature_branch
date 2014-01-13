@@ -1,3 +1,8 @@
+require 'redis'
+
+# Storage for user features, customizable over here (right now, only a Redis client is supported)
+AbstractFeatureBranch.user_features_storage = Redis.new
+
 # Application root where config/features.yml or config/features/ is found
 AbstractFeatureBranch.application_root = Rails.root
 
