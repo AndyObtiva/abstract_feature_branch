@@ -29,6 +29,7 @@ Requirements
 ------------
 - Ruby ~> 2.0.0, ~> 1.9 or ~> 1.8.7
 - (Optional) Rails ~> 4.0.0, ~> 3.0 or ~> 2.0
+- (Optional) Redis server
 
 Setup
 -----
@@ -118,6 +119,41 @@ Note that <code>feature_branch</code> returns nil and does not execute the block
 >     end
 
 Note that <code>feature_enabled?</code> returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
+
+### Per-User Feature Enablement
+
+It is possible to restrict enablement of features per specific users. This works in concert with having a feature enabled
+in features.yml (or one of the overrides like features.local.yml or environment variable overrides)
+
+1. Use <code>toggle_features_for_user</code> in Ruby code to enable features per user ID (e.g. email address or database ID). This loads Redis client gem into memory and stores per-user feature configuration in Redis.
+In the example below, current_user is a method that provides the current signed in user (e.g. using Rails [Devise] (https://github.com/plataformatec/devise) library).
+
+>     user_id = current_user.email
+>     AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
+
+Use alternate version of <code>feature_branch</code> and <code>feature_enabled?</code> passing extra <code>user_id</code> argument
+
+Examples:
+
+>     feature_branch :feature1, current_user.email do
+>       # THIS WILL EXECUTE
+>     end
+
+>     if feature_enabled?(:feature2, current_user.email)
+>       # THIS ONE WILL NOT EXECUTE
+>     else
+>       # THIS ONE WILL EXECUTE
+>     end
+
+>     feature_branch :feature1, another_user.email do
+>       # THIS WILL NOT EXECUTE
+>     end
+
+>     if feature_enabled?(:feature2, another_user.email)
+>       # THIS ONE WILL EXECUTE (assuming feature2 is enabled in features.yml)
+>     else
+>       # THIS ONE WILL NOT EXECUTE
+>     end
 
 Recommendations
 ---------------

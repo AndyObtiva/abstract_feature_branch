@@ -131,7 +131,11 @@ module AbstractFeatureBranch
     end
     def toggle_features_for_user(user_id, features)
       features.each do |name, value|
-        user_features_storage.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id) if value
+        if value
+          user_features_storage.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
+        else
+          user_features_storage.srem("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
+        end
       end
     end
 

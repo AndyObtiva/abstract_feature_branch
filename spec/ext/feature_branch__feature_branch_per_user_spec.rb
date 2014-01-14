@@ -49,6 +49,33 @@ describe 'feature_branch object extensions' do
         features_enabled.should include(:feature5)
         features_enabled.should_not include(:feature5_otheruser)
       end
+      it 'update feature branching (disabling some features) after having stored feature configuration per user in a separate process (ensuring persistence)' do
+        user_id = 'email1@example.com'
+        Process.fork do
+          AbstractFeatureBranch.initialize_user_features_storage
+          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
+          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => false, :feature2 => true, :feature3 => false, :feature5 => false)
+        end
+        Process.wait
+        features_enabled = []
+        feature_branch :feature1, user_id do
+          features_enabled << :feature1
+        end
+        feature_branch :feature2, user_id do
+          features_enabled << :feature2
+        end
+        feature_branch :feature3, user_id do
+          features_enabled << :feature3
+        end
+        feature_branch :feature5, user_id do
+          features_enabled << :feature5
+        end
+        features_enabled.should_not include(:feature1)
+        features_enabled.should include(:feature2)
+        features_enabled.should_not include(:feature3)
+        features_enabled.should_not include(:feature5)
+      end
+
     end
   end
   describe 'self#feature_branch' do
