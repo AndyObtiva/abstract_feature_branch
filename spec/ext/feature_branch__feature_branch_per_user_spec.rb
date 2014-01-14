@@ -7,7 +7,11 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.logger.warn 'Environment variable ABSTRACT_FEATURE_BRANCH_FEATURE1 already set, potentially conflicting with another test' if ENV.keys.include?('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     AbstractFeatureBranch.logger.warn 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
     AbstractFeatureBranch.logger.warn 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
-    AbstractFeatureBranch.user_features_storage.flushall
+    begin
+      AbstractFeatureBranch.user_features_storage.flushall
+    rescue => e
+      #noop
+    end
   end
   after do
     ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
@@ -16,7 +20,11 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.application_root = @app_root_backup
     AbstractFeatureBranch.application_environment = @app_env_backup
     AbstractFeatureBranch.unload_application_features
-    AbstractFeatureBranch.user_features_storage.flushall
+    begin
+      AbstractFeatureBranch.user_features_storage.flushall
+    rescue => e
+    #noop
+    end
   end
   describe '#feature_branch' do
     context 'per user' do
