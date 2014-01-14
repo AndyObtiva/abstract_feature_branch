@@ -81,5 +81,5 @@ DEPENDENCIES
   coveralls (= 0.7.0)
   deep_merge (= 1.0.0)
   jeweler (= 1.8.8)
-  redis (= 3.0.6)
+  redis (~> 3.0.0)
   rspec (= 2.14.1)
