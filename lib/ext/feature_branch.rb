@@ -9,8 +9,12 @@ class Object
   raise 'Abstract feature branch conflicts with another Ruby library' if respond_to?(:feature_enabled?)
   def self.feature_enabled?(feature_name, user_id = nil)
     normalized_feature_name = feature_name.to_s.downcase
-    AbstractFeatureBranch.application_features[normalized_feature_name] &&
-      (user_id.nil? || AbstractFeatureBranch.user_features_storage.sismember("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}", user_id))
+
+    value = AbstractFeatureBranch.application_features[normalized_feature_name]
+    if value == 'per_user'
+      value = AbstractFeatureBranch.user_features_storage.sismember("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}", user_id)
+    end
+    value
   end
 
   raise 'Abstract feature branch conflicts with another Ruby library' if Object.new.respond_to?(:feature_branch)

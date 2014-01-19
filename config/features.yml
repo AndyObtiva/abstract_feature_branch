@@ -4,6 +4,8 @@ defaults: &defaults
   feature3: false
   feature4: true
   feature4a: true
+  feature6: per_user
+  feature7: per_user
 
 development:
   <<: *defaults

@@ -65,7 +65,30 @@ describe 'feature_branch object extensions' do
       feature_enabled?(:feature4a).should be_nil
       feature_enabled?(:feature5).should be_nil
     end
-
+    context 'per user' do
+      let(:user_id) { 'email1@example.com' }
+      let(:another_user_id) { 'another_email@example.com' }
+      before do
+        AbstractFeatureBranch.user_features_storage.del("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}feature6")
+      end
+      after do
+        AbstractFeatureBranch.user_features_storage.del("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}feature6")
+      end
+      it 'behaves as expected if member list is empty, regardless of the user provided' do
+        feature_enabled?('feature6').should == false
+        feature_enabled?('feature6', nil).should == false
+        feature_enabled?('feature6', user_id).should == false
+      end
+      it 'behaves as expected if member list is not empty, and user provided is in member list' do
+        AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true)
+        feature_enabled?('feature6').should == false
+        feature_enabled?('feature6', user_id).should == true
+      end
+      it 'behaves as expected if member list is not empty, and user provided is not in member list' do
+        AbstractFeatureBranch.toggle_features_for_user(another_user_id, :feature6 => true)
+        feature_enabled?('feature6', user_id).should == false
+      end
+    end
     context 'cacheability' do
       before do
         @development_application_root = File.expand_path(File.join(__FILE__, '..', '..', 'fixtures', 'application_development_config'))
