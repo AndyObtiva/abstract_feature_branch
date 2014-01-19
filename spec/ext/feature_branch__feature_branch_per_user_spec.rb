@@ -32,56 +32,52 @@ describe 'feature_branch object extensions' do
         user_id = 'email1@example.com'
         Process.fork do
           AbstractFeatureBranch.initialize_user_features_storage
-          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
+          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
         end
         Process.wait
         features_enabled = []
         feature_branch :feature1, user_id do
           features_enabled << :feature1
         end
-        feature_branch :feature2, user_id do
-          features_enabled << :feature2
-        end
         feature_branch :feature3, user_id do
           features_enabled << :feature3
         end
-        feature_branch :feature5, user_id do
-          features_enabled << :feature5
+        feature_branch :feature6, user_id do
+          features_enabled << :feature6
         end
-        feature_branch :feature5, 'otheruser@example.com' do
-          features_enabled << :feature5_otheruser
+        feature_branch :feature6, 'otheruser@example.com' do
+          features_enabled << :feature6_otheruser
         end
-        features_enabled.should include(:feature1)
-        features_enabled.should_not include(:feature2)
-        features_enabled.should_not include(:feature3)
-        features_enabled.should include(:feature5)
-        features_enabled.should_not include(:feature5_otheruser)
+        feature_branch :feature6 do
+          features_enabled << :feature6_nouserspecified
+        end
+        feature_branch :feature7, user_id do
+          features_enabled << :feature7
+        end
+        features_enabled.should include(:feature1) #remains like features.yml
+        features_enabled.should_not include(:feature3) #remains like features.yml
+        features_enabled.should include(:feature6) #per user honored as true
+        features_enabled.should_not include(:feature6_otheruser) #per user honored as false
+        features_enabled.should_not include(:feature6_nouserspecified) #per user requires user id or it returns false
+        features_enabled.should_not include(:feature7) #per user honored as false
       end
       it 'update feature branching (disabling some features) after having stored feature configuration per user in a separate process (ensuring persistence)' do
         user_id = 'email1@example.com'
         Process.fork do
           AbstractFeatureBranch.initialize_user_features_storage
-          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
-          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => false, :feature2 => true, :feature3 => false, :feature5 => false)
+          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true, :feature7 => false)
+          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => false, :feature7 => true)
         end
         Process.wait
         features_enabled = []
-        feature_branch :feature1, user_id do
-          features_enabled << :feature1
+        feature_branch :feature6, user_id do
+          features_enabled << :feature6
         end
-        feature_branch :feature2, user_id do
-          features_enabled << :feature2
+        feature_branch :feature7, user_id do
+          features_enabled << :feature7
         end
-        feature_branch :feature3, user_id do
-          features_enabled << :feature3
-        end
-        feature_branch :feature5, user_id do
-          features_enabled << :feature5
-        end
-        features_enabled.should_not include(:feature1)
-        features_enabled.should include(:feature2)
-        features_enabled.should_not include(:feature3)
-        features_enabled.should_not include(:feature5)
+        features_enabled.should_not include(:feature6)
+        features_enabled.should include(:feature7)
       end
 
     end
