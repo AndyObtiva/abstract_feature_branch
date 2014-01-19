@@ -24,6 +24,8 @@ matrix:
       gemfile: ruby187.Gemfile
     - rvm: ree
       gemfile: Gemfile
+    - rvm: ree
+      gemfile: ruby187.Gemfile
     - rvm: jruby-18mode
       gemfile: Gemfile
     - rvm: jruby-18mode
@@ -34,3 +36,5 @@ matrix:
       gemfile: Gemfile
     - rvm: rbx-2.1.1
       gemfile: Gemfile
+    - rvm: rbx-2.1.1
+      gemfile: ruby187.Gemfile
