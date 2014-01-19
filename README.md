@@ -79,6 +79,7 @@ enabled (true) or disabled (false) per environment (e.g. production).
 >       feature1: true
 >       feature2: true
 >       feature3: false
+>       feature4: per_user
 >
 >     development:
 >       <<: *defaults
@@ -122,8 +123,7 @@ Note that <code>feature_enabled?</code> returns false if the feature is disabled
 
 ### Per-User Feature Enablement
 
-It is possible to restrict enablement of features per specific users. This works in concert with having a feature enabled
-in features.yml (or one of the overrides like features.local.yml or environment variable overrides)
+It is possible to restrict enablement of features per specific users by setting a feature value to <code>per_user</code>.
 
 1. Use <code>toggle_features_for_user</code> in Ruby code to enable features per user ID (e.g. email address or database ID). This loads Redis client gem into memory and stores per-user feature configuration in Redis.
 In the example below, current_user is a method that provides the current signed in user (e.g. using Rails [Devise] (https://github.com/plataformatec/devise) library).
@@ -154,6 +154,13 @@ Examples:
 >     else
 >       # THIS ONE WILL NOT EXECUTE
 >     end
+
+Note:
+
+If a feature is enabled as <code>true</code> or disabled as <code>false</code> in features.yml (or one of the overrides
+like features.local.yml or environment variable overrides), then it overrides toggled per-user restrictions, becoming
+enabled or disabled globally.
+
 
 Recommendations
 ---------------
