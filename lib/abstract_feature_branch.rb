@@ -150,7 +150,13 @@ module AbstractFeatureBranch
     end
 
     def booleanize_values(hash)
-      Hash[hash.map {|k, v| [k, v.to_s.downcase == 'true']}]
+      hash_values = hash.map do |k, v|
+        normalized_value = v.to_s.downcase
+        boolean_value = normalized_value == 'true'
+        new_value = normalized_value == 'per_user' ? 'per_user' : boolean_value
+        [k, new_value]
+      end
+      Hash[hash_values]
     end
 
     def downcase_keys(hash)
