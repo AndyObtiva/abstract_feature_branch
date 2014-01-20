@@ -453,6 +453,7 @@ Contributors
 ---------------------------------------
 * [Christian Nennemann](https://github.com/XORwell)
 * [Ben Downey](https://github.com/bnd5k)
+* [Mark Moschel](https://github.com/mmosche2)
 
 Copyright
 ---------------------------------------
