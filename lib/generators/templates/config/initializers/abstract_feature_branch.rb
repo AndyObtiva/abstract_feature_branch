@@ -1,6 +1,8 @@
 require 'redis'
 
-# Storage for user features, customizable over here (right now, only a Redis client is supported)
+# Storage for user features, customizable over here. Right now, only a Redis client is supported.
+# The following example line works with Heroku Redis To Go while still operating on local Redis for local development
+# AbstractFeatureBranch.user_features_storage = Redis.new(:url => ENV['REDISTOGO_URL'])
 AbstractFeatureBranch.user_features_storage = Redis.new
 
 # Application root where config/features.yml or config/features/ is found

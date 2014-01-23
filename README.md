@@ -41,7 +41,7 @@ Setup
    - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.1.1'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
-4. (Optional and rarely needed) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application or troubleshooting a specific Rails environment feature configuration)
+4. (Optional) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis for per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
 
 ### Ruby Application General Use
 
@@ -55,6 +55,7 @@ Setup
 8. (Optional) Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
 9. (Optional) Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. (Optional) Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
+11. (Optional) Add code <code>AbstractFeatureBranch.user_features_storage = Redis.new(options)</code> to configure Redis for per-user feature enablement
 
 Instructions
 ------------
@@ -308,7 +309,9 @@ Here is the content of the generated initializer (<code>config/initializers/abst
 
 >     require 'redis'
 >
->     # Storage for user features, customizable over here (right now, only a Redis client is supported)
+>     # Storage for user features, customizable over here. Right now, only a Redis client is supported.
+>     # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
+>     # AbstractFeatureBranch.user_features_storage = Redis.new(:url => ENV['REDISTOGO_URL'])
 >     AbstractFeatureBranch.user_features_storage = Redis.new
 >
 >     # Application root where config/features.yml or config/features/ is found
@@ -331,6 +334,8 @@ Here is the content of the generated initializer (<code>config/initializers/abst
 >
 >     # Pre-load application features to improve performance of first web-page hit
 >     AbstractFeatureBranch.load_application_features unless Rails.env.development?
+
+TODO Document in Heroku (:url => ENV['REDISTOGO_URL'])
 
 Rake Task
 ---------
