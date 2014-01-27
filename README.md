@@ -4,6 +4,12 @@ Abstract Feature Branch
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
 
+**As Featured In**
+
+[![Factor 75](https://dzd6ppgm28vds.cloudfront.net/assets/logo-b190de0b423855600e216d490fc160ad.png)](https://www.factor75.com)..[![Character Business Card](https://characterbusinesscard.s3.amazonaws.com/assets/Character-Business-Card-Logo-Desktop-44eb97b18b0a100488ba9c322343b91a.png)](https://www.characterbusinesscard.com)..[![Early Shares](http://early-shares-assets-production.s3.amazonaws.com/assets/logo2x-67fadfc8bb942ba92cca60c464010f1f.png)](https://www.earlyshares.com)
+
+
+
 abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
 http://paulhammant.com/blog/branch_by_abstraction.html
 
