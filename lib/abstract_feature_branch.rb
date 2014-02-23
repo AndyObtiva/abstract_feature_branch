@@ -36,24 +36,14 @@ module AbstractFeatureBranch
     end
     def load_local_features
       @local_features = {}
-      Dir.glob(File.join(application_root, 'config', 'features', '**', '*.local.yml')).each do |feature_configuration_file|
-        @local_features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
-      end
-      main_local_features_file = File.join(application_root, 'config', 'features.local.yml')
-      @local_features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(main_local_features_file))) if File.exists?(main_local_features_file)
-      @local_features
+      load_specific_features(@local_features, '.local.yml')
     end
     def features
       @features ||= load_features
     end
     def load_features
       @features = {}
-      Dir.glob(File.join(application_root, 'config', 'features', '**', '*.yml')).each do |feature_configuration_file|
-        @features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
-      end
-      main_features_file = File.join(application_root, 'config', 'features.yml')
-      @features.deep_merge!(downcase_feature_hash_keys(YAML.load_file(main_features_file))) if File.exists?(main_features_file)
-      @features
+      load_specific_features(@features, '.yml')
     end
     # performance optimization via caching of feature values resolved through environment variable overrides and local features
     def environment_features(environment)
@@ -98,6 +88,15 @@ module AbstractFeatureBranch
     end
 
     private
+
+    def load_specific_features(features_hash, extension)
+      Dir.glob(File.join(application_root, 'config', 'features', '**', "*#{extension}")).each do |feature_configuration_file|
+        features_hash.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
+      end
+      main_local_features_file = File.join(application_root, 'config', "features#{extension}")
+      features_hash.deep_merge!(downcase_feature_hash_keys(YAML.load_file(main_local_features_file))) if File.exists?(main_local_features_file)
+      features_hash
+    end
 
     def featureize_keys(hash)
       Hash[hash.map {|k, v| [k.sub(ENV_FEATURE_PREFIX, ''), v]}]
