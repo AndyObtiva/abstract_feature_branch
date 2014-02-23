@@ -3,6 +3,7 @@ Abstract Feature Branch
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
+[![Code Climate](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch.png)](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch)
 
 **As Featured In**
 
@@ -43,15 +44,15 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '1.1.1'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.1.1'</pre>
+   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '1.2.1'</pre>
+   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.2.1'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. (Optional) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis for per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.1.1</pre>
+1. <pre>gem install abstract_feature_branch -v 1.2.1</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
