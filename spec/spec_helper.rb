@@ -12,8 +12,10 @@ if RUBY_VERSION >= '1.9'
   begin
     require 'coveralls'
     Coveralls.wear!
+    require "codeclimate-test-reporter"
+    CodeClimate::TestReporter.start
   rescue LoadError, StandardError
-    #no op to support Ruby 1.8.7, ree and Rubinius which do not support Coveralls
+    #no op to support Ruby 1.8.7, ree, jruby-18mode, and Rubinius
   end
 end
 require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')
