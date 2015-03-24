@@ -7,7 +7,7 @@ Abstract Feature Branch
 
 **As Featured In**
 
-[![Early Shares](https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/8e33c25d2dbed84827b979798ce4c3ddd6ef80b2/img/EarlyShares-Logo.svg)](https://www.earlyshares.com)..[![Factor 75](https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/8e33c25d2dbed84827b979798ce4c3ddd6ef80b2/img/Factor75-Logo.svg)](https://www.factor75.com)..[![Big Astronaut](https://raw.githubusercontent.com/AndyObtiva/abstract_feature_branch/master/img/BigAstronaut-Logo.png)](https://www.bigastronaut.com)
+[![Early Shares](https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/f1f60509874daf8c9844eeb3fb49e7a42f3bfb69/img/EarlyShares-Logo.svg)](https://www.earlyshares.com)..[![Factor 75](https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/f1f60509874daf8c9844eeb3fb49e7a42f3bfb69/img/Factor75-Logo.svg)](https://www.factor75.com)..[![Big Astronaut](https://raw.githubusercontent.com/AndyObtiva/abstract_feature_branch/master/img/BigAstronaut-Logo.png)](https://www.bigastronaut.com)
 
 abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
 http://paulhammant.com/blog/branch_by_abstraction.html
