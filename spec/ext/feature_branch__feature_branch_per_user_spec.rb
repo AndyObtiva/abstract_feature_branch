@@ -37,7 +37,7 @@ describe 'feature_branch object extensions' do
           AbstractFeatureBranch.initialize_user_features_storage
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
         RUBY_CODE
-        system "$(which ruby || which jruby) -e \"#{ruby_code}\""
+        system "ruby -e \"#{ruby_code}\""
         features_enabled = []
         feature_branch :feature1, user_id do
           features_enabled << :feature1
@@ -74,7 +74,7 @@ describe 'feature_branch object extensions' do
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => true, :feature7 => false)
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => false, :feature7 => true)
         RUBY_CODE
-        system "$(which ruby || which jruby) -e \"#{ruby_code}\""
+        system "ruby -e \"#{ruby_code}\""
         features_enabled = []
         feature_branch :feature6, user_id do
           features_enabled << :feature6
