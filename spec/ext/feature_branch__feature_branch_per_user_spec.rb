@@ -30,11 +30,14 @@ describe 'feature_branch object extensions' do
     context 'per user' do
       it 'feature branches correctly after storing feature configuration per user in a separate process (ensuring persistence)' do
         user_id = 'email1@example.com'
-        Process.fork do
+        ruby_code = <<-RUBY_CODE
+          $:.unshift('.')
+          require 'redis'
+          require 'lib/abstract_feature_branch'
           AbstractFeatureBranch.initialize_user_features_storage
-          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
-        end
-        Process.wait
+          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
+        RUBY_CODE
+        system "$(which ruby || which jruby) -e \"#{ruby_code}\""
         features_enabled = []
         feature_branch :feature1, user_id do
           features_enabled << :feature1
@@ -63,12 +66,15 @@ describe 'feature_branch object extensions' do
       end
       it 'update feature branching (disabling some features) after having stored feature configuration per user in a separate process (ensuring persistence)' do
         user_id = 'email1@example.com'
-        Process.fork do
+        ruby_code = <<-RUBY_CODE
+          $:.unshift('.')
+          require 'redis'
+          require 'lib/abstract_feature_branch'
           AbstractFeatureBranch.initialize_user_features_storage
-          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true, :feature7 => false)
-          AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => false, :feature7 => true)
-        end
-        Process.wait
+          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => true, :feature7 => false)
+          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => false, :feature7 => true)
+        RUBY_CODE
+        system "$(which ruby || which jruby) -e \"#{ruby_code}\""
         features_enabled = []
         feature_branch :feature6, user_id do
           features_enabled << :feature6
