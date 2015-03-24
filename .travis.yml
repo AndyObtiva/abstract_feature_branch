@@ -1,6 +1,9 @@
 language: ruby
 services:
   - redis-server
+addons:
+  code_climate:
+    repo_token: adf08323...
 rvm:
   - 2.2.1
   - 2.1.5
