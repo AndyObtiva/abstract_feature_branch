@@ -32,7 +32,7 @@ context-specific feature files if needed.
 
 Requirements
 ------------
-- Ruby ~> 2.0.0, ~> 1.9 or ~> 1.8.7
+- Ruby >= 1.8.7 ([click for a list of tested Ruby versions](https://travis-ci.org/AndyObtiva/abstract_feature_branch))
 - (Optional) Rails ~> 4.0.0, ~> 3.0 or ~> 2.0
 - (Optional) Redis server
 
