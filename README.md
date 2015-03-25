@@ -7,7 +7,7 @@ Abstract Feature Branch
 
 **As Featured In**
 
-[<img src="https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/68b9ed706d92dcbb635da47a6c94e5e521478936/img/EarlyShares-Logo.svg" style="height: 57px;" height="57">](https://www.earlyshares.com)..[<img src="https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/68b9ed706d92dcbb635da47a6c94e5e521478936/img/Factor75-Logo.svg" style="height: 57px;" height="57">](https://www.factor75.com)..[![Big Astronaut](https://raw.githubusercontent.com/AndyObtiva/abstract_feature_branch/master/img/BigAstronaut-Logo.png)](https://www.bigastronaut.com)
+[<img src="https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/68b9ed706d92dcbb635da47a6c94e5e521478936/img/EarlyShares-Logo.svg" style="height: 57px;" height="57">](https://www.earlyshares.com)<span>&nbsp;&nbsp;&nbsp;&nbsp;</span>[<img src="https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/68b9ed706d92dcbb635da47a6c94e5e521478936/img/Factor75-Logo.svg" style="height: 57px;" height="57">](https://www.factor75.com)<span>&nbsp;&nbsp;&nbsp;&nbsp;</span>[![Big Astronaut](https://raw.githubusercontent.com/AndyObtiva/abstract_feature_branch/master/img/BigAstronaut-Logo.png)](https://www.bigastronaut.com)
 
 abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
 http://paulhammant.com/blog/branch_by_abstraction.html
