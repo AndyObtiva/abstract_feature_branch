@@ -3,7 +3,7 @@ services:
   - redis-server
 addons:
   code_climate:
-    repo_token: adf08323...
+    repo_token: 535ff40cf55554362b2f48b85e913a7362f0cf3e51638455dab456006258c5a0
 rvm:
   - 2.2.1
   - 2.1.5

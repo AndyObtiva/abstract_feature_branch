@@ -1,4 +1,5 @@
 ENV['APP_ENV'] = 'test'
+ENV['CODECLIMATE_REPO_TOKEN'] = '535ff40cf55554362b2f48b85e913a7362f0cf3e51638455dab456006258c5a0'
 require 'rubygems'
 require 'bundler'
 begin
