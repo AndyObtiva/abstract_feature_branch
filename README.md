@@ -456,7 +456,7 @@ Contributing to abstract_feature_branch
 
 Committers
 ---------------------------------------
-[Annas "Andy" Maleh (Author)](https://github.com/AndyObtiva)
+* [Andy Maleh (Author)](https://github.com/AndyObtiva)
 
 Contributors
 ---------------------------------------
@@ -465,5 +465,5 @@ Contributors
 Copyright
 ---------------------------------------
 
-Copyright (c) 2013 Annas "Andy" Maleh. See LICENSE.txt for
+Copyright (c) 2013-2018 Andy Maleh. See LICENSE.txt for
 further details.
