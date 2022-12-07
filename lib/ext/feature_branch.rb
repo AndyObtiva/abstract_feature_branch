@@ -12,7 +12,7 @@ class Object
 
     value = AbstractFeatureBranch.application_features[normalized_feature_name]
     if value == 'per_user'
-      value = AbstractFeatureBranch.user_features_storage.sismember("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}", user_id)
+      value = !user_id.nil? && AbstractFeatureBranch.user_features_storage.sismember("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}", user_id)
     end
     value
   end

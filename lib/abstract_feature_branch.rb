@@ -11,6 +11,7 @@ rescue Bundler::BundlerError => e
 end
 require 'logger' unless defined?(Rails) && Rails.logger
 require 'deep_merge' unless {}.respond_to?(:deep_merge!)
+require 'forwardable'
 
 require File.join(File.dirname(__FILE__), 'abstract_feature_branch', 'configuration')
 

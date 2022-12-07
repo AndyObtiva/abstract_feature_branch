@@ -1,19 +1,13 @@
-Abstract Feature Branch
-=======================
+# Abstract Feature Branch 1.3.0
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
 [![Code Climate](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch.png)](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch)
 
-**As Featured In**
-
-[<img src="https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/68b9ed706d92dcbb635da47a6c94e5e521478936/img/EarlyShares-Logo.svg" style="height: 57px;" height="57">](https://www.earlyshares.com)<span>&nbsp;&nbsp;&nbsp;&nbsp;</span>[<img src="https://cdn.rawgit.com/AndyObtiva/abstract_feature_branch/68b9ed706d92dcbb635da47a6c94e5e521478936/img/Factor75-Logo.svg" style="height: 57px;" height="57">](https://www.factor75.com)<span>&nbsp;&nbsp;&nbsp;&nbsp;</span>[![Big Astronaut](https://raw.githubusercontent.com/AndyObtiva/abstract_feature_branch/master/img/BigAstronaut-Logo.png)](https://www.bigastronaut.com)
-
 abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
 http://paulhammant.com/blog/branch_by_abstraction.html
 
-It is a productivity and fault tolerance enhancing team practice that has been utilized by professional software development
-teams at large corporations, such as [Sears](http://www.sears.com) and [Groupon](http://www.groupon.com).
+It is a productivity and fault tolerance enhancing team practice.
 
 It provides the ability to wrap blocks of code with an abstract feature branch name, and then
 specify in a configuration file which features to be switched on or off.
@@ -32,9 +26,10 @@ context-specific feature files if needed.
 
 Requirements
 ------------
-- Ruby >= 1.8.7 ([click for a list of tested Ruby versions](https://travis-ci.org/AndyObtiva/abstract_feature_branch))
-- (Optional) Rails ~> 4.0.0, ~> 3.0 or ~> 2.0
-- (Optional) Redis server
+- Ruby (between `~> 3.1` and `~> 1.8.7`) ([click for a list of tested Ruby versions](https://travis-ci.org/AndyObtiva/abstract_feature_branch))
+- [Optional] Rails (between `~> 7.0` and `~> 2.0`)
+- [Optional] Redis Server (between `~> 7.0` and `~> 2.0`)
+- [Optional] Redis client gem (between `~> 5.0` and `~> 3.0`)
 
 Setup
 -----
@@ -42,25 +37,27 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - Rails (~> 4.0.0 or ~> 3.0): Add the following to Gemfile <pre>gem 'abstract_feature_branch', '1.2.2'</pre>
-   - Rails (~> 2.0): Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.2.2'</pre>
+   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.3.0'</pre>
+   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.3.0'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
-3. (Optional) Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
-4. (Optional) Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis for per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
+3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
+4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis for per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
+5. [Optional] Redis Server (between `~> 7.0` and `~> 3.0`): Install view [Homebrew](https://brew.sh/) with `brew install redis`
+6. [Optional] `redis` client gem (between `~> 5.0` and `~> 3.0`): Add the following to Gemfile <pre>gem 'redis', '~> 5.0.5'</pre>
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.2.2</pre>
+1. <pre>gem install abstract_feature_branch -v 1.3.0</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
-4. (Optional) Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
-5. (Optional) Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under [**instructions**](#instructions))
-6. (Optional) Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> to configure the location of feature files (it defaults to <code>'.'</code>)
-7. (Optional) Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set <code>ENV['APP_ENV']</code> before the <code>require</code> statement or an an external environment variable.
-8. (Optional) Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
-9. (Optional) Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
-10. (Optional) Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
-11. (Optional) Add code <code>AbstractFeatureBranch.user_features_storage = Redis.new(options)</code> to configure Redis for per-user feature enablement
+4. [Optional] Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
+5. [Optional] Create <code>config/features/[context_path].yml</code> under <code>AbstractFeatureBranch.application_root</code> (more details under [**instructions**](#instructions))
+6. [Optional] Add code <code>AbstractFeatureBranch.application_root = "[your_application_path]"</code> to configure the location of feature files (it defaults to <code>'.'</code>)
+7. [Optional] Add code <code>AbstractFeatureBranch.application_environment = "[your_application_environment]"</code> (it defaults to <code>'development'</code>). Alternatively, you can set <code>ENV['APP_ENV']</code> before the <code>require</code> statement or an an external environment variable.
+8. [Optional] Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
+9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
+10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
+11. [Optional] Add code <code>AbstractFeatureBranch.user_features_storage = Redis.new(options)</code> to configure Redis for per-user feature enablement
 
 Instructions
 ------------
@@ -310,10 +307,8 @@ the former if overlap in features occurs:
 Rails Initializer
 -----------------
 
-Here is the content of the generated initializer (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize via [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection):
+Here is the content of the generated initializer [with `redis` client gem added] (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize via [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection):
 
->     require 'redis'
->
 >     # Storage for user features, customizable over here. Right now, only a Redis client is supported.
 >     # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
 >     # AbstractFeatureBranch.user_features_storage = Redis.new(:url => ENV['REDISTOGO_URL'])
@@ -437,9 +432,9 @@ task changes.
 Feature Branches vs Branch by Abstraction
 -----------------------------------------
 
-Although feature branches and branching by abstraction are similar, there are different situations that recommend each approach.  
+Although feature branches and branching by abstraction are similar, there are different situations that recommend each approach.
 
-Feature branching leverages your version control software (VCS) to create a branch that is independent of your main branch.  Once you write your feature, you integrate it with the rest of your code base. Feature branching is ideal for developing features that can be completed within the one or two iterations.  But it can become cumbersome with larger features due to the fact your code is isolated and quickly falls out of sync with your main branch.  You will have to regularly rebase with your main branch or devote substantial time to resolving merge conflicts.   
+Feature branching leverages your version control software (VCS) to create a branch that is independent of your main branch.  Once you write your feature, you integrate it with the rest of your code base. Feature branching is ideal for developing features that can be completed within the one or two iterations.  But it can become cumbersome with larger features due to the fact your code is isolated and quickly falls out of sync with your main branch.  You will have to regularly rebase with your main branch or devote substantial time to resolving merge conflicts.
 
 Branching by abstraction, on the other hand, is ideal for substantial features, i.e. ones which take many iterations to complete.  This approach to branching takes place outside of your VCS.  Instead, you build your feature, but wrap the code inside configurable flags.  These configuration flags will allow for different behavior, depending on the runtime environment.  For example, a feature would be set to "on" when your app runs in development mode, but "off" when running in "production" mode.  This approach avoids the pain of constantly rebasing or resolving a myriad of merge conflict when you do attempt to integrate your feature into the larger app.
 

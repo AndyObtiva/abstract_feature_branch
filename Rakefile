@@ -55,6 +55,13 @@ Jeweler::RubygemsDotOrgTasks.new
 
 require 'rspec/core/rake_task'
 
+# Note: adding last_comment to Rake.application for backwards compatibility reasons,
+# needed by rspec due to using a newer version of rake in the newer Ruby
+Rake.application.instance_eval do
+  def last_comment
+  end
+end
+
 RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec

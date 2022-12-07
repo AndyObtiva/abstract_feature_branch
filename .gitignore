@@ -18,3 +18,5 @@ pickle-email-*.html
 pkg
 *Gemfile.lock
 .DS_Store
+.gladiator
+.gladiator-scratchpad
