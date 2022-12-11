@@ -48,8 +48,11 @@ module AbstractFeatureBranch
       @user_features_storage = user_features_storage
     end
     def initialize_user_features_storage
-      require 'redis'
       self.user_features_storage = Redis.new
+    rescue => e
+      logger.debug "Redis is not enabled!"
+      logger.debug e.full_message
+      nil
     end
   end
 end

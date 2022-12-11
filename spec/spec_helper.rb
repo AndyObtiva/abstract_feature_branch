@@ -19,6 +19,9 @@ if RUBY_VERSION >= '1.9'
     #no op to support Ruby 1.8.7, ree, jruby-18mode, and Rubinius
   end
 end
+require 'puts_debuggerer'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')
+require 'redis'
+AbstractFeatureBranch.user_features_storage = Redis.new
 AbstractFeatureBranch.logger.level = Logger::WARN
 AbstractFeatureBranch.load_application_features

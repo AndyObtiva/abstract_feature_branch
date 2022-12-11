@@ -13,4 +13,5 @@ group :test do
   gem 'coveralls', '0.7.0', :require => false
   gem 'codeclimate-test-reporter', '0.4.7', :require => false
   gem 'redis', '~> 5.0.5', :require => false
+  gem 'puts_debuggerer', '~> 0.13.5'
 end

@@ -15,6 +15,9 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.application_root = @app_root_backup
     AbstractFeatureBranch.application_environment = @app_env_backup
     AbstractFeatureBranch.unload_application_features
+    AbstractFeatureBranch.user_features_storage.keys.each do |key|
+      AbstractFeatureBranch.user_features_storage.del(key)
+    end
   end
   describe '#feature_branch' do
     context 'class level behavior (case-insensitive string or symbol feature names)' do
@@ -48,6 +51,26 @@ describe 'feature_branch object extensions' do
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'
       ENV['abstract_feature_branch_feature3'] = 'true'
+      AbstractFeatureBranch.load_application_features
+      features_enabled = []
+      feature_branch :feature1 do
+        features_enabled << :feature1
+      end
+      feature_branch :feature2 do
+        features_enabled << :feature2
+      end
+      feature_branch :feature3 do
+        features_enabled << :feature3
+      end
+      features_enabled.should_not include(:feature1)
+      features_enabled.should_not include(:feature2)
+      features_enabled.should include(:feature3)
+    end
+    it 'allows redis variables (case-insensitive booleans) to override configuration file' do
+      AbstractFeatureBranch.unload_application_features
+      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'FEATURE1', 'FALSE')
+      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'Feature2', 'False')
+      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'feature3', 'true')
       AbstractFeatureBranch.load_application_features
       features_enabled = []
       feature_branch :feature1 do

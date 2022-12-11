@@ -310,9 +310,10 @@ Rails Initializer
 Here is the content of the generated initializer [with `redis` client gem added] (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize via [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection):
 
 >     # Storage for user features, customizable over here. Right now, only a Redis client is supported.
+>     # AbstractFeatureBranch.user_features_storage = Redis.new
+>
 >     # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
 >     # AbstractFeatureBranch.user_features_storage = Redis.new(:url => ENV['REDISTOGO_URL'])
->     AbstractFeatureBranch.user_features_storage = Redis.new
 >
 >     # Application root where config/features.yml or config/features/ is found
 >     AbstractFeatureBranch.application_root = Rails.root

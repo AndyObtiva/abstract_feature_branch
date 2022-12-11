@@ -15,6 +15,9 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.application_root = @app_root_backup
     AbstractFeatureBranch.application_environment = @app_env_backup
     AbstractFeatureBranch.unload_application_features
+    AbstractFeatureBranch.user_features_storage.keys.each do |key|
+      AbstractFeatureBranch.user_features_storage.del(key)
+    end
   end
   describe '#feature_enabled?' do
     it 'determines whether a feature is enabled or not in features configuration (case-insensitive string or symbol feature names)' do
@@ -29,6 +32,17 @@ describe 'feature_branch object extensions' do
       ENV['ABSTRACT_FEATURE_BRANCH_FEATURE1'] = 'FALSE'
       ENV['Abstract_Feature_Branch_Feature2'] = 'False'
       ENV['abstract_feature_branch_feature3'] = 'true'
+      AbstractFeatureBranch.load_application_features
+      feature_enabled?(:feature1).should == false
+      feature_enabled?(:feature2).should == false
+      feature_enabled?(:feature3).should == true
+      feature_enabled?(:feature4a).should == true #not overridden
+    end
+    it 'allows redis variables (case-insensitive booleans) to override configuration file' do
+      AbstractFeatureBranch.unload_application_features
+      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'FEATURE1', 'FALSE')
+      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'Feature2', 'False')
+      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'feature3', 'true')
       AbstractFeatureBranch.load_application_features
       feature_enabled?(:feature1).should == false
       feature_enabled?(:feature2).should == false

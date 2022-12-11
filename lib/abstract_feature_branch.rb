@@ -17,6 +17,7 @@ require File.join(File.dirname(__FILE__), 'abstract_feature_branch', 'configurat
 
 module AbstractFeatureBranch
   ENV_FEATURE_PREFIX = "abstract_feature_branch_"
+  REDIS_HKEY = "abstract_feature_branch"
 
   class << self
     extend Forwardable
@@ -26,12 +27,26 @@ module AbstractFeatureBranch
       @configuration ||= Configuration.new
     end
 
+    def redis_overrides
+      @redis_overrides ||= load_redis_overrides
+    end
+    def load_redis_overrides
+      return {} if user_features_storage.nil?
+      
+      redis_feature_hash = get_storage_features.inject({}) do |output, feature|
+        output.merge(feature => get_storage_feature(feature))
+      end
+      
+      @redis_overrides = downcase_keys(redis_feature_hash)
+    end
+
     def environment_variable_overrides
       @environment_variable_overrides ||= load_environment_variable_overrides
     end
     def load_environment_variable_overrides
-      @environment_variable_overrides = featureize_keys(select_feature_keys(booleanize_values(downcase_keys(ENV))))
+      @environment_variable_overrides = featureize_keys(downcase_keys(booleanize_values(select_feature_keys(ENV))))
     end
+    
     def local_features
       @local_features ||= load_local_features
     end
@@ -39,6 +54,7 @@ module AbstractFeatureBranch
       @local_features = {}
       load_specific_features(@local_features, '.local.yml')
     end
+    
     def features
       @features ||= load_features
     end
@@ -46,6 +62,7 @@ module AbstractFeatureBranch
       @features = {}
       load_specific_features(@features, '.yml')
     end
+    
     # performance optimization via caching of feature values resolved through environment variable overrides and local features
     def environment_features(environment)
       @environment_features ||= {}
@@ -55,19 +72,24 @@ module AbstractFeatureBranch
       @environment_features ||= {}
       features[environment] ||= {}
       local_features[environment] ||= {}
-      @environment_features[environment] = features[environment].merge(local_features[environment]).merge(environment_variable_overrides)
+      @environment_features[environment] = features[environment].
+        merge(local_features[environment]).
+        merge(environment_variable_overrides).
+        merge(redis_overrides)
     end
     def application_features
       unload_application_features unless cacheable?
       environment_features(application_environment)
     end
     def load_application_features
+      AbstractFeatureBranch.load_redis_overrides
       AbstractFeatureBranch.load_environment_variable_overrides
       AbstractFeatureBranch.load_features
       AbstractFeatureBranch.load_local_features
       AbstractFeatureBranch.load_environment_features(application_environment)
     end
     def unload_application_features
+      @redis_overrides = nil
       @environment_variable_overrides = nil
       @features = nil
       @local_features = nil
@@ -78,6 +100,38 @@ module AbstractFeatureBranch
       value = (application_environment != 'development') if value.nil?
       value
     end
+    
+    # Sets feature value (true or false) in storage (e.g. Redis client)
+    def set_storage_feature(feature, value)
+      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
+      feature = feature.to_s
+      value = 'true' if value == true
+      value = 'false' if value.nil? || value == false
+      user_features_storage.hset(REDIS_HKEY, feature, value)
+    end
+    
+    # Gets feature value (true or false) from storage (e.g. Redis client)
+    def get_storage_feature(feature)
+      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
+      feature = feature.to_s
+      value = user_features_storage.hget(REDIS_HKEY, feature)
+      value.to_s.downcase == 'true'
+    end
+    
+    # Gets features array (all features) from storage (e.g. Redis client)
+    def get_storage_features
+      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
+      user_features_storage.hkeys(REDIS_HKEY)
+    end
+    
+    # Gets features array (all features) from storage (e.g. Redis client)
+    def clear_storage_features
+      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
+      user_features_storage.hkeys(REDIS_HKEY).each do |feature|
+        user_features_storage.hdel(REDIS_HKEY, feature)
+      end
+    end
+    
     def toggle_features_for_user(user_id, features)
       features.each do |name, value|
         if value
@@ -104,7 +158,7 @@ module AbstractFeatureBranch
     end
 
     def select_feature_keys(hash)
-      hash.reject {|k, v| !k.start_with?(ENV_FEATURE_PREFIX)} # using reject for Ruby 1.8 compatibility as select returns an array in it
+      hash.reject {|k, v| !k.downcase.start_with?(ENV_FEATURE_PREFIX)} # using reject for Ruby 1.8 compatibility as select returns an array in it
     end
 
     def booleanize_values(hash)

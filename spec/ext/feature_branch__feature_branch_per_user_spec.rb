@@ -25,6 +25,9 @@ describe 'feature_branch object extensions' do
     rescue => e
     #noop
     end
+    AbstractFeatureBranch.user_features_storage.keys.each do |key|
+      AbstractFeatureBranch.user_features_storage.del(key)
+    end
   end
   describe '#feature_branch' do
     context 'per user' do
