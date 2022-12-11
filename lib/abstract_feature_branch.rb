@@ -31,10 +31,10 @@ module AbstractFeatureBranch
       @redis_overrides ||= load_redis_overrides
     end
     def load_redis_overrides
-      return {} if user_features_storage.nil?
+      return {} if feature_store.nil?
       
-      redis_feature_hash = get_storage_features.inject({}) do |output, feature|
-        output.merge(feature => get_storage_feature(feature))
+      redis_feature_hash = get_store_features.inject({}) do |output, feature|
+        output.merge(feature => get_store_feature(feature))
       end
       
       @redis_overrides = downcase_keys(redis_feature_hash)
@@ -102,42 +102,49 @@ module AbstractFeatureBranch
     end
     
     # Sets feature value (true or false) in storage (e.g. Redis client)
-    def set_storage_feature(feature, value)
-      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
+    def set_store_feature(feature, value)
+      raise 'Feature storage (e.g. Redis) is not setup!' if feature_store.nil?
       feature = feature.to_s
       value = 'true' if value == true
       value = 'false' if value.nil? || value == false
-      user_features_storage.hset(REDIS_HKEY, feature, value)
+      feature_store.hset(REDIS_HKEY, feature, value)
     end
     
     # Gets feature value (true or false) from storage (e.g. Redis client)
-    def get_storage_feature(feature)
-      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
+    def get_store_feature(feature)
+      raise 'Feature storage (e.g. Redis) is not setup!' if feature_store.nil?
       feature = feature.to_s
-      value = user_features_storage.hget(REDIS_HKEY, feature)
+      value = feature_store.hget(REDIS_HKEY, feature)
       value.to_s.downcase == 'true'
     end
     
-    # Gets features array (all features) from storage (e.g. Redis client)
-    def get_storage_features
-      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
-      user_features_storage.hkeys(REDIS_HKEY)
+    # Gets feature value (true or false) from storage (e.g. Redis client)
+    def delete_store_feature(feature)
+      raise 'Feature storage (e.g. Redis) is not setup!' if feature_store.nil?
+      feature = feature.to_s
+      feature_store.hdel(REDIS_HKEY, feature)
     end
     
     # Gets features array (all features) from storage (e.g. Redis client)
-    def clear_storage_features
-      raise 'Feature storage (e.g. Redis) is not setup!' if user_features_storage.nil?
-      user_features_storage.hkeys(REDIS_HKEY).each do |feature|
-        user_features_storage.hdel(REDIS_HKEY, feature)
+    def get_store_features
+      raise 'Feature storage (e.g. Redis) is not setup!' if feature_store.nil?
+      feature_store.hkeys(REDIS_HKEY)
+    end
+    
+    # Gets features array (all features) from storage (e.g. Redis client)
+    def clear_store_features
+      raise 'Feature storage (e.g. Redis) is not setup!' if feature_store.nil?
+      feature_store.hkeys(REDIS_HKEY).each do |feature|
+        feature_store.hdel(REDIS_HKEY, feature)
       end
     end
     
     def toggle_features_for_user(user_id, features)
       features.each do |name, value|
         if value
-          user_features_storage.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
+          feature_store.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
         else
-          user_features_storage.srem("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
+          feature_store.srem("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
         end
       end
     end

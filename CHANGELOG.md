@@ -3,9 +3,9 @@
 ## 1.3.0
 
 - Officially support newer `redis` client gem version 5
-- Support `redis` (general-user) overrides (similar to environment variable overrides)
-- Remove `redis` gem from required dependencies
-- Make Redis optional in generated Rails initializer
+- Support (general-user) Redis Overrides (similar to Environment Variable Overrides)
+- Remove `redis` gem from required dependencies to allow using `abstract_feature_branch` without Redis
+- Make configuration of Redis optional in generated Rails initializer
 - Provide alias of `AbstractFeatureBranch::Configuration#feature_store` to `AbstractFeatureBranch::Configuration#user_features_storage` (plus corresponding aliases `feature_store=` and `initialize_feature_store`)
 - Document support for Rails 7 and Redis Server 7
 - Add gem post install instructions, including how to run the Rails generators and install/use Redis

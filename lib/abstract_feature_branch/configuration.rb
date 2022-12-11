@@ -55,8 +55,8 @@ module AbstractFeatureBranch
     def initialize_feature_store
       self.feature_store = Redis.new
     rescue => e
-      logger.debug "Redis is not enabled!"
-      logger.debug e.full_message
+      logger.debug { "Redis is not enabled!" }
+      logger.debug { e.full_message }
       nil
     end
     alias initialize_user_features_storage initialize_feature_store

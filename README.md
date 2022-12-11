@@ -26,7 +26,7 @@ context-specific feature files if needed.
 
 Requirements
 ------------
-- Ruby (between `~> 3.1` and `~> 1.8.7`) ([click for a list of tested Ruby versions](https://travis-ci.org/AndyObtiva/abstract_feature_branch))
+- Ruby (between `~> 3.1.0` and `~> 1.8.7`) ([click for a list of tested Ruby versions](https://travis-ci.org/AndyObtiva/abstract_feature_branch))
 - [Optional] Rails (between `~> 7.0` and `~> 2.0`)
 - [Optional] Redis Server (between `~> 7.0` and `~> 2.0`)
 - [Optional] Redis client gem (between `~> 5.0` and `~> 3.0`)
@@ -43,7 +43,7 @@ Setup
 3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis for per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
 5. [Optional] Redis Server (between `~> 7.0` and `~> 3.0`): Install view [Homebrew](https://brew.sh/) with `brew install redis`
-6. [Optional] `redis` client gem (between `~> 5.0` and `~> 3.0`): Add the following to Gemfile <pre>gem 'redis', '~> 5.0.5'</pre>
+6. [Optional] `redis` client gem (between `~> 5.0` and `~> 3.0`): Add the following to Gemfile above `abstract_feature_branch` <pre>gem 'redis', '~> 5.0.5'</pre>
 
 ### Ruby Application General Use
 
@@ -57,7 +57,7 @@ Setup
 8. [Optional] Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
 9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
-11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for per-user feature enablement
+11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides or per-user feature enablement
 
 Instructions
 ------------
@@ -259,6 +259,45 @@ The benefits can be achieved more easily via <code>config/features.local.yml</co
 However, environment variable overrides are implemented to support overriding feature configuration for a Heroku deployed
 application more easily.
 
+Redis Overrides
+---------------
+
+Prerequisites: Redis server and client (`redis` gem) and optional Redis configuration of `AbstractFeatureBranch.feature_store` in `config/initializers/abstract_feature_branch.rb`
+
+To be able to override feature configuration in a production environment, you can utilize Redis Overrides.
+
+Alternatively, you may use Redis Overrides as your main source of feature configuration if you prefer that instead of relying on YAML files.
+
+You can override feature configuration with Redis hash values by calling `AbstractFeatureBranch#set_store_feature` in `rails console` (or `irb` after requiring `redis` and `abstract_feature_branch`):
+
+```ruby
+AbstractFeatureBranch.set_store_feature('feature1', true)
+```
+
+Behind the scenes, that is the equivalent of the following Redis client invocation, which stores a hash value in a `abstract_feature_branch` key:
+
+```ruby
+AbstractFeatureBranch.configuration.feature_store.hset('abstract_feature_branch', 'feature1', 'true')
+```
+
+To remove a Redis override, you can run the following in `rails console` (or `irb`):
+
+```ruby
+AbstractFeatureBranch.delete_store_feature('feature1')
+```
+
+To get a Redis override value, you can run the following in `rails console` (or `irb`):
+
+```ruby
+AbstractFeatureBranch.get_store_feature('feature1')
+```
+
+To get an array of all Redis Override features, you can run the following in `rails console` (or `irb`):
+
+```ruby
+AbstractFeatureBranch.get_store_features
+```
+
 Heroku
 ------
 
@@ -279,7 +318,7 @@ Removing an environment variable override:
 ### Recommendation
 
 It is recommended that you use environment variable overrides on Heroku only as an emergency or temporary measure.
-Afterward, make the change officially in config/features.yml, deploy, and remove the environment variable override for the long term.
+Afterward, make the change official in config/features.yml, deploy, and remove the environment variable override for the long term.
 
 ### Gotcha with abstract feature branching in CSS and JS files
 
@@ -303,6 +342,7 @@ the former if overlap in features occurs:
 3. Context-specific local feature file overrides: <code>config/features/**/*.local.yml</code>
 4. Main local feature file override: <code>config/features.local.yml</code>
 5. Environment variable overrides
+6. Redis overrides
 
 Rails Initializer
 -----------------
@@ -459,5 +499,5 @@ Contributors
 Copyright
 ---------------------------------------
 
-Copyright (c) 2013-2018 Andy Maleh. See LICENSE.txt for
+Copyright (c) 2012-2022 Andy Maleh. See [LICENSE.txt](LICENSE.txt) for
 further details.

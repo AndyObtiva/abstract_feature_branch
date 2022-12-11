@@ -23,8 +23,7 @@ Jeweler::Tasks.new do |gem|
 abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
 http://paulhammant.com/blog/branch_by_abstraction.html
 
-It is a productivity and fault tolerance enhancing team practice that has been utilized by professional software development
-teams at large corporations, such as Sears and Groupon.
+It is a productivity and fault tolerance enhancing team practice.
 
 It provides the ability to wrap blocks of code with an abstract feature branch name, and then
 specify in a configuration file which features to be switched on or off.
