@@ -41,18 +41,24 @@ module AbstractFeatureBranch
         :production => true
       }
     end
-    def user_features_storage
-      @user_features_storage ||= initialize_user_features_storage
+    
+    def feature_store
+      @feature_store ||= initialize_feature_store
     end
-    def user_features_storage=(user_features_storage)
-      @user_features_storage = user_features_storage
+    alias user_features_storage feature_store
+    
+    def feature_store=(feature_store)
+      @feature_store = feature_store
     end
-    def initialize_user_features_storage
-      self.user_features_storage = Redis.new
+    alias user_features_storage= feature_store=
+    
+    def initialize_feature_store
+      self.feature_store = Redis.new
     rescue => e
       logger.debug "Redis is not enabled!"
       logger.debug e.full_message
       nil
     end
+    alias initialize_user_features_storage initialize_feature_store
   end
 end

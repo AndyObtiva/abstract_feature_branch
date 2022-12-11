@@ -1,8 +1,8 @@
-# Storage for user features, customizable over here. Right now, only a Redis client is supported.
-# AbstractFeatureBranch.user_features_storage = Redis.new
+# Storage system for features (other than YAML/Env-Vars). Right now, only Redis is supported.
+# AbstractFeatureBranch.feature_store = Redis.new
 
 # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
-# AbstractFeatureBranch.user_features_storage = Redis.new(:url => ENV['REDISTOGO_URL'])
+# AbstractFeatureBranch.feature_store = Redis.new(:url => ENV['REDISTOGO_URL'])
 
 # Application root where config/features.yml or config/features/ is found
 AbstractFeatureBranch.application_root = Rails.root

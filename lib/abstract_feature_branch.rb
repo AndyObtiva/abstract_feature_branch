@@ -21,7 +21,7 @@ module AbstractFeatureBranch
 
   class << self
     extend Forwardable
-    def_delegators :configuration, :application_root, :application_root=, :initialize_application_root, :application_environment, :application_environment=, :initialize_application_environment, :logger, :logger=, :initialize_logger, :cacheable, :cacheable=, :initialize_cacheable, :user_features_storage, :user_features_storage=, :initialize_user_features_storage
+    def_delegators :configuration, :application_root, :application_root=, :initialize_application_root, :application_environment, :application_environment=, :initialize_application_environment, :logger, :logger=, :initialize_logger, :cacheable, :cacheable=, :initialize_cacheable, :feature_store, :feature_store=, :initialize_feature_store, :user_features_storage, :user_features_storage=, :initialize_user_features_storage
 
     def configuration
       @configuration ||= Configuration.new

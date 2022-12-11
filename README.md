@@ -57,7 +57,7 @@ Setup
 8. [Optional] Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
 9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
-11. [Optional] Add code <code>AbstractFeatureBranch.user_features_storage = Redis.new(options)</code> to configure Redis for per-user feature enablement
+11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for per-user feature enablement
 
 Instructions
 ------------
@@ -309,11 +309,11 @@ Rails Initializer
 
 Here is the content of the generated initializer [with `redis` client gem added] (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize via [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection):
 
->     # Storage for user features, customizable over here. Right now, only a Redis client is supported.
->     # AbstractFeatureBranch.user_features_storage = Redis.new
+>     # Storage system for features (other than YAML/Env-Vars). Right now, only Redis is supported.
+>     # AbstractFeatureBranch.feature_store = Redis.new
 >
 >     # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
->     # AbstractFeatureBranch.user_features_storage = Redis.new(:url => ENV['REDISTOGO_URL'])
+>     # AbstractFeatureBranch.feature_store = Redis.new(:url => ENV['REDISTOGO_URL'])
 >
 >     # Application root where config/features.yml or config/features/ is found
 >     AbstractFeatureBranch.application_root = Rails.root
@@ -335,8 +335,6 @@ Here is the content of the generated initializer [with `redis` client gem added]
 >
 >     # Pre-load application features to improve performance of first web-page hit
 >     AbstractFeatureBranch.load_application_features unless Rails.env.development?
-
-TODO Document in Heroku (:url => ENV['REDISTOGO_URL'])
 
 Rake Task
 ---------
