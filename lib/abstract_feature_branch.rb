@@ -28,7 +28,7 @@ module AbstractFeatureBranch
     end
 
     def redis_overrides
-      @redis_overrides ||= load_redis_overrides
+      load_redis_overrides
     end
     def load_redis_overrides
       return {} if feature_store.nil?
@@ -37,7 +37,7 @@ module AbstractFeatureBranch
         output.merge(feature => get_store_feature(feature))
       end
       
-      @redis_overrides = downcase_keys(redis_feature_hash)
+      downcase_keys(redis_feature_hash)
     end
 
     def environment_variable_overrides
@@ -74,22 +74,19 @@ module AbstractFeatureBranch
       local_features[environment] ||= {}
       @environment_features[environment] = features[environment].
         merge(local_features[environment]).
-        merge(environment_variable_overrides).
-        merge(redis_overrides)
+        merge(environment_variable_overrides)
     end
     def application_features
       unload_application_features unless cacheable?
       environment_features(application_environment)
     end
     def load_application_features
-      AbstractFeatureBranch.load_redis_overrides
       AbstractFeatureBranch.load_environment_variable_overrides
       AbstractFeatureBranch.load_features
       AbstractFeatureBranch.load_local_features
       AbstractFeatureBranch.load_environment_features(application_environment)
     end
     def unload_application_features
-      @redis_overrides = nil
       @environment_variable_overrides = nil
       @features = nil
       @local_features = nil
@@ -105,8 +102,9 @@ module AbstractFeatureBranch
     def set_store_feature(feature, value)
       raise 'Feature storage (e.g. Redis) is not setup!' if feature_store.nil?
       feature = feature.to_s
+      return delete_store_feature(feature) if value.nil?
       value = 'true' if value == true
-      value = 'false' if value.nil? || value == false
+      value = 'false' if value == false
       feature_store.hset(REDIS_HKEY, feature, value)
     end
     
@@ -115,6 +113,12 @@ module AbstractFeatureBranch
       raise 'Feature storage (e.g. Redis) is not setup!' if feature_store.nil?
       feature = feature.to_s
       value = feature_store.hget(REDIS_HKEY, feature)
+      if value.nil?
+        matching_feature = get_store_features.find { |store_feature| store_feature.downcase == feature.downcase }
+        value = feature_store.hget(REDIS_HKEY, matching_feature) if matching_feature
+      end
+      return nil if value.nil?
+      return 'per_user' if value.to_s.downcase == 'per_user'
       value.to_s.downcase == 'true'
     end
     
