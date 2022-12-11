@@ -8,3 +8,4 @@
 - Make Redis optional in generated Rails initializer
 - Provide alias of `AbstractFeatureBranch::Configuration#feature_store` to `AbstractFeatureBranch::Configuration#user_features_storage` (plus corresponding aliases `feature_store=` and `initialize_feature_store`)
 - Document support for Rails 7 and Redis Server 7
+- Add gem post install instructions, including how to run the Rails generators and install/use Redis

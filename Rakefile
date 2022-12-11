@@ -42,6 +42,37 @@ Bounded Contexts by allowing developers to configure
 context-specific feature files if needed.
   TEXT
   gem.authors = ["Annas \"Andy\" Maleh"]
+  gem.post_install_message = <<~TEXT
+  
+    Rails-only post-install instructions:
+    
+    1) Run the following command to generate the Rails initializer and basic feature files:
+    
+    rails g abstract_feature_branch:install
+    
+    2) Optionally, you may run this command to generate feature files per context:
+    
+    rails g abstract_feature_branch:context context_path
+       
+    3) Optionally, install Redis server with [Homebrew](https://brew.sh/) by running:
+    
+    brew install redis
+    
+    4) Optionally, install redis client gem (required with Redis server) by adding the following line to Gemfile above abstract_feature_branch:
+    
+    gem 'redis', '~> 5.0.5'
+    
+    Afterwards, run:
+    
+    bundle
+    
+    5) Optionally, customize configuration in config/initializers/abstract_feature_branch.rb
+    
+    (can be useful for changing location of feature files in Rails application,
+    configuring Redis to use for overrides and per-user feature enablement,
+    and/or troubleshooting specific Rails environment feature configurations)
+    
+  TEXT
   gem.files.exclude 'spec/*'
   gem.files.exclude 'config/*'
   gem.files.exclude 'Gemfile'
