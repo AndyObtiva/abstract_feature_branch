@@ -53,7 +53,12 @@ module AbstractFeatureBranch
       if feature_store.nil?
         @feature_store = nil
       else
-        @feature_store = feature_store.is_a?(::ConnectionPool) ? AbstractFeatureBranch::Redis::ConnectionPoolToRedisAdapter.new(feature_store) : feature_store
+        begin
+          @feature_store = feature_store.is_a?(::ConnectionPool) ? AbstractFeatureBranch::Redis::ConnectionPoolToRedisAdapter.new(feature_store) : feature_store
+        rescue NameError => e
+          logger.debug { "connection_pool gem is not available" }
+          @feature_store = feature_store
+        end
       end
     end
     alias user_features_storage= feature_store=

@@ -1,4 +1,4 @@
-# Abstract Feature Branch 1.3.1
+# Abstract Feature Branch 1.3.2
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
@@ -37,8 +37,8 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.3.1'</pre>
-   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.3.1'</pre>
+   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.3.2'</pre>
+   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.3.2'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
@@ -47,7 +47,7 @@ Setup
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.3.1</pre>
+1. <pre>gem install abstract_feature_branch -v 1.3.2</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. [Optional] Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -58,7 +58,7 @@ Setup
 9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
 11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides and/or per-user feature enablement
-12. [Optional] Set <code>AbstractFeatureBranch.feature_store_live_fetching = true</code> to enable live fetching of features from store (e.g. Redis) to avoid need for app/server restart upon feature changes, with the trade-off of slightly more latency due to communicating with feature store over the network
+12. [Optional] Set <code>AbstractFeatureBranch.feature_store_live_fetching = true</code> to enable live fetching of features from store (e.g. Redis) to avoid need for app/server restart upon feature changes, with the trade-off of slightly more latency due to making calls to feature store over the network
 
 Instructions
 ------------
@@ -268,6 +268,10 @@ Prerequisites: Redis server and client (`redis` gem) and Redis configuration of 
 To be able to override feature configuration in a production environment, you can utilize Redis Overrides.
 
 Alternatively, you may use Redis Overrides as your main source of feature configuration if you prefer that instead of relying on YAML files.
+
+Keep in mind that by default, Redis Overrides are fetched on app/server start to pre-cache for better performance.
+
+To enable live fetching of Redis Overrides, set `AbstractFeatureBranch#feature_store_live_fetching` to `true` (e.g. in `config/initializers/abstract_feature_branch.rb`), but keep in mind the trade-off with more latency due to making calls to Redis Server over the network.
 
 You can override feature configuration with Redis hash values by calling `AbstractFeatureBranch#set_store_feature` in `rails console` (or `irb` after requiring `redis` and `abstract_feature_branch`):
 
