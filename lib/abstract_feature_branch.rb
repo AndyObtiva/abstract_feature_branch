@@ -23,14 +23,16 @@ module AbstractFeatureBranch
 
   class << self
     extend Forwardable
-    def_delegators :configuration, :application_root, :application_root=, :initialize_application_root, :application_environment, :application_environment=, :initialize_application_environment, :logger, :logger=, :initialize_logger, :cacheable, :cacheable=, :initialize_cacheable, :feature_store, :feature_store=, :initialize_feature_store, :user_features_storage, :user_features_storage=, :initialize_user_features_storage
+    def_delegators :configuration, :application_root, :application_root=, :initialize_application_root, :application_environment, :application_environment=, :initialize_application_environment,
+                   :logger, :logger=, :initialize_logger, :cacheable, :cacheable=, :initialize_cacheable, :feature_store, :feature_store=, :initialize_feature_store,
+                   :user_features_storage, :user_features_storage=, :initialize_user_features_storage, :feature_store_live_fetching, :feature_store_live_fetching=
 
     def configuration
       @configuration ||= Configuration.new
     end
 
     def redis_overrides
-      load_redis_overrides
+      @redis_overrides ||= load_redis_overrides
     end
     def load_redis_overrides
       return {} if feature_store.nil?
@@ -39,7 +41,7 @@ module AbstractFeatureBranch
         output.merge(feature => get_store_feature(feature))
       end
       
-      downcase_keys(redis_feature_hash)
+      @redis_overrides = downcase_keys(redis_feature_hash)
     end
 
     def environment_variable_overrides
@@ -76,19 +78,22 @@ module AbstractFeatureBranch
       local_features[environment] ||= {}
       @environment_features[environment] = features[environment].
         merge(local_features[environment]).
-        merge(environment_variable_overrides)
+        merge(environment_variable_overrides).
+        merge(redis_overrides)
     end
     def application_features
       unload_application_features unless cacheable?
       environment_features(application_environment)
     end
     def load_application_features
+      AbstractFeatureBranch.load_redis_overrides
       AbstractFeatureBranch.load_environment_variable_overrides
       AbstractFeatureBranch.load_features
       AbstractFeatureBranch.load_local_features
       AbstractFeatureBranch.load_environment_features(application_environment)
     end
     def unload_application_features
+      @redis_overrides = nil
       @environment_variable_overrides = nil
       @features = nil
       @local_features = nil

@@ -58,6 +58,7 @@ Setup
 9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
 11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides or per-user feature enablement
+12. [Optional] Set <code>AbstractFeatureBranch.feature_store_live_fetching = true</code> to enable live fetching of features from store (e.g. Redis) to avoid need for app/server restart upon feature changes, with the trade-off of slightly more latency due to communicating with feature store over the network
 
 Instructions
 ------------
@@ -357,6 +358,10 @@ Here is the content of the generated initializer [with `redis` client gem added]
 >
 >     # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
 >     # AbstractFeatureBranch.feature_store = Redis.new(:url => ENV['REDISTOGO_URL'])
+>
+>     # Enable live fetching of feature configuration from storage system, to update features without app/server restart.
+>     # false by default to only load features on app/server start for faster performance (requires restart on change)
+>     AbstractFeatureBranch.feature_store_live_fetching = false
 >
 >     # Application root where config/features.yml or config/features/ is found
 >     AbstractFeatureBranch.application_root = Rails.root

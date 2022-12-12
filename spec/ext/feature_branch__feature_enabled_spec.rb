@@ -15,10 +15,11 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.application_root = @app_root_backup
     AbstractFeatureBranch.application_environment = @app_env_backup
     AbstractFeatureBranch.unload_application_features
-    AbstractFeatureBranch.user_features_storage.keys.each do |key|
-      AbstractFeatureBranch.user_features_storage.del(key)
+    AbstractFeatureBranch.feature_store.keys.each do |key|
+      AbstractFeatureBranch.feature_store.del(key)
     end
     AbstractFeatureBranch.feature_store = nil
+    AbstractFeatureBranch.configuration.feature_store_live_fetching = nil # reset to default
   end
   describe '#feature_enabled?' do
     it 'determines whether a feature is enabled or not in features configuration (case-insensitive string or symbol feature names)' do
@@ -39,13 +40,37 @@ describe 'feature_branch object extensions' do
       feature_enabled?(:feature3).should == true
       feature_enabled?(:feature4a).should == true #not overridden
     end
-    
-    it 'allows redis variables (case-insensitive booleans) to override configuration file' do
+
+    it 'allows redis variables (case-insensitive booleans) to override configuration file, not live' do
       AbstractFeatureBranch.unload_application_features
+      AbstractFeatureBranch.load_application_features
+      
       AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'FEATURE1', 'FALSE')
       AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'Feature2', 'False')
       AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'feature3', 'true')
+      
+      # before reloading features after store feature changes
+      feature_enabled?('Feature1').should == true
+      feature_enabled?(:FEATURE2).should == true
+      feature_enabled?(:feature3).should == false
+      feature_enabled?(:feature4a).should == true #not overridden
+      
+      AbstractFeatureBranch.unload_application_features
       AbstractFeatureBranch.load_application_features
+      # after reloading features after store feature changes
+      feature_enabled?(:feature1).should == false
+      feature_enabled?(:feature2).should == false
+      feature_enabled?(:feature3).should == true
+      feature_enabled?(:feature4a).should == true #not overridden
+    end
+    
+    it 'allows redis variables (case-insensitive booleans) to override configuration file, live' do
+      AbstractFeatureBranch.configuration.feature_store_live_fetching = true
+      AbstractFeatureBranch.unload_application_features
+      AbstractFeatureBranch.load_application_features
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'FEATURE1', 'FALSE')
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'Feature2', 'False')
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'feature3', 'true')
       feature_enabled?(:feature1).should == false
       feature_enabled?(:feature2).should == false
       feature_enabled?(:feature3).should == true

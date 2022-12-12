@@ -22,6 +22,6 @@ end
 require 'puts_debuggerer'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'abstract_feature_branch')
 require 'redis'
-AbstractFeatureBranch.user_features_storage = Redis.new
+AbstractFeatureBranch.feature_store = Redis.new
 AbstractFeatureBranch.logger.level = Logger::WARN
 AbstractFeatureBranch.load_application_features

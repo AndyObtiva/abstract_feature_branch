@@ -66,5 +66,19 @@ module AbstractFeatureBranch
       nil
     end
     alias initialize_user_features_storage initialize_feature_store
+    
+    def feature_store_live_fetching
+      initialize_feature_store_live_fetching if @feature_store_live_fetching.nil?
+      @feature_store_live_fetching
+    end
+    alias feature_store_live_fetching? feature_store_live_fetching
+    
+    def feature_store_live_fetching=(value)
+      @feature_store_live_fetching = value
+    end
+    
+    def initialize_feature_store_live_fetching
+      @feature_store_live_fetching = false
+    end
   end
 end

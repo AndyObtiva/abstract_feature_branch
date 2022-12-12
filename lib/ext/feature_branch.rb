@@ -10,7 +10,7 @@ class Object
   def self.feature_enabled?(feature_name, user_id = nil)
     normalized_feature_name = feature_name.to_s.downcase
 
-    redis_override_value = AbstractFeatureBranch.get_store_feature(normalized_feature_name) rescue nil
+    redis_override_value = (AbstractFeatureBranch.get_store_feature(normalized_feature_name) rescue nil) if AbstractFeatureBranch.configuration.feature_store_live_fetching?
     value = !redis_override_value.nil? ? redis_override_value : AbstractFeatureBranch.application_features[normalized_feature_name]
     if value == 'per_user'
       value = !user_id.nil? && AbstractFeatureBranch.user_features_storage.sismember("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}", user_id)
