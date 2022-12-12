@@ -13,7 +13,9 @@ require 'logger' unless defined?(Rails) && Rails.logger
 require 'deep_merge' unless {}.respond_to?(:deep_merge!)
 require 'forwardable'
 
-require File.join(File.dirname(__FILE__), 'abstract_feature_branch', 'configuration')
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+
+require 'abstract_feature_branch/configuration'
 
 module AbstractFeatureBranch
   ENV_FEATURE_PREFIX = "abstract_feature_branch_"

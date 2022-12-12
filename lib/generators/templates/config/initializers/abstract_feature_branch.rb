@@ -1,5 +1,8 @@
-# Storage system for features (other than YAML/Env-Vars). Right now, only Redis is supported.
+# Storage system for features (other than YAML/Env-Vars). Right now, only Redis and ConnectionPool are supported.
 # AbstractFeatureBranch.feature_store = Redis.new
+
+# Storage can be a Redis ConnectionPool instance
+# AbstractFeatureBranch.feature_store = ConnectionPool.new { Redis.new }
 
 # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
 # AbstractFeatureBranch.feature_store = Redis.new(:url => ENV['REDISTOGO_URL'])

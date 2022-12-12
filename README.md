@@ -1,4 +1,4 @@
-# Abstract Feature Branch 1.3.0
+# Abstract Feature Branch 1.3.1
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
@@ -37,17 +37,17 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.3.0'</pre>
-   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.3.0'</pre>
+   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.3.1'</pre>
+   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.3.1'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
-4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis for per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
+4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
 5. [Optional] Redis Server (between `~> 7.0` and `~> 3.0`): Install view [Homebrew](https://brew.sh/) with `brew install redis`
 6. [Optional] `redis` client gem (between `~> 5.0` and `~> 3.0`): Add the following to Gemfile above `abstract_feature_branch` <pre>gem 'redis', '~> 5.0.5'</pre>
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.3.0</pre>
+1. <pre>gem install abstract_feature_branch -v 1.3.1</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. [Optional] Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -262,7 +262,7 @@ application more easily.
 Redis Overrides
 ---------------
 
-Prerequisites: Redis server and client (`redis` gem) and optional Redis configuration of `AbstractFeatureBranch.feature_store` in `config/initializers/abstract_feature_branch.rb`
+Prerequisites: Redis server and client (`redis` gem) and optional Redis configuration of `AbstractFeatureBranch.feature_store` in `config/initializers/abstract_feature_branch.rb` (`Redis` `ConnectionPool` instance is recommended for Production environments)
 
 To be able to override feature configuration in a production environment, you can utilize Redis Overrides.
 
@@ -349,8 +349,11 @@ Rails Initializer
 
 Here is the content of the generated initializer [with `redis` client gem added] (<code>config/initializers/abstract_feature_branch.rb</code>), which contains instructions on how to customize via [dependency injection](http://en.wikipedia.org/wiki/Dependency_injection):
 
->     # Storage system for features (other than YAML/Env-Vars). Right now, only Redis is supported.
+>     # Storage system for features (other than YAML/Env-Vars). Right now, only Redis and ConnectionPool are supported.
 >     # AbstractFeatureBranch.feature_store = Redis.new
+>
+>     # Storage can be a Redis ConnectionPool instance
+>     # AbstractFeatureBranch.feature_store = ConnectionPool.new { Redis.new }
 >
 >     # The following example line works with Heroku Redis To Go while still operating on local Redis for local development
 >     # AbstractFeatureBranch.feature_store = Redis.new(:url => ENV['REDISTOGO_URL'])

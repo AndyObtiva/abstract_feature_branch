@@ -1,3 +1,5 @@
+require 'abstract_feature_branch/redis/connection_pool_to_redis_adapter'
+
 module AbstractFeatureBranch
   class Configuration
     def application_root
@@ -48,12 +50,16 @@ module AbstractFeatureBranch
     alias user_features_storage feature_store
     
     def feature_store=(feature_store)
-      @feature_store = feature_store
+      if feature_store.nil?
+        @feature_store = nil
+      else
+        @feature_store = feature_store.is_a?(::ConnectionPool) ? AbstractFeatureBranch::Redis::ConnectionPoolToRedisAdapter.new(feature_store) : feature_store
+      end
     end
     alias user_features_storage= feature_store=
     
     def initialize_feature_store
-      self.feature_store = Redis.new
+      self.feature_store = ::Redis.new
     rescue => e
       logger.debug { "Redis is not enabled!" }
       logger.debug { e.full_message }

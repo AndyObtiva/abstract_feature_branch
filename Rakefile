@@ -68,17 +68,11 @@ context-specific feature files if needed.
     5) Optionally, customize configuration in config/initializers/abstract_feature_branch.rb
     
     (can be useful for changing location of feature files in Rails application,
-    configuring Redis to use for overrides and per-user feature enablement,
+    configuring Redis with a Redis or ConnectionPool instance to use for overrides and per-user feature enablement,
     and/or troubleshooting specific Rails environment feature configurations)
     
   TEXT
-  gem.files.exclude 'spec/*'
-  gem.files.exclude 'config/*'
-  gem.files.exclude 'Gemfile'
-  gem.files.exclude 'Gemfile.lock'
-  gem.files.exclude 'Rakefile'
-  gem.files.exclude '.ruby-gemset'
-  gem.files.exclude '.ruby-version'
+  gem.files = Dir['README.md', 'LICENSE.txt', 'VERSION', 'CHANGELOG.md', 'abstract_feature_branch.gemspec', 'lib/**/*']
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new

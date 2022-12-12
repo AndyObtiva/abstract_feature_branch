@@ -18,6 +18,7 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.user_features_storage.keys.each do |key|
       AbstractFeatureBranch.user_features_storage.del(key)
     end
+    AbstractFeatureBranch.feature_store = nil
   end
   describe '#feature_enabled?' do
     it 'determines whether a feature is enabled or not in features configuration (case-insensitive string or symbol feature names)' do
@@ -38,17 +39,32 @@ describe 'feature_branch object extensions' do
       feature_enabled?(:feature3).should == true
       feature_enabled?(:feature4a).should == true #not overridden
     end
+    
     it 'allows redis variables (case-insensitive booleans) to override configuration file' do
       AbstractFeatureBranch.unload_application_features
-      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'FEATURE1', 'FALSE')
-      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'Feature2', 'False')
-      AbstractFeatureBranch.user_features_storage.hset('abstract_feature_branch', 'feature3', 'true')
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'FEATURE1', 'FALSE')
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'Feature2', 'False')
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'feature3', 'true')
       AbstractFeatureBranch.load_application_features
       feature_enabled?(:feature1).should == false
       feature_enabled?(:feature2).should == false
       feature_enabled?(:feature3).should == true
       feature_enabled?(:feature4a).should == true #not overridden
     end
+    
+    it 'allows redis variables (case-insensitive booleans) to override configuration file via a ConnectionPool instance' do
+      AbstractFeatureBranch.unload_application_features
+      AbstractFeatureBranch.feature_store = ConnectionPool.new { Redis.new }
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'FEATURE1', 'FALSE')
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'Feature2', 'False')
+      AbstractFeatureBranch.feature_store.hset('abstract_feature_branch', 'feature3', 'true')
+      AbstractFeatureBranch.load_application_features
+      feature_enabled?(:feature1).should == false
+      feature_enabled?(:feature2).should == false
+      feature_enabled?(:feature3).should == true
+      feature_enabled?(:feature4a).should == true #not overridden
+    end
+    
     it 'allows local configuration file to override main configuration file in test environment' do
       feature_enabled?(:feature4).should == false
       feature_enabled?(:feature5).should == true

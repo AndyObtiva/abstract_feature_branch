@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.1
+
+- Support Redis `ConnectionPool` `AbstractFeatureBranch::Configuration#feature_store`
+
 ## 1.3.0
 
 - Officially support newer `redis` client gem version 5
