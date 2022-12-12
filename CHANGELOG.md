@@ -3,6 +3,7 @@
 ## 1.3.2
 
 - Ensure better performance, fetch Redis Overrides at app/server startup time only by default while providing option to fetch live by setting `AbstractFeatureBranch.feature_store_live_fetching` to `true`
+- Do not automatically pre-init `AbstractFeatureBranch.feature_store` with `Redis.new` if it was `nil` as that is a bad default.
 
 ## 1.3.1
 

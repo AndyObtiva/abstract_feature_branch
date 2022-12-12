@@ -18,7 +18,6 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.feature_store.keys.each do |key|
       AbstractFeatureBranch.feature_store.del(key)
     end
-    AbstractFeatureBranch.feature_store = nil
     AbstractFeatureBranch.configuration.feature_store_live_fetching = nil # reset to default
   end
   describe '#feature_enabled?' do

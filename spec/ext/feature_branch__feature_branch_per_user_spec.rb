@@ -37,7 +37,7 @@ describe 'feature_branch object extensions' do
           $:.unshift('.')
           require 'redis'
           require 'lib/abstract_feature_branch'
-          AbstractFeatureBranch.initialize_user_features_storage
+          AbstractFeatureBranch.feature_store = Redis.new
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
@@ -73,7 +73,7 @@ describe 'feature_branch object extensions' do
           $:.unshift('.')
           require 'redis'
           require 'lib/abstract_feature_branch'
-          AbstractFeatureBranch.initialize_user_features_storage
+          AbstractFeatureBranch.feature_store = Redis.new
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => true, :feature7 => false)
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => false, :feature7 => true)
         RUBY_CODE

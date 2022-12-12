@@ -45,7 +45,7 @@ module AbstractFeatureBranch
     end
     
     def feature_store
-      @feature_store ||= initialize_feature_store
+      @feature_store
     end
     alias user_features_storage feature_store
     
@@ -57,15 +57,6 @@ module AbstractFeatureBranch
       end
     end
     alias user_features_storage= feature_store=
-    
-    def initialize_feature_store
-      self.feature_store = ::Redis.new
-    rescue => e
-      logger.debug { "Redis is not enabled!" }
-      logger.debug { e.full_message }
-      nil
-    end
-    alias initialize_user_features_storage initialize_feature_store
     
     def feature_store_live_fetching
       initialize_feature_store_live_fetching if @feature_store_live_fetching.nil?

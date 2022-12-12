@@ -57,7 +57,7 @@ Setup
 8. [Optional] Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
 9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
-11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides or per-user feature enablement
+11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides and/or per-user feature enablement
 12. [Optional] Set <code>AbstractFeatureBranch.feature_store_live_fetching = true</code> to enable live fetching of features from store (e.g. Redis) to avoid need for app/server restart upon feature changes, with the trade-off of slightly more latency due to communicating with feature store over the network
 
 Instructions
@@ -263,7 +263,7 @@ application more easily.
 Redis Overrides
 ---------------
 
-Prerequisites: Redis server and client (`redis` gem) and optional Redis configuration of `AbstractFeatureBranch.feature_store` in `config/initializers/abstract_feature_branch.rb` (`Redis` `ConnectionPool` instance is recommended for Production environments)
+Prerequisites: Redis server and client (`redis` gem) and Redis configuration of `AbstractFeatureBranch.feature_store` in `config/initializers/abstract_feature_branch.rb` (`Redis` `ConnectionPool` instance is recommended for Production environments)
 
 To be able to override feature configuration in a production environment, you can utilize Redis Overrides.
 
