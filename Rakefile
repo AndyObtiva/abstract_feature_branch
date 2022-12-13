@@ -17,31 +17,24 @@ Jeweler::Tasks.new do |gem|
   gem.name = "abstract_feature_branch"
   gem.homepage = "http://github.com/AndyObtiva/abstract_feature_branch"
   gem.license = "MIT"
-  gem.summary = %Q{abstract_feature_branch is a Rails gem that enables developers to easily branch by
-  abstraction as per this pattern: http://paulhammant.com/blog/branch_by_abstraction.html}
-  gem.description = <<-TEXT
-abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
-http://paulhammant.com/blog/branch_by_abstraction.html
+  gem.summary = %Q{abstract_feature_branch is a Ruby gem that provides a variation on the Branch by Abstraction Pattern by Paul Hammant and the Feature Toggles Pattern by Martin Fowler (aka Feature Flags).}
+  gem.description = <<~MULTI_LINE_STRING
+abstract_feature_branch is a Ruby gem that provides a variation on the Branch by Abstraction Pattern by Paul Hammant and the Feature Toggles Pattern by Martin Fowler.
 
 It is a productivity and fault tolerance enhancing team practice.
 
-It provides the ability to wrap blocks of code with an abstract feature branch name, and then
-specify in a configuration file which features to be switched on or off.
+It provides the ability to wrap blocks of code with an abstract feature branch name, and then specify in a configuration file which features to be switched on or off.
 
-The goal is to build out upcoming features in the same source code repository branch, regardless of whether all are
-completed by the next release date or not, thus increasing team productivity by preventing integration delays.
-Developers then disable in-progress features until they are ready to be switched on in production, yet enable them
-locally and in staging environments for in-progress testing.
+The goal is to build out upcoming features in the same source code repository branch (i.e. continuous integration), regardless of whether all are completed by the next release date or not, thus increasing team productivity by preventing integration delays. Developers then disable in-progress features until they are ready to be switched on in production, yet enable them locally and in staging environments for in-progress testing.
 
-This gives developers the added benefit of being able to switch a feature off after release should big problems arise
-for a high risk feature.
+This gives developers the added benefit of being able to switch a feature off after release should big problems arise for a high risk feature.
 
-abstract_feature_branch additionally supports DDD's pattern of
-Bounded Contexts by allowing developers to configure
-context-specific feature files if needed.
-  TEXT
-  gem.authors = ["Annas \"Andy\" Maleh"]
-  gem.post_install_message = <<~TEXT
+abstract_feature_branch additionally supports Domain Driven Design's pattern of Bounded Contexts by allowing developers to configure context-specific feature files if needed.
+
+abstract_feature_branch is one of the simplest and most minimalistic "Feature Flags" Ruby gems out there as it enables you to get started very quickly by simply leveraging YAML files without having to set up a data store if you do not need it (albeit, you also have the option to use Redis as a very fast in-memory data store).
+  MULTI_LINE_STRING
+  gem.authors = ["Andy Maleh"]
+  gem.post_install_message = <<~MULTI_LINE_STRING
   
     Rails-only post-install instructions:
     
@@ -71,7 +64,7 @@ context-specific feature files if needed.
     configuring Redis with a Redis or ConnectionPool instance to use for overrides and per-user feature enablement,
     and/or troubleshooting specific Rails environment feature configurations)
     
-  TEXT
+  MULTI_LINE_STRING
   gem.files = Dir['README.md', 'LICENSE.txt', 'VERSION', 'CHANGELOG.md', 'abstract_feature_branch.gemspec', 'lib/**/*']
   # dependencies defined in Gemfile
 end

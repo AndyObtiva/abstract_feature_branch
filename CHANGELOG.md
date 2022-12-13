@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.3.3
+
+- Redis network failure error handling for per-user feature enablement to default to `nil` value instead of crashing
+- Error logging upon encountering Redis network failure errors in loading Redis Overrides live or not and in per-user feature enablement
+
 ## 1.3.2
 
 - Ensure better performance, fetch Redis Overrides at app/server startup time only by default while providing option to fetch live by setting `AbstractFeatureBranch.feature_store_live_fetching` to `true`
@@ -17,5 +22,5 @@
 - Remove `redis` gem from required dependencies to allow using `abstract_feature_branch` without Redis
 - Make configuration of Redis optional in generated Rails initializer
 - Provide alias of `AbstractFeatureBranch::Configuration#feature_store` to `AbstractFeatureBranch::Configuration#user_features_storage` (plus corresponding aliases `feature_store=` and `initialize_feature_store`)
-- Document support for Rails 7 and Redis Server 7
+- Document support for Ruby 3.1, Rails 7 and Redis Server 7
 - Add gem post install instructions, including how to run the Rails generators and install/use Redis

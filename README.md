@@ -1,18 +1,17 @@
-# Abstract Feature Branch 1.3.2
+# Abstract Feature Branch 1.3.3
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
 [![Code Climate](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch.png)](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch)
 
-abstract_feature_branch is a Rails gem that enables developers to easily branch by abstraction as per this pattern:
-http://paulhammant.com/blog/branch_by_abstraction.html
+[`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) is a Ruby gem that provides a variation on the [Branch by Abstraction Pattern](http://paulhammant.com/blog/branch_by_abstraction.html) by [Paul Hammant](https://paulhammant.com/) and the [Feature Toggles Pattern](https://martinfowler.com/bliki/FeatureToggle.html) by [Martin Fowler](https://martinfowler.com/).
 
 It is a productivity and fault tolerance enhancing team practice.
 
 It provides the ability to wrap blocks of code with an abstract feature branch name, and then
-specify in a configuration file which features to be switched on or off.
+[specify in a configuration file](#instructions) which features to be switched on or off.
 
-The goal is to build out upcoming features in the same source code repository branch, regardless of whether all are
+The goal is to build out upcoming features in the same source code repository branch (i.e. continuous integration), regardless of whether all are
 completed by the next release date or not, thus increasing team productivity by preventing integration delays.
 Developers then disable in-progress features until they are ready to be switched on in production, yet enable them
 locally and in staging environments for in-progress testing.
@@ -20,13 +19,17 @@ locally and in staging environments for in-progress testing.
 This gives developers the added benefit of being able to switch a feature off after release should big problems arise
 for a high risk feature.
 
-abstract_feature_branch additionally supports [DDD](http://www.domaindrivendesign.org)'s pattern of
-[Bounded Contexts](http://dddcommunity.org/uncategorized/bounded-context/) by allowing developers to configure
+[`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) additionally supports [Domain Driven Design](https://en.wikipedia.org/wiki/Domain-driven_design)'s pattern of
+[Bounded Contexts](https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf) by allowing developers to configure
 context-specific feature files if needed.
+
+[`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) is one of the simplest and most minimalistic "Feature Flags" Ruby gems out there as it enables you to get started very quickly by simply leveraging YAML files without having to set up a data store if you do not need it (albeit, you also have the option to use Redis as a very fast in-memory data store).
+
+
 
 Requirements
 ------------
-- Ruby (between `~> 3.1.0` and `~> 1.8.7`) ([click for a list of tested Ruby versions](https://travis-ci.org/AndyObtiva/abstract_feature_branch))
+- Ruby (between `~> 3.1.0` and `~> 1.8.7`)
 - [Optional] Rails (between `~> 7.0` and `~> 2.0`)
 - [Optional] Redis Server (between `~> 7.0` and `~> 2.0`)
 - [Optional] Redis client gem (between `~> 5.0` and `~> 3.0`)
@@ -37,17 +40,17 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.3.2'</pre>
-   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.3.2'</pre>
+   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.3.3'</pre>
+   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.3.3'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
-4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and per-user feature enablement, or troubleshooting a specific Rails environment feature configuration)
-5. [Optional] Redis Server (between `~> 7.0` and `~> 3.0`): Install view [Homebrew](https://brew.sh/) with `brew install redis`
-6. [Optional] `redis` client gem (between `~> 5.0` and `~> 3.0`): Add the following to Gemfile above `abstract_feature_branch` <pre>gem 'redis', '~> 5.0.5'</pre>
+4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and [per-user feature enablement](#per-user-feature-enablement), or troubleshooting a specific Rails environment feature configuration)
+5. [Optional] Redis Server (between `~> 7.0` and `~> 3.0`): On the Mac, you can install simply via [Homebrew](https://brew.sh/) with `brew install redis`
+6. [Optional] `redis` client gem (between `~> 5.0` and `~> 3.0`): Add the following to Gemfile above [`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) <pre>gem 'redis', '~> 5.0.5'</pre>
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.3.2</pre>
+1. <pre>gem install abstract_feature_branch -v 1.3.3</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. [Optional] Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -57,7 +60,7 @@ Setup
 8. [Optional] Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
 9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
-11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides and/or per-user feature enablement
+11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides and/or [per-user feature enablement](#per-user-feature-enablement)
 12. [Optional] Set <code>AbstractFeatureBranch.feature_store_live_fetching = true</code> to enable live fetching of features from store (e.g. Redis) to avoid need for app/server restart upon feature changes, with the trade-off of slightly more latency due to making calls to feature store over the network
 
 Instructions
@@ -125,9 +128,14 @@ Note that <code>feature_branch</code> returns nil and does not execute the block
 
 Note that <code>feature_enabled?</code> returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
 
+- List all configured features for a particular environment:
+
+>     AbstractFeatureBranch.environment_features('development')
+>     # => {"feature1"=>true, "feature2"=>false, "feature3"=>false, "feature4"=>true}
+
 ### Per-User Feature Enablement
 
-It is possible to restrict enablement of features per specific users by setting a feature value to <code>per_user</code>.
+It is possible to restrict enablement of features per specific users (or per entities of any kind) by setting a feature value to <code>per_user</code>, and then toggling features for specific users (or other entities).
 
 1. Use <code>toggle_features_for_user</code> in Ruby code to enable features per user ID (e.g. email address or database ID). This loads Redis client gem into memory and stores per-user feature configuration in Redis.
 In the example below, current_user is a method that provides the current signed in user (e.g. using Rails [Devise] (https://github.com/plataformatec/devise) library).
@@ -273,13 +281,13 @@ Keep in mind that by default, Redis Overrides are fetched on app/server start to
 
 To enable live fetching of Redis Overrides, set `AbstractFeatureBranch#feature_store_live_fetching` to `true` (e.g. in `config/initializers/abstract_feature_branch.rb`), but keep in mind the trade-off with more latency due to making calls to Redis Server over the network.
 
-You can override feature configuration with Redis hash values by calling `AbstractFeatureBranch#set_store_feature` in `rails console` (or `irb` after requiring `redis` and `abstract_feature_branch`):
+You can override feature configuration with Redis hash values by calling `AbstractFeatureBranch#set_store_feature` in `rails console` (or `irb` after requiring `redis` and [`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch)):
 
 ```ruby
 AbstractFeatureBranch.set_store_feature('feature1', true)
 ```
 
-Behind the scenes, that is the equivalent of the following Redis client invocation, which stores a hash value in a `abstract_feature_branch` key:
+Behind the scenes, that is the equivalent of the following Redis client invocation, which stores a hash value in a `'abstract_feature_branch'` key:
 
 ```ruby
 AbstractFeatureBranch.configuration.feature_store.hset('abstract_feature_branch', 'feature1', 'true')
@@ -487,7 +495,7 @@ Although feature branches and branching by abstraction are similar, there are di
 
 Feature branching leverages your version control software (VCS) to create a branch that is independent of your main branch.  Once you write your feature, you integrate it with the rest of your code base. Feature branching is ideal for developing features that can be completed within the one or two iterations.  But it can become cumbersome with larger features due to the fact your code is isolated and quickly falls out of sync with your main branch.  You will have to regularly rebase with your main branch or devote substantial time to resolving merge conflicts.
 
-Branching by abstraction, on the other hand, is ideal for substantial features, i.e. ones which take many iterations to complete.  This approach to branching takes place outside of your VCS.  Instead, you build your feature, but wrap the code inside configurable flags.  These configuration flags will allow for different behavior, depending on the runtime environment.  For example, a feature would be set to "on" when your app runs in development mode, but "off" when running in "production" mode.  This approach avoids the pain of constantly rebasing or resolving a myriad of merge conflict when you do attempt to integrate your feature into the larger app.
+Branching by abstraction, on the other hand, is ideal for substantial features, i.e. ones which take many iterations to complete.  This approach to branching takes place outside of your VCS.  Instead, you build your feature, but wrap the code inside configurable flags.  These configuration flags will allow for different behavior, depending on the runtime environment.  For example, a feature would be set to "on" when your app runs in development mode, but "off" when running in "production" mode.  This approach avoids the pain of constantly rebasing or resolving a myriad of merge conflicts when you do attempt to integrate your feature into the larger app.
 
 Contributing to abstract_feature_branch
 ---------------------------------------
@@ -511,5 +519,5 @@ Contributors
 Copyright
 ---------------------------------------
 
-Copyright (c) 2012-2022 Andy Maleh. See [LICENSE.txt](LICENSE.txt) for
+Copyright (c) 2012-2023 Andy Maleh. See [LICENSE.txt](LICENSE.txt) for
 further details.

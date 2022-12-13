@@ -12,6 +12,7 @@ describe 'feature_branch object extensions' do
     ENV.delete('ABSTRACT_FEATURE_BRANCH_FEATURE1')
     ENV.delete('Abstract_Feature_Branch_Feature2')
     ENV.delete('abstract_feature_branch_feature3')
+    AbstractFeatureBranch.feature_store = Redis.new
     AbstractFeatureBranch.application_root = @app_root_backup
     AbstractFeatureBranch.application_environment = @app_env_backup
     AbstractFeatureBranch.unload_application_features
@@ -62,6 +63,17 @@ describe 'feature_branch object extensions' do
       feature_enabled?(:feature3).should == true
       feature_enabled?(:feature4a).should == true #not overridden
     end
+
+    it 'allows redis variables (case-insensitive booleans) to override configuration file, not live, but fails due to a Redis connection error' do
+      AbstractFeatureBranch.feature_store = Redis.new(url: 'rediss://:p4ssw0rd@10.0.1.1:6381/15', reconnect_attempts: 0, timeout: 0.0)
+      AbstractFeatureBranch.unload_application_features
+      AbstractFeatureBranch.load_application_features
+      # after reloading features after store feature changes
+      feature_enabled?(:feature1).should == true
+      feature_enabled?(:feature2).should == true
+      feature_enabled?(:feature3).should == false
+      feature_enabled?(:feature4a).should == true #not overridden
+    end
     
     it 'allows redis variables (case-insensitive booleans) to override configuration file, live' do
       AbstractFeatureBranch.configuration.feature_store_live_fetching = true
@@ -73,6 +85,17 @@ describe 'feature_branch object extensions' do
       feature_enabled?(:feature1).should == false
       feature_enabled?(:feature2).should == false
       feature_enabled?(:feature3).should == true
+      feature_enabled?(:feature4a).should == true #not overridden
+    end
+    
+    it 'allows redis variables (case-insensitive booleans) to override configuration file, live, but fails due to a Redis connection error' do
+      AbstractFeatureBranch.feature_store = Redis.new(url: 'rediss://:p4ssw0rd@10.0.1.1:6381/15', reconnect_attempts: 0, timeout: 0.0)
+      AbstractFeatureBranch.configuration.feature_store_live_fetching = true
+      AbstractFeatureBranch.unload_application_features
+      AbstractFeatureBranch.load_application_features
+      feature_enabled?(:feature1).should == true
+      feature_enabled?(:feature2).should == true
+      feature_enabled?(:feature3).should == false
       feature_enabled?(:feature4a).should == true #not overridden
     end
     
@@ -122,22 +145,35 @@ describe 'feature_branch object extensions' do
     context 'per user' do
       let(:user_id) { 'email1@example.com' }
       let(:another_user_id) { 'another_email@example.com' }
+      
       before do
         AbstractFeatureBranch.user_features_storage.del("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}feature6")
       end
+      
       after do
+        AbstractFeatureBranch.feature_store = Redis.new
         AbstractFeatureBranch.user_features_storage.del("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}feature6")
       end
+      
       it 'behaves as expected if member list is empty, regardless of the user provided' do
         feature_enabled?('feature6').should == false
         feature_enabled?('feature6', nil).should == false
         feature_enabled?('feature6', user_id).should == false
       end
+      
       it 'behaves as expected if member list is not empty, and user provided is in member list' do
         AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true)
         feature_enabled?('feature6').should == false
         feature_enabled?('feature6', user_id).should == true
       end
+      
+      it 'fails due to a Redis connection error when member list is not empty and user provided is in member list' do
+        AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true)
+        AbstractFeatureBranch.feature_store = Redis.new(url: 'rediss://:p4ssw0rd@10.0.1.1:6381/15', reconnect_attempts: 0, timeout: 0.0)
+        feature_enabled?('feature6').should == false
+        feature_enabled?('feature6', user_id).should be_nil
+      end
+      
       it 'behaves as expected if member list is not empty, and user provided is not in member list' do
         AbstractFeatureBranch.toggle_features_for_user(another_user_id, :feature6 => true)
         feature_enabled?('feature6', user_id).should == false

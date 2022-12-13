@@ -35,13 +35,16 @@ module AbstractFeatureBranch
       @redis_overrides ||= load_redis_overrides
     end
     def load_redis_overrides
-      return {} if feature_store.nil?
+      return (@redis_overrides = {}) if feature_store.nil?
       
       redis_feature_hash = get_store_features.inject({}) do |output, feature|
         output.merge(feature => get_store_feature(feature))
       end
       
       @redis_overrides = downcase_keys(redis_feature_hash)
+    rescue Exception => error
+      AbstractFeatureBranch.logger.error "AbstractFeatureBranch encounter an error in loading Redis Overrides!\n\nError:#{error.full_message}\n\n"
+      @redis_overrides = {}
     end
 
     def environment_variable_overrides
