@@ -16,7 +16,6 @@ rerun.txt
 pickle-email-*.html
 .idea
 pkg
-*Gemfile.lock
 .DS_Store
 .gladiator
 .gladiator-scratchpad

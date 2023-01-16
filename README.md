@@ -4,14 +4,12 @@
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
 [![Code Climate](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch.png)](https://codeclimate.com/github/AndyObtiva/abstract_feature_branch)
 
-[`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) is a Ruby gem that provides a variation on the [Branch by Abstraction Pattern](http://paulhammant.com/blog/branch_by_abstraction.html) by [Paul Hammant](https://paulhammant.com/) and the [Feature Toggles Pattern](https://martinfowler.com/bliki/FeatureToggle.html) by [Martin Fowler](https://martinfowler.com/).
-
-It is a productivity and fault tolerance enhancing team practice.
+[`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) is a Ruby gem that provides a unique variation on the [Branch by Abstraction Pattern](http://paulhammant.com/blog/branch_by_abstraction.html) by [Paul Hammant](https://paulhammant.com/) and the [Feature Toggles Pattern](https://martinfowler.com/bliki/FeatureToggle.html) by [Martin Fowler](https://martinfowler.com/) to enhance team productivity and improve software fault tolerance.
 
 It provides the ability to wrap blocks of code with an abstract feature branch name, and then
 [specify in a configuration file](#instructions) which features to be switched on or off.
 
-The goal is to build out upcoming features in the same source code repository branch (i.e. continuous integration), regardless of whether all are
+The goal is to build out upcoming features in the same source code repository branch (i.e. [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) and [Trunk-Based Development](https://trunkbaseddevelopment.com)), regardless of whether all are
 completed by the next release date or not, thus increasing team productivity by preventing integration delays.
 Developers then disable in-progress features until they are ready to be switched on in production, yet enable them
 locally and in staging environments for in-progress testing.
@@ -23,7 +21,7 @@ for a high risk feature.
 [Bounded Contexts](https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf) by allowing developers to configure
 context-specific feature files if needed.
 
-[`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) is one of the simplest and most minimalistic "Feature Flags" Ruby gems out there as it enables you to get started very quickly by simply leveraging YAML files without having to set up a data store if you do not need it (albeit, you also have the option to use Redis as a very fast in-memory data store).
+[`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) is one of the simplest and most minimalistic "Feature Flags" Ruby gems out there as it enables you to get started very quickly by simply leveraging YAML files without having to set up a data store if you do not need it (albeit, you also have the option to use [Redis](https://redis.com) as a very fast in-memory data store).
 
 
 

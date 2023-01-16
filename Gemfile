@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'deep_merge', '~> 1.0.0', :require => false #avoid loading to use only if Rails is unavailable
+gem 'deep_merge', '>= 1.0.0', '< 2.0.0', :require => false #avoid loading to use only if Rails is unavailable
 
 group :development do
   gem 'jeweler', '~> 2.3.9'

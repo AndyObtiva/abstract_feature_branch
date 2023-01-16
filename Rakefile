@@ -17,15 +17,13 @@ Jeweler::Tasks.new do |gem|
   gem.name = "abstract_feature_branch"
   gem.homepage = "http://github.com/AndyObtiva/abstract_feature_branch"
   gem.license = "MIT"
-  gem.summary = %Q{abstract_feature_branch is a Ruby gem that provides a variation on the Branch by Abstraction Pattern by Paul Hammant and the Feature Toggles Pattern by Martin Fowler (aka Feature Flags).}
+  gem.summary = %Q{abstract_feature_branch is a Ruby gem that provides a variation on the Branch by Abstraction Pattern by Paul Hammant and the Feature Toggles Pattern by Martin Fowler (aka Feature Flags) to enable Continuous Integration and Trunk-Based Development.}
   gem.description = <<~MULTI_LINE_STRING
-abstract_feature_branch is a Ruby gem that provides a variation on the Branch by Abstraction Pattern by Paul Hammant and the Feature Toggles Pattern by Martin Fowler.
-
-It is a productivity and fault tolerance enhancing team practice.
+abstract_feature_branch is a Ruby gem that provides a unique variation on the Branch by Abstraction Pattern by Paul Hammant and the Feature Toggles Pattern by Martin Fowler to enhance team productivity and improve software fault tolerance.
 
 It provides the ability to wrap blocks of code with an abstract feature branch name, and then specify in a configuration file which features to be switched on or off.
 
-The goal is to build out upcoming features in the same source code repository branch (i.e. continuous integration), regardless of whether all are completed by the next release date or not, thus increasing team productivity by preventing integration delays. Developers then disable in-progress features until they are ready to be switched on in production, yet enable them locally and in staging environments for in-progress testing.
+The goal is to build out upcoming features in the same source code repository branch (i.e. Continuous Integration and Trunk-Based Development), regardless of whether all are completed by the next release date or not, thus increasing team productivity by preventing integration delays. Developers then disable in-progress features until they are ready to be switched on in production, yet enable them locally and in staging environments for in-progress testing.
 
 This gives developers the added benefit of being able to switch a feature off after release should big problems arise for a high risk feature.
 
