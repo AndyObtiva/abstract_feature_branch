@@ -147,7 +147,14 @@ describe 'feature_branch object extensions' do
       let(:another_user_id) { 'another_email@example.com' }
       
       before do
+        AbstractFeatureBranch.configuration.feature_store_live_fetching = true
         AbstractFeatureBranch.user_features_storage.del("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}feature6")
+        begin
+          AbstractFeatureBranch.feature_store = Redis.new
+          AbstractFeatureBranch.user_features_storage.flushall
+        rescue => e
+          #noop
+        end
       end
       
       after do
@@ -161,14 +168,15 @@ describe 'feature_branch object extensions' do
         feature_enabled?('feature6', user_id).should == false
       end
       
-      it 'behaves as expected if member list is not empty, and user provided is in member list' do
+      it 'behaves as expected if member list is not empty, and user id provided is in member list' do
         AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true)
         feature_enabled?('feature6').should == false
         feature_enabled?('feature6', user_id).should == true
       end
       
-      it 'fails due to a Redis connection error when member list is not empty and user provided is in member list' do
+      it 'fails due to a Redis connection error when member list is not empty and accessing user provided is in member list, live' do
         AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true)
+        AbstractFeatureBranch.configuration.feature_store_live_fetching = true
         AbstractFeatureBranch.feature_store = Redis.new(url: 'rediss://:p4ssw0rd@10.0.1.1:6381/15', reconnect_attempts: 0, timeout: 0.0)
         feature_enabled?('feature6').should == false
         feature_enabled?('feature6', user_id).should be_nil

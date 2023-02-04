@@ -8,6 +8,7 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.logger.warn 'Environment variable Abstract_Feature_Branch_Feature2 already set, potentially conflicting with another test' if ENV.keys.include?('Abstract_Feature_Branch_Feature2')
     AbstractFeatureBranch.logger.warn 'Environment variable abstract_feature_branch_feature3 already set, potentially conflicting with another test' if ENV.keys.include?('abstract_feature_branch_feature3')
     begin
+      AbstractFeatureBranch.feature_store = Redis.new
       AbstractFeatureBranch.user_features_storage.flushall
     rescue => e
       #noop
@@ -28,11 +29,14 @@ describe 'feature_branch object extensions' do
     AbstractFeatureBranch.user_features_storage.keys.each do |key|
       AbstractFeatureBranch.user_features_storage.del(key)
     end
+    AbstractFeatureBranch.configuration.feature_store_live_fetching = nil # reset to default
   end
   describe '#feature_branch' do
-    context 'per user' do
+    context 'per user with feature_store_live_fetching false' do
       it 'feature branches correctly after storing feature configuration per user in a separate process (ensuring persistence)' do
-        user_id = 'email1@example.com'
+        AbstractFeatureBranch.configuration.feature_store_live_fetching = false
+        AbstractFeatureBranch.load_application_features
+        user_id = 1 # test the case of numeric ID
         ruby_code = <<-RUBY_CODE
           $:.unshift('.')
           require 'redis'
@@ -41,6 +45,36 @@ describe 'feature_branch object extensions' do
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
+        
+        features_enabled = []
+        feature_branch :feature1, user_id do
+          features_enabled << :feature1
+        end
+        feature_branch :feature3, user_id do
+          features_enabled << :feature3
+        end
+        feature_branch :feature6, user_id do
+          features_enabled << :feature6
+        end
+        feature_branch :feature6, 'otheruser@example.com' do
+          features_enabled << :feature6_otheruser
+        end
+        feature_branch :feature6 do
+          features_enabled << :feature6_nouserspecified
+        end
+        feature_branch :feature7, user_id do
+          features_enabled << :feature7
+        end
+        features_enabled.should include(:feature1) #remains like features.yml
+        features_enabled.should_not include(:feature3) #remains like features.yml
+        features_enabled.should_not include(:feature6) #remains like features.yml
+        features_enabled.should_not include(:feature6_otheruser) #remains like features.yml
+        features_enabled.should_not include(:feature6_nouserspecified) #per user requires user id or it returns false
+        features_enabled.should_not include(:feature7) #remains like features.yml
+
+        AbstractFeatureBranch.unload_application_features
+        AbstractFeatureBranch.load_application_features
+        
         features_enabled = []
         feature_branch :feature1, user_id do
           features_enabled << :feature1
@@ -68,7 +102,9 @@ describe 'feature_branch object extensions' do
         features_enabled.should_not include(:feature7) #per user honored as false
       end
       it 'update feature branching (disabling some features) after having stored feature configuration per user in a separate process (ensuring persistence)' do
-        user_id = 'email1@example.com'
+        AbstractFeatureBranch.configuration.feature_store_live_fetching = false
+        AbstractFeatureBranch.load_application_features
+        user_id = 1 # test the case of numeric ID
         ruby_code = <<-RUBY_CODE
           $:.unshift('.')
           require 'redis'
@@ -78,6 +114,20 @@ describe 'feature_branch object extensions' do
           AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => false, :feature7 => true)
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
+        
+        features_enabled = []
+        feature_branch :feature6, user_id do
+          features_enabled << :feature6
+        end
+        feature_branch :feature7, user_id do
+          features_enabled << :feature7
+        end
+        features_enabled.should_not include(:feature6) # remains like features.yml
+        features_enabled.should_not include(:feature7) # remains like features.yml
+
+        AbstractFeatureBranch.unload_application_features
+        AbstractFeatureBranch.load_application_features
+
         features_enabled = []
         feature_branch :feature6, user_id do
           features_enabled << :feature6
@@ -88,9 +138,74 @@ describe 'feature_branch object extensions' do
         features_enabled.should_not include(:feature6)
         features_enabled.should include(:feature7)
       end
-
+    end
+    
+    context 'per user with feature_store_live_fetching true' do
+      it 'feature branches correctly after storing feature configuration per user in a separate process (ensuring persistence)' do
+        AbstractFeatureBranch.configuration.feature_store_live_fetching = true
+        user_id = 1 # test the case of numeric ID
+        ruby_code = <<-RUBY_CODE
+          $:.unshift('.')
+          require 'redis'
+          require 'lib/abstract_feature_branch'
+          AbstractFeatureBranch.feature_store = Redis.new
+          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
+        RUBY_CODE
+        system "ruby -e \"#{ruby_code}\""
+        
+        features_enabled = []
+        feature_branch :feature1, user_id do
+          features_enabled << :feature1
+        end
+        feature_branch :feature3, user_id do
+          features_enabled << :feature3
+        end
+        feature_branch :feature6, user_id do
+          features_enabled << :feature6
+        end
+        feature_branch :feature6, 'otheruser@example.com' do
+          features_enabled << :feature6_otheruser
+        end
+        feature_branch :feature6 do
+          features_enabled << :feature6_nouserspecified
+        end
+        feature_branch :feature7, user_id do
+          features_enabled << :feature7
+        end
+        features_enabled.should include(:feature1) #remains like features.yml
+        features_enabled.should_not include(:feature3) #remains like features.yml
+        features_enabled.should include(:feature6) #per user honored as true
+        features_enabled.should_not include(:feature6_otheruser) #per user honored as false
+        features_enabled.should_not include(:feature6_nouserspecified) #per user requires user id or it returns false
+        features_enabled.should_not include(:feature7) #per user honored as false
+      end
+      
+      it 'update feature branching (disabling some features) after having stored feature configuration per user in a separate process (ensuring persistence)' do
+        AbstractFeatureBranch.configuration.feature_store_live_fetching = true
+        user_id = 1 # test the case of numeric ID
+        ruby_code = <<-RUBY_CODE
+          $:.unshift('.')
+          require 'redis'
+          require 'lib/abstract_feature_branch'
+          AbstractFeatureBranch.feature_store = Redis.new
+          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => true, :feature7 => false)
+          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => false, :feature7 => true)
+        RUBY_CODE
+        system "ruby -e \"#{ruby_code}\""
+        
+        features_enabled = []
+        feature_branch :feature6, user_id do
+          features_enabled << :feature6
+        end
+        feature_branch :feature7, user_id do
+          features_enabled << :feature7
+        end
+        features_enabled.should_not include(:feature6)
+        features_enabled.should include(:feature7)
+      end
     end
   end
+  
   describe 'self#feature_branch' do
     after do
       Object.send(:remove_const, :TestObject)

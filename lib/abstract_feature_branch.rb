@@ -23,7 +23,8 @@ module AbstractFeatureBranch
 
   class << self
     extend Forwardable
-    def_delegators :configuration, :application_root, :application_root=, :initialize_application_root, :application_environment, :application_environment=, :initialize_application_environment,
+    def_delegators :configuration, # delegating the following methods to configuration
+                   :application_root, :application_root=, :initialize_application_root, :application_environment, :application_environment=, :initialize_application_environment,
                    :logger, :logger=, :initialize_logger, :cacheable, :cacheable=, :initialize_cacheable, :feature_store, :feature_store=, :user_features_storage, :user_features_storage=,
                    :feature_store_live_fetching, :feature_store_live_fetching=
 
@@ -84,6 +85,35 @@ module AbstractFeatureBranch
         merge(environment_variable_overrides).
         merge(redis_overrides)
     end
+    
+    def redis_per_user_features
+      @redis_per_user_features ||= load_redis_per_user_features
+    end
+    def load_redis_per_user_features
+      @redis_per_user_features = {}
+      return @redis_per_user_features if AbstractFeatureBranch.configuration.feature_store_live_fetching?
+      
+      @environment_features.each do |environment, features|
+        features.each do |feature, value|
+          if value == 'per_user'
+            normalized_feature_name = feature.to_s.downcase
+            @redis_per_user_features[normalized_feature_name] ||= []
+            begin
+              per_user_feature_user_ids = AbstractFeatureBranch.
+                                            user_features_storage.
+                                            smembers("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}")
+              @redis_per_user_features[normalized_feature_name] += per_user_feature_user_ids
+            rescue Exception => error
+              AbstractFeatureBranch.logger.error "AbstractFeatureBranch encountered an error in retrieving Per-User values for feature \"#{normalized_feature_name}\"! Defaulting to no values...\n\nError: #{error.full_message}\n\n"
+              nil
+            end
+          end
+        end
+      end
+      
+      @redis_per_user_features
+    end
+    
     def application_features
       unload_application_features unless cacheable?
       environment_features(application_environment)
@@ -94,6 +124,7 @@ module AbstractFeatureBranch
       AbstractFeatureBranch.load_features
       AbstractFeatureBranch.load_local_features
       AbstractFeatureBranch.load_environment_features(application_environment)
+      AbstractFeatureBranch.load_redis_per_user_features
     end
     def unload_application_features
       @redis_overrides = nil
@@ -101,7 +132,9 @@ module AbstractFeatureBranch
       @features = nil
       @local_features = nil
       @environment_features = nil
+      @redis_per_user_features = nil
     end
+    
     def cacheable?
       value = downcase_keys(cacheable)[application_environment]
       value = (application_environment != 'development') if value.nil?

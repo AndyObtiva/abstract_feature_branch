@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.4.0
+
+- Avoid live loading of per-user features when `AbstractFeatureBranch.feature_store_live_fetching` is `false` to ensure better performance through caching.
+
 ## 1.3.3
 
 - Redis network failure error handling for per-user feature enablement to default to `nil` value instead of crashing

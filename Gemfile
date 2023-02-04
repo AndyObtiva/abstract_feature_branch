@@ -8,6 +8,7 @@ group :development do
   gem 'rspec', '2.14.1'
   gem 'rdoc', '5.1.0'
   gem 'psych', '3.3.4'
+  gem 'rake-tui', '~> 0.2'
 end
 
 group :test do

@@ -35,11 +35,15 @@ class Object
     
     raise 'Abstract feature branch conflicts with another Ruby library having Object::feature_enabled_per_user_value' if Object.new.respond_to?(:feature_enabled_per_user_value, true)
     def feature_enabled_per_user_value(normalized_feature_name, user_id)
-      begin
-        AbstractFeatureBranch.user_features_storage.sismember("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}", user_id)
-      rescue Exception => error
-        AbstractFeatureBranch.logger.error "AbstractFeatureBranch encountered an error in retrieving Per-User value for feature \"#{normalized_feature_name}\" and user_id #{user_id}! Defaulting to nil value...\n\nError: #{error.full_message}\n\n"
-        nil
+      if AbstractFeatureBranch.configuration.feature_store_live_fetching?
+        begin
+          AbstractFeatureBranch.user_features_storage.sismember("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}", user_id)
+        rescue Exception => error
+          AbstractFeatureBranch.logger.error "AbstractFeatureBranch encountered an error in retrieving Per-User value for feature \"#{normalized_feature_name}\" and user_id #{user_id}! Defaulting to nil value...\n\nError: #{error.full_message}\n\n"
+          nil
+        end
+      else
+        AbstractFeatureBranch.redis_per_user_features[normalized_feature_name]&.include?(user_id.to_s)
       end
     end
   end
