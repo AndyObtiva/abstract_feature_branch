@@ -59,7 +59,7 @@ abstract_feature_branch is one of the simplest and most minimalistic "Feature Fl
     5) Optionally, customize configuration in config/initializers/abstract_feature_branch.rb
     
     (can be useful for changing location of feature files in Rails application,
-    configuring Redis with a Redis or ConnectionPool instance to use for overrides and per-user feature enablement,
+    configuring Redis with a Redis or ConnectionPool instance to use for overrides and scoped feature enablement (e.g. per-user),
     and/or troubleshooting specific Rails environment feature configurations)
     
   MULTI_LINE_STRING

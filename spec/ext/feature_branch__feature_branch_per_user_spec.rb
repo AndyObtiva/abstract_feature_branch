@@ -36,24 +36,29 @@ describe 'feature_branch object extensions' do
       it 'feature branches correctly after storing feature configuration per user in a separate process (ensuring persistence)' do
         AbstractFeatureBranch.configuration.feature_store_live_fetching = false
         AbstractFeatureBranch.load_application_features
-        user_id = 1 # test the case of numeric ID
+        scope_id = 1 # test the case of numeric ID
         ruby_code = <<-RUBY_CODE
           $:.unshift('.')
           require 'redis'
           require 'lib/abstract_feature_branch'
           AbstractFeatureBranch.feature_store = Redis.new
-          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
+          AbstractFeatureBranch.toggle_features_for_scope('#{scope_id}',
+                                                          :feature1 => false,
+                                                          :feature3 => true,
+                                                          :feature6 => true,
+                                                          :feature7 => false
+                                                         )
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
         
         features_enabled = []
-        feature_branch :feature1, user_id do
+        feature_branch :feature1, scope_id do
           features_enabled << :feature1
         end
-        feature_branch :feature3, user_id do
+        feature_branch :feature3, scope_id do
           features_enabled << :feature3
         end
-        feature_branch :feature6, user_id do
+        feature_branch :feature6, scope_id do
           features_enabled << :feature6
         end
         feature_branch :feature6, 'otheruser@example.com' do
@@ -62,7 +67,7 @@ describe 'feature_branch object extensions' do
         feature_branch :feature6 do
           features_enabled << :feature6_nouserspecified
         end
-        feature_branch :feature7, user_id do
+        feature_branch :feature7, scope_id do
           features_enabled << :feature7
         end
         features_enabled.should include(:feature1) #remains like features.yml
@@ -76,13 +81,13 @@ describe 'feature_branch object extensions' do
         AbstractFeatureBranch.load_application_features
         
         features_enabled = []
-        feature_branch :feature1, user_id do
+        feature_branch :feature1, scope_id do
           features_enabled << :feature1
         end
-        feature_branch :feature3, user_id do
+        feature_branch :feature3, scope_id do
           features_enabled << :feature3
         end
-        feature_branch :feature6, user_id do
+        feature_branch :feature6, scope_id do
           features_enabled << :feature6
         end
         feature_branch :feature6, 'otheruser@example.com' do
@@ -91,7 +96,7 @@ describe 'feature_branch object extensions' do
         feature_branch :feature6 do
           features_enabled << :feature6_nouserspecified
         end
-        feature_branch :feature7, user_id do
+        feature_branch :feature7, scope_id do
           features_enabled << :feature7
         end
         features_enabled.should include(:feature1) #remains like features.yml
@@ -104,22 +109,28 @@ describe 'feature_branch object extensions' do
       it 'update feature branching (disabling some features) after having stored feature configuration per user in a separate process (ensuring persistence)' do
         AbstractFeatureBranch.configuration.feature_store_live_fetching = false
         AbstractFeatureBranch.load_application_features
-        user_id = 1 # test the case of numeric ID
+        scope_id = 1 # test the case of numeric ID
         ruby_code = <<-RUBY_CODE
           $:.unshift('.')
           require 'redis'
           require 'lib/abstract_feature_branch'
           AbstractFeatureBranch.feature_store = Redis.new
-          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => true, :feature7 => false)
-          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => false, :feature7 => true)
+          AbstractFeatureBranch.toggle_features_for_scope('#{scope_id}',
+                                                          :feature6 => true,
+                                                          :feature7 => false
+                                                         )
+          AbstractFeatureBranch.toggle_features_for_scope('#{scope_id}',
+                                                          :feature6 => false,
+                                                          :feature7 => true
+                                                         )
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
         
         features_enabled = []
-        feature_branch :feature6, user_id do
+        feature_branch :feature6, scope_id do
           features_enabled << :feature6
         end
-        feature_branch :feature7, user_id do
+        feature_branch :feature7, scope_id do
           features_enabled << :feature7
         end
         features_enabled.should_not include(:feature6) # remains like features.yml
@@ -129,10 +140,10 @@ describe 'feature_branch object extensions' do
         AbstractFeatureBranch.load_application_features
 
         features_enabled = []
-        feature_branch :feature6, user_id do
+        feature_branch :feature6, scope_id do
           features_enabled << :feature6
         end
-        feature_branch :feature7, user_id do
+        feature_branch :feature7, scope_id do
           features_enabled << :feature7
         end
         features_enabled.should_not include(:feature6)
@@ -143,24 +154,29 @@ describe 'feature_branch object extensions' do
     context 'per user with feature_store_live_fetching true' do
       it 'feature branches correctly after storing feature configuration per user in a separate process (ensuring persistence)' do
         AbstractFeatureBranch.configuration.feature_store_live_fetching = true
-        user_id = 1 # test the case of numeric ID
+        scope_id = 1 # test the case of numeric ID
         ruby_code = <<-RUBY_CODE
           $:.unshift('.')
           require 'redis'
           require 'lib/abstract_feature_branch'
           AbstractFeatureBranch.feature_store = Redis.new
-          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature1 => false, :feature3 => true, :feature6 => true, :feature7 => false)
+          AbstractFeatureBranch.toggle_features_for_scope('#{scope_id}',
+                                                          :feature1 => false,
+                                                          :feature3 => true,
+                                                          :feature6 => true,
+                                                          :feature7 => false
+                                                         )
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
         
         features_enabled = []
-        feature_branch :feature1, user_id do
+        feature_branch :feature1, scope_id do
           features_enabled << :feature1
         end
-        feature_branch :feature3, user_id do
+        feature_branch :feature3, scope_id do
           features_enabled << :feature3
         end
-        feature_branch :feature6, user_id do
+        feature_branch :feature6, scope_id do
           features_enabled << :feature6
         end
         feature_branch :feature6, 'otheruser@example.com' do
@@ -169,7 +185,7 @@ describe 'feature_branch object extensions' do
         feature_branch :feature6 do
           features_enabled << :feature6_nouserspecified
         end
-        feature_branch :feature7, user_id do
+        feature_branch :feature7, scope_id do
           features_enabled << :feature7
         end
         features_enabled.should include(:feature1) #remains like features.yml
@@ -182,22 +198,28 @@ describe 'feature_branch object extensions' do
       
       it 'update feature branching (disabling some features) after having stored feature configuration per user in a separate process (ensuring persistence)' do
         AbstractFeatureBranch.configuration.feature_store_live_fetching = true
-        user_id = 1 # test the case of numeric ID
+        scope_id = 1 # test the case of numeric ID
         ruby_code = <<-RUBY_CODE
           $:.unshift('.')
           require 'redis'
           require 'lib/abstract_feature_branch'
           AbstractFeatureBranch.feature_store = Redis.new
-          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => true, :feature7 => false)
-          AbstractFeatureBranch.toggle_features_for_user('#{user_id}', :feature6 => false, :feature7 => true)
+          AbstractFeatureBranch.toggle_features_for_scope('#{scope_id}',
+                                                          :feature6 => true,
+                                                          :feature7 => false
+                                                         )
+          AbstractFeatureBranch.toggle_features_for_scope('#{scope_id}',
+                                                          :feature6 => false,
+                                                          :feature7 => true
+                                                         )
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
         
         features_enabled = []
-        feature_branch :feature6, user_id do
+        feature_branch :feature6, scope_id do
           features_enabled << :feature6
         end
-        feature_branch :feature7, user_id do
+        feature_branch :feature7, scope_id do
           features_enabled << :feature7
         end
         features_enabled.should_not include(:feature6)

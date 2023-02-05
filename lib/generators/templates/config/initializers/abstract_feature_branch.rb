@@ -9,7 +9,7 @@
 
 # Enable live fetching of feature configuration from storage system (Redis), to update features without app/server restart.
 # false by default to only load features on app/server start for faster performance (requires restart on change)
-# This also affects per-user feature loading from storage system (Redis), pre-caching user IDs for features on app/server
+# This also affects scoped feature loading from storage system (Redis), pre-caching scope IDs for features on app/server
 # restart when false, for better performance.
 AbstractFeatureBranch.feature_store_live_fetching = false
 

@@ -20,6 +20,8 @@ require 'abstract_feature_branch/configuration'
 module AbstractFeatureBranch
   ENV_FEATURE_PREFIX = "abstract_feature_branch_"
   REDIS_HKEY = "abstract_feature_branch"
+  VALUE_SCOPED = 'scoped'
+  SCOPED_SPECIAL_VALUES = [VALUE_SCOPED, 'per_user', 'per-user', 'per user']
 
   class << self
     extend Forwardable
@@ -27,7 +29,7 @@ module AbstractFeatureBranch
                    :application_root, :application_root=, :initialize_application_root, :application_environment, :application_environment=, :initialize_application_environment,
                    :logger, :logger=, :initialize_logger, :cacheable, :cacheable=, :initialize_cacheable, :feature_store, :feature_store=, :user_features_storage, :user_features_storage=,
                    :feature_store_live_fetching, :feature_store_live_fetching=
-
+    
     def configuration
       @configuration ||= Configuration.new
     end
@@ -86,23 +88,23 @@ module AbstractFeatureBranch
         merge(redis_overrides)
     end
     
-    def redis_per_user_features
-      @redis_per_user_features ||= load_redis_per_user_features
+    def redis_scoped_features
+      @redis_scoped_features ||= load_redis_scoped_features
     end
-    def load_redis_per_user_features
-      @redis_per_user_features = {}
-      return @redis_per_user_features if AbstractFeatureBranch.configuration.feature_store_live_fetching?
+    def load_redis_scoped_features
+      @redis_scoped_features = {}
+      return @redis_scoped_features if AbstractFeatureBranch.configuration.feature_store_live_fetching?
       
       @environment_features.each do |environment, features|
         features.each do |feature, value|
-          if value == 'per_user'
+          if SCOPED_SPECIAL_VALUES.include?(value.to_s.downcase)
             normalized_feature_name = feature.to_s.downcase
-            @redis_per_user_features[normalized_feature_name] ||= []
+            @redis_scoped_features[normalized_feature_name] ||= []
             begin
-              per_user_feature_user_ids = AbstractFeatureBranch.
-                                            user_features_storage.
+              scoped_feature_scope_ids = AbstractFeatureBranch.
+                                            feature_store.
                                             smembers("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}")
-              @redis_per_user_features[normalized_feature_name] += per_user_feature_user_ids
+              @redis_scoped_features[normalized_feature_name] += scoped_feature_scope_ids
             rescue Exception => error
               AbstractFeatureBranch.logger.error "AbstractFeatureBranch encountered an error in retrieving Per-User values for feature \"#{normalized_feature_name}\"! Defaulting to no values...\n\nError: #{error.full_message}\n\n"
               nil
@@ -111,7 +113,7 @@ module AbstractFeatureBranch
         end
       end
       
-      @redis_per_user_features
+      @redis_scoped_features
     end
     
     def application_features
@@ -124,7 +126,7 @@ module AbstractFeatureBranch
       AbstractFeatureBranch.load_features
       AbstractFeatureBranch.load_local_features
       AbstractFeatureBranch.load_environment_features(application_environment)
-      AbstractFeatureBranch.load_redis_per_user_features
+      AbstractFeatureBranch.load_redis_scoped_features
     end
     def unload_application_features
       @redis_overrides = nil
@@ -132,13 +134,17 @@ module AbstractFeatureBranch
       @features = nil
       @local_features = nil
       @environment_features = nil
-      @redis_per_user_features = nil
+      @redis_scoped_features = nil
     end
     
     def cacheable?
       value = downcase_keys(cacheable)[application_environment]
       value = (application_environment != 'development') if value.nil?
       value
+    end
+    
+    def scoped_value?(value)
+      SCOPED_SPECIAL_VALUES.include?(value.to_s.downcase)
     end
     
     # Sets feature value (true or false) in storage (e.g. Redis client)
@@ -161,7 +167,7 @@ module AbstractFeatureBranch
         value = feature_store.hget(REDIS_HKEY, matching_feature) if matching_feature
       end
       return nil if value.nil?
-      return 'per_user' if value.to_s.downcase == 'per_user'
+      return VALUE_SCOPED if scoped_value?(value)
       value.to_s.downcase == 'true'
     end
     
@@ -186,15 +192,16 @@ module AbstractFeatureBranch
       end
     end
     
-    def toggle_features_for_user(user_id, features)
+    def toggle_features_for_scope(scope_id, features)
       features.each do |name, value|
         if value
-          feature_store.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
+          feature_store.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", scope_id)
         else
-          feature_store.srem("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", user_id)
+          feature_store.srem("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", scope_id)
         end
       end
     end
+    alias toggle_features_for_user toggle_features_for_scope
 
     private
 
@@ -219,7 +226,7 @@ module AbstractFeatureBranch
       hash_values = hash.map do |k, v|
         normalized_value = v.to_s.downcase
         boolean_value = normalized_value == 'true'
-        new_value = normalized_value == 'per_user' ? 'per_user' : boolean_value
+        new_value = scoped_value?(normalized_value) ? VALUE_SCOPED : boolean_value
         [k, new_value]
       end
       Hash[hash_values]

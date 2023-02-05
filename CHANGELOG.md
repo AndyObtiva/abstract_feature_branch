@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.5.0
+
+- Generalize "Per-User Feature Enablement" as "Scoped Feature Enablement" (using `scoped` value instead of `per_user` value) to scope features by any scope IDs (e.g. entity IDs or value objects)
+- Rename `toggle_features_for_user` to `toggle_features_for_scope`
+
 ## 1.4.0
 
 - Avoid live loading of per-user features when `AbstractFeatureBranch.feature_store_live_fetching` is `false` to ensure better performance through caching.

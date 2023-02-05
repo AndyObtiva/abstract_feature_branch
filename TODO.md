@@ -2,7 +2,6 @@
 
 ## Future
 
-- Generalize per-user feature enablement to per-entity feature enablement by supporting a per_entity value and keeping per_user value support as an alias for backwards compatibility. Consider other aliases too like per-entity, per entity, and perentity, to follow the Ruby way of more ways than one and be fault tolerant towards user error (consider these variations for per-user too)
 - List enabled per-user features for a user_id
 - Support new configuration option `AbstractFeatureBranch.feature_store_per_user_live_fetching` to have the ability to enable per-user only live loading from feature store (i.e. Redis) by taking precedence over the `AbstractFeatureBranch.feature_store_live_fetching` configuration option (which affects both general and per-user feature loading)
 

@@ -1,4 +1,4 @@
-# Abstract Feature Branch 1.4.0
+# Abstract Feature Branch 1.5.0
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
@@ -38,17 +38,17 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.4.0'</pre>
-   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.4.0'</pre>
+   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.5.0'</pre>
+   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.5.0'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
-4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and [per-user feature enablement](#per-user-feature-enablement), or troubleshooting a specific Rails environment feature configuration)
+4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and [scoped feature enablement](#scoped-feature-enablement) (e.g. per-user), or troubleshooting a specific Rails environment feature configuration)
 5. [Optional] Redis Server (between `~> 7.0` and `~> 3.0`): On the Mac, you can install simply via [Homebrew](https://brew.sh/) with `brew install redis`
 6. [Optional] `redis` client gem (between `~> 5.0` and `~> 3.0`): Add the following to Gemfile above [`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) <pre>gem 'redis', '~> 5.0.5'</pre>
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.4.0</pre>
+1. <pre>gem install abstract_feature_branch -v 1.5.0</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. [Optional] Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -58,8 +58,8 @@ Setup
 8. [Optional] Add code <code>AbstractFeatureBranch.logger = "[your_application_logger]"</code> (it defaults to a new instance of Ruby <code>Logger</code>. Must use a logger with <code>info</code> and <code>warn</code> methods).
 9. [Optional] Add code <code>AbstractFeatureBranch.cacheable = {[environment] => [true/false]}</code> to indicate cacheability of loaded feature files for enhanced performance (it defaults to true for every environment other than development).
 10. [Optional] Add code <code>AbstractFeatureBranch.load_application_features</code> to pre-load application features for improved first-use performance
-11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides and/or [per-user feature enablement](#per-user-feature-enablement)
-12. [Optional] Set <code>AbstractFeatureBranch.feature_store_live_fetching = true</code> to enable live fetching of features from store (e.g. Redis) to avoid need for app/server restart upon feature changes, with the trade-off of slightly more latency due to making calls to feature store over the network (this affects per-user feature enablement too, pre-caching all user IDs for features on app/server restart when disabled)
+11. [Optional] Add code <code>AbstractFeatureBranch.feature_store = Redis.new(options)</code> to configure Redis for overrides and/or [scoped feature enablement](#scoped-feature-enablement) (e.g. per-user)
+12. [Optional] Set <code>AbstractFeatureBranch.feature_store_live_fetching = true</code> to enable live fetching of features from store (e.g. Redis) to avoid need for app/server restart upon feature changes, with the trade-off of slightly more latency due to making calls to feature store over the network (this affects scoped feature enablement too, pre-caching all user IDs for features on app/server restart when disabled)
 
 Instructions
 ------------
@@ -84,7 +84,7 @@ enabled (true) or disabled (false) per environment (e.g. production).
 >       feature1: true
 >       feature2: true
 >       feature3: false
->       feature4: per_user
+>       feature4: scoped
 >
 >     development:
 >       <<: *defaults
@@ -131,17 +131,17 @@ Note that <code>feature_enabled?</code> returns false if the feature is disabled
 >     AbstractFeatureBranch.environment_features('development')
 >     # => {"feature1"=>true, "feature2"=>false, "feature3"=>false, "feature4"=>true}
 
-### Per-User Feature Enablement
+### Scoped Feature Enablement
 
-It is possible to restrict enablement of features per specific users (or per entities of any kind) by setting a feature value to <code>per_user</code>, and then toggling features for specific users (or other entities).
+It is possible to restrict enablement of features per specific users (or per entities of any kind) by setting a feature value to <code>scoped</code>, and then toggling features for specific users (or other entities).
 
-1. Use <code>toggle_features_for_user</code> in Ruby code to enable features per user ID (e.g. email address or database ID). This loads Redis client gem into memory and stores per-user feature configuration in Redis.
+1. Use <code>toggle_features_for_scope</code> in Ruby code to enable features per scope ID (e.g. entity ID, comma-separated compound ID, JSON string, or value object), which must be a String or a value that is safely-convertable to a String like Integer (e.g. email address or database ID). This loads Redis client gem into memory and stores scoped feature configuration in Redis.
 In the example below, current_user is a method that provides the current signed in user (e.g. using Rails [Devise] (https://github.com/plataformatec/devise) library).
 
->     user_id = current_user.email
->     AbstractFeatureBranch.toggle_features_for_user(user_id, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
+>     scope_id = current_user.email
+>     AbstractFeatureBranch.toggle_features_for_scope(scope_id, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
 
-Use alternate version of <code>feature_branch</code> and <code>feature_enabled?</code> passing extra <code>user_id</code> argument
+Use alternate version of <code>feature_branch</code> and <code>feature_enabled?</code> passing extra <code>scope_id</code> argument
 
 Examples:
 
@@ -168,7 +168,7 @@ Examples:
 Note:
 
 If a feature is enabled as <code>true</code> or disabled as <code>false</code> in features.yml (or one of the overrides
-like features.local.yml or environment variable overrides), then it overrides toggled per-user restrictions, becoming
+like features.local.yml or environment variable overrides), then it overrides toggled scoped feature restrictions, becoming
 enabled or disabled globally.
 
 

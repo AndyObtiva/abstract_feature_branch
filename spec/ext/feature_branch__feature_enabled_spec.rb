@@ -143,8 +143,8 @@ describe 'feature_branch object extensions' do
       feature_enabled?(:feature5).should be_nil
     end
     context 'per user' do
-      let(:user_id) { 'email1@example.com' }
-      let(:another_user_id) { 'another_email@example.com' }
+      let(:scope_id) { 'email1@example.com' }
+      let(:another_scope_id) { 'another_email@example.com' }
       
       before do
         AbstractFeatureBranch.configuration.feature_store_live_fetching = true
@@ -165,26 +165,26 @@ describe 'feature_branch object extensions' do
       it 'behaves as expected if member list is empty, regardless of the user provided' do
         feature_enabled?('feature6').should == false
         feature_enabled?('feature6', nil).should == false
-        feature_enabled?('feature6', user_id).should == false
+        feature_enabled?('feature6', scope_id).should == false
       end
       
       it 'behaves as expected if member list is not empty, and user id provided is in member list' do
-        AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true)
+        AbstractFeatureBranch.toggle_features_for_scope(scope_id, :feature6 => true)
         feature_enabled?('feature6').should == false
-        feature_enabled?('feature6', user_id).should == true
+        feature_enabled?('feature6', scope_id).should == true
       end
       
       it 'fails due to a Redis connection error when member list is not empty and accessing user provided is in member list, live' do
-        AbstractFeatureBranch.toggle_features_for_user(user_id, :feature6 => true)
+        AbstractFeatureBranch.toggle_features_for_scope(scope_id, :feature6 => true)
         AbstractFeatureBranch.configuration.feature_store_live_fetching = true
         AbstractFeatureBranch.feature_store = Redis.new(url: 'rediss://:p4ssw0rd@10.0.1.1:6381/15', reconnect_attempts: 0, timeout: 0.0)
         feature_enabled?('feature6').should == false
-        feature_enabled?('feature6', user_id).should be_nil
+        feature_enabled?('feature6', scope_id).should be_nil
       end
       
       it 'behaves as expected if member list is not empty, and user provided is not in member list' do
-        AbstractFeatureBranch.toggle_features_for_user(another_user_id, :feature6 => true)
-        feature_enabled?('feature6', user_id).should == false
+        AbstractFeatureBranch.toggle_features_for_scope(another_scope_id, :feature6 => true)
+        feature_enabled?('feature6', scope_id).should == false
       end
     end
     context 'cacheability' do

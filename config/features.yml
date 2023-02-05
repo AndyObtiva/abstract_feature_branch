@@ -5,7 +5,7 @@ defaults: &defaults
   feature4: true
   feature4a: true
   feature6: per_user
-  feature7: per_user
+  feature7: scoped
 
 development:
   <<: *defaults
