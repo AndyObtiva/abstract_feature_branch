@@ -1,4 +1,4 @@
-# Abstract Feature Branch 1.5.0
+# Abstract Feature Branch 1.5.1
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
@@ -23,8 +23,6 @@ context-specific feature files if needed.
 
 [`abstract_feature_branch`](https://rubygems.org/gems/abstract_feature_branch) is one of the simplest and most minimalistic "Feature Flags" Ruby gems out there as it enables you to get started very quickly by simply leveraging YAML files without having to set up a data store if you do not need it (albeit, you also have the option to use [Redis](https://redis.com) as a very fast in-memory data store).
 
-
-
 Requirements
 ------------
 - Ruby (between `~> 3.1.0` and `~> 1.8.7`)
@@ -38,8 +36,8 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.5.0'</pre>
-   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.5.0'</pre>
+   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.5.1'</pre>
+   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.5.1'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and [scoped feature enablement](#scoped-feature-enablement) (e.g. per-user), or troubleshooting a specific Rails environment feature configuration)
@@ -48,7 +46,7 @@ Setup
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.5.0</pre>
+1. <pre>gem install abstract_feature_branch -v 1.5.1</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. [Optional] Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -138,10 +136,10 @@ It is possible to restrict enablement of features per specific users (or per ent
 1. Use <code>toggle_features_for_scope</code> in Ruby code to enable features per scope ID (e.g. entity ID, comma-separated compound ID, JSON string, or value object), which must be a String or a value that is safely-convertable to a String like Integer (e.g. email address or database ID). This loads Redis client gem into memory and stores scoped feature configuration in Redis.
 In the example below, current_user is a method that provides the current signed in user (e.g. using Rails [Devise] (https://github.com/plataformatec/devise) library).
 
->     scope_id = current_user.email
->     AbstractFeatureBranch.toggle_features_for_scope(scope_id, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
+>     scope = current_user.email
+>     AbstractFeatureBranch.toggle_features_for_scope(scope, :feature1 => true, :feature2 => false, :feature3 => true, :feature5 => true)
 
-Use alternate version of <code>feature_branch</code> and <code>feature_enabled?</code> passing extra <code>scope_id</code> argument
+Use alternate version of <code>feature_branch</code> and <code>feature_enabled?</code> passing extra <code>scope</code> argument
 
 Examples:
 
@@ -171,6 +169,14 @@ If a feature is enabled as <code>true</code> or disabled as <code>false</code> i
 like features.local.yml or environment variable overrides), then it overrides toggled scoped feature restrictions, becoming
 enabled or disabled globally.
 
+API
+---
+
+`AbstractFeatureBranch.toggle_features_for_scope(scope, feature1: true, feature2: false, ...)`: API method that toggles features (Strings or Symbols) for a scope
+
+`AbstractFeatureBranch.toggled_features_for_scope(scope)`: API method that returns toggled features for a scope (String)
+
+`AbstractFeatureBranch.scopes_for_feature(feature)`: API method that returns scopes for a (scoped) feature (String or Symbol)
 
 Recommendations
 ---------------

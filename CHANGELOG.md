@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.5.1
+
+- `AbstractFeatureBranch.toggled_features_for_scope(scope)` API method that returns toggled features for a scope (String)
+- `AbstractFeatureBranch.scopes_for_feature(feature)` API method that returns scopes for a (scoped) feature (String or Symbol)
+
 ## 1.5.0
 
 - Generalize "Per-User Feature Enablement" as "Scoped Feature Enablement" (using `scoped` value instead of `per_user` value) to scope features by any scope IDs (e.g. entity IDs or value objects)

@@ -101,10 +101,7 @@ module AbstractFeatureBranch
             normalized_feature_name = feature.to_s.downcase
             @redis_scoped_features[normalized_feature_name] ||= []
             begin
-              scoped_feature_scope_ids = AbstractFeatureBranch.
-                                            feature_store.
-                                            smembers("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}")
-              @redis_scoped_features[normalized_feature_name] += scoped_feature_scope_ids
+              @redis_scoped_features[normalized_feature_name] += scopes_for_feature(normalized_feature_name)
             rescue Exception => error
               AbstractFeatureBranch.logger.error "AbstractFeatureBranch encountered an error in retrieving Per-User values for feature \"#{normalized_feature_name}\"! Defaulting to no values...\n\nError: #{error.full_message}\n\n"
               nil
@@ -192,17 +189,34 @@ module AbstractFeatureBranch
       end
     end
     
-    def toggle_features_for_scope(scope_id, features)
+    def toggle_features_for_scope(scope, features)
       features.each do |name, value|
         if value
-          feature_store.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", scope_id)
+          feature_store.sadd("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", scope)
         else
-          feature_store.srem("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", scope_id)
+          feature_store.srem("#{ENV_FEATURE_PREFIX}#{name.to_s.downcase}", scope)
         end
       end
     end
     alias toggle_features_for_user toggle_features_for_scope
-
+    
+    def toggled_features_for_scope(scope)
+      AbstractFeatureBranch.feature_store.keys.select do |key|
+        key.start_with?(AbstractFeatureBranch::ENV_FEATURE_PREFIX)
+      end.map do |key|
+        feature = key.sub(AbstractFeatureBranch::ENV_FEATURE_PREFIX, '')
+      end.select do |feature|
+        scopes_for_feature(feature).include?(scope.to_s)
+      end
+    end
+    
+    def scopes_for_feature(feature)
+      normalized_feature_name = feature.to_s.downcase
+      AbstractFeatureBranch.
+        feature_store.
+        smembers("#{AbstractFeatureBranch::ENV_FEATURE_PREFIX}#{normalized_feature_name}")
+    end
+    
     private
 
     def load_specific_features(features_hash, extension)
