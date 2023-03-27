@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.6.0
+
+- Support Ruby 3.3 - Ruby 1.9.1
+- Thread-Safe Support for Multi-Threaded Usage of `feature_enabled?` and `feature_branch` (fixes issue with multi-threaded usage of `feature_enabled?` causing a `merge` method invocation error due to a `features[environment]` `nil` value that should have been a `Hash` value instead)
+
 ## 1.5.1
 
 - `AbstractFeatureBranch.toggled_features_for_scope(scope)` API method that returns toggled features for a scope (String)

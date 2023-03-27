@@ -2,6 +2,9 @@
 
 ## Future
 
+- Fix error regarding failed Hash merge on features[environment] caused by code not being safe for multi-threading
+- Write tests to confirm that AbstractFeatureBranch is thread-safe
+
 - Support new configuration option `AbstractFeatureBranch.feature_store_per_user_live_fetching` to have the ability to enable per-user only live loading from feature store (i.e. Redis) by taking precedence over the `AbstractFeatureBranch.feature_store_live_fetching` configuration option (which affects both general and per-user feature loading)
 
 - Web user interface for configuring Redis Overrides (tech details: could be implemented as a [Rails engine](https://guides.rubyonrails.org/engines.html) gem)
@@ -12,6 +15,7 @@
 - Support a Rails JavaScript object API for retrieving feature flags conveniently in JavaScript from feature flag Rails API
 - Detect if a feature got repeated in multiple context files and display a warning about it. Also, provide an option to fail fast in that scenario
 - Provide official support or examples of how to Branch By Abstraction by using Inheritance, Strategy Design Pattern or Bridge Design Pattern based on whether a feature is enabled or not, or based on whether one of multiple related features is enabled exclusively.
+- Programmatic in-memory setting of feature flags via Ruby API (different from env var overrides and redis overrides)
 
 ## Maybe
 

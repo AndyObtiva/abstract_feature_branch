@@ -15,13 +15,28 @@ require 'forwardable'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
+require 'abstract_feature_branch/memoizable'
 require 'abstract_feature_branch/configuration'
 
 module AbstractFeatureBranch
+  extend Memoizable
+  
   ENV_FEATURE_PREFIX = "abstract_feature_branch_"
   REDIS_HKEY = "abstract_feature_branch"
   VALUE_SCOPED = 'scoped'
   SCOPED_SPECIAL_VALUES = [VALUE_SCOPED, 'per_user', 'per-user', 'per user']
+  MUTEX = {
+    '@configuration': Mutex.new,
+    '@redis_overrides': Mutex.new,
+    '@environment_variable_overrides': Mutex.new,
+    '@local_features': Mutex.new,
+    '@features': Mutex.new,
+    '@environment_features': Mutex.new,
+    '@redis_scoped_features': Mutex.new,
+    'environment_features': Mutex.new,
+    'load_application_features': Mutex.new,
+    'unload_application_features': Mutex.new,
+  }
 
   class << self
     extend Forwardable
@@ -31,11 +46,11 @@ module AbstractFeatureBranch
                    :feature_store_live_fetching, :feature_store_live_fetching=
     
     def configuration
-      @configuration ||= Configuration.new
+      memoize_thread_safe(:@configuration) { Configuration.new }
     end
 
     def redis_overrides
-      @redis_overrides ||= load_redis_overrides
+      memoize_thread_safe(:@redis_overrides, :load_redis_overrides)
     end
     def load_redis_overrides
       return (@redis_overrides = {}) if feature_store.nil?
@@ -51,14 +66,14 @@ module AbstractFeatureBranch
     end
 
     def environment_variable_overrides
-      @environment_variable_overrides ||= load_environment_variable_overrides
+      memoize_thread_safe(:@environment_variable_overrides, :load_environment_variable_overrides)
     end
     def load_environment_variable_overrides
       @environment_variable_overrides = featureize_keys(downcase_keys(booleanize_values(select_feature_keys(ENV))))
     end
     
     def local_features
-      @local_features ||= load_local_features
+      memoize_thread_safe(:@local_features, :load_local_features)
     end
     def load_local_features
       @local_features = {}
@@ -66,7 +81,7 @@ module AbstractFeatureBranch
     end
     
     def features
-      @features ||= load_features
+      memoize_thread_safe(:@features, :load_features)
     end
     def load_features
       @features = {}
@@ -75,8 +90,15 @@ module AbstractFeatureBranch
     
     # performance optimization via caching of feature values resolved through environment variable overrides and local features
     def environment_features(environment)
-      @environment_features ||= {}
-      @environment_features[environment] ||= load_environment_features(environment)
+      if environment_features_for_all_environments[environment].nil?
+        MUTEX[:environment_features].synchronize do
+          if environment_features_for_all_environments[environment].nil?
+            environment_features_for_all_environments[environment] = load_environment_features(environment)
+          end
+          @unload_application_features = nil
+        end
+      end
+      environment_features_for_all_environments[environment]
     end
     def load_environment_features(environment)
       @environment_features ||= {}
@@ -88,8 +110,12 @@ module AbstractFeatureBranch
         merge(redis_overrides)
     end
     
+    def environment_features_for_all_environments
+      memoize_thread_safe(:@environment_features) { {} }
+    end
+    
     def redis_scoped_features
-      @redis_scoped_features ||= load_redis_scoped_features
+      memoize_thread_safe(:@redis_scoped_features, :load_redis_scoped_features)
     end
     def load_redis_scoped_features
       @redis_scoped_features = {}
@@ -114,27 +140,44 @@ module AbstractFeatureBranch
     end
     
     def application_features
-      unload_application_features unless cacheable?
+      unload_application_features if !cacheable?
       environment_features(application_environment)
     end
     def load_application_features
-      AbstractFeatureBranch.load_redis_overrides
-      AbstractFeatureBranch.load_environment_variable_overrides
-      AbstractFeatureBranch.load_features
-      AbstractFeatureBranch.load_local_features
-      AbstractFeatureBranch.load_environment_features(application_environment)
-      AbstractFeatureBranch.load_redis_scoped_features
+      if @load_application_features.nil?
+        MUTEX[:load_application_features].synchronize do
+          if @load_application_features.nil?
+            AbstractFeatureBranch.load_redis_overrides
+            AbstractFeatureBranch.load_environment_variable_overrides
+            AbstractFeatureBranch.load_features
+            AbstractFeatureBranch.load_local_features
+            AbstractFeatureBranch.load_environment_features(application_environment)
+            AbstractFeatureBranch.load_redis_scoped_features
+            @unload_application_features = nil
+            @load_application_features = true
+          end
+        end
+      end
     end
     def unload_application_features
-      @redis_overrides = nil
-      @environment_variable_overrides = nil
-      @features = nil
-      @local_features = nil
-      @environment_features = nil
-      @redis_scoped_features = nil
+      if @unload_application_features.nil?
+        MUTEX[:unload_application_features].synchronize do
+          if @unload_application_features.nil?
+            @redis_overrides = nil
+            @environment_variable_overrides = nil
+            @features = nil
+            @local_features = nil
+            @environment_features = nil
+            @redis_scoped_features = nil
+            @load_application_features = nil
+            @unload_application_features = true
+          end
+        end
+      end
     end
     
     def cacheable?
+      # TODO Make thread-safe
       value = downcase_keys(cacheable)[application_environment]
       value = (application_environment != 'development') if value.nil?
       value
@@ -218,13 +261,13 @@ module AbstractFeatureBranch
     end
     
     private
-
+    
     def load_specific_features(features_hash, extension)
       Dir.glob(File.join(application_root, 'config', 'features', '**', "*#{extension}")).each do |feature_configuration_file|
         features_hash.deep_merge!(downcase_feature_hash_keys(YAML.load_file(feature_configuration_file)))
       end
       main_local_features_file = File.join(application_root, 'config', "features#{extension}")
-      features_hash.deep_merge!(downcase_feature_hash_keys(YAML.load_file(main_local_features_file))) if File.exists?(main_local_features_file)
+      features_hash.deep_merge!(downcase_feature_hash_keys(YAML.load_file(main_local_features_file))) if File.exist?(main_local_features_file)
       features_hash
     end
 

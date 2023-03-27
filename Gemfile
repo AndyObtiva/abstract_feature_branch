@@ -5,7 +5,7 @@ gem 'deep_merge', '>= 1.0.0', '< 2.0.0', :require => false #avoid loading to use
 group :development do
   gem 'jeweler', '~> 2.3.9'
   gem 'bundler', '>= 2.1.4'
-  gem 'rspec', '2.14.1'
+  gem 'rspec', '~> 3.12.0'
   gem 'rdoc', '5.1.0'
   gem 'psych', '3.3.4'
   gem 'rake-tui', '~> 0.2'

@@ -1,9 +1,20 @@
+require 'abstract_feature_branch/memoizable'
 require 'abstract_feature_branch/redis/connection_pool_to_redis_adapter'
 
 module AbstractFeatureBranch
   class Configuration
+    include Memoizable
+    
+    MUTEX = {
+      '@application_root': Mutex.new,
+      '@application_environment': Mutex.new,
+      '@logger': Mutex.new,
+      '@cacheable': Mutex.new,
+      '@feature_store_live_fetching': Mutex.new,
+    }
+  
     def application_root
-      @application_root ||= initialize_application_root
+      memoize_thread_safe(:@application_root, :initialize_application_root)
     end
     def application_root=(path)
       @application_root = path
@@ -12,7 +23,7 @@ module AbstractFeatureBranch
       self.application_root = defined?(Rails) ? Rails.root : '.'
     end
     def application_environment
-      @application_environment ||= initialize_application_environment
+      memoize_thread_safe(:@application_environment, :initialize_application_environment)
     end
     def application_environment=(environment)
       @application_environment = environment
@@ -21,7 +32,7 @@ module AbstractFeatureBranch
       self.application_environment = defined?(Rails) ? Rails.env.to_s : ENV['APP_ENV'] || 'development'
     end
     def logger
-      @logger ||= initialize_logger
+      memoize_thread_safe(:@logger, :initialize_logger)
     end
     def logger=(logger)
       @logger = logger
@@ -30,7 +41,7 @@ module AbstractFeatureBranch
       self.logger = defined?(Rails) && Rails.logger ? Rails.logger : Logger.new(STDOUT)
     end
     def cacheable
-      @cacheable ||= initialize_cacheable
+      memoize_thread_safe(:@cacheable, :initialize_cacheable)
     end
     def cacheable=(cacheable)
       @cacheable = cacheable
@@ -64,8 +75,7 @@ module AbstractFeatureBranch
     alias user_features_storage= feature_store=
     
     def feature_store_live_fetching
-      initialize_feature_store_live_fetching if @feature_store_live_fetching.nil?
-      @feature_store_live_fetching
+      memoize_thread_safe(:@feature_store_live_fetching, :initialize_feature_store_live_fetching)
     end
     alias feature_store_live_fetching? feature_store_live_fetching
     

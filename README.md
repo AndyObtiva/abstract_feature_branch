@@ -1,4 +1,4 @@
-# Abstract Feature Branch 1.5.1
+# Abstract Feature Branch 1.6.0
 [![Gem Version](https://badge.fury.io/rb/abstract_feature_branch.png)](http://badge.fury.io/rb/abstract_feature_branch)
 [![Build Status](https://api.travis-ci.org/AndyObtiva/abstract_feature_branch.png?branch=master)](https://travis-ci.org/AndyObtiva/abstract_feature_branch)
 [![Coverage Status](https://coveralls.io/repos/AndyObtiva/abstract_feature_branch/badge.png?branch=master)](https://coveralls.io/r/AndyObtiva/abstract_feature_branch?branch=master)
@@ -25,7 +25,7 @@ context-specific feature files if needed.
 
 Requirements
 ------------
-- Ruby (between `~> 3.1.0` and `~> 1.8.7`)
+- Ruby (between `~> 3.3.0` and `~> 1.9.1`)
 - [Optional] Rails (between `~> 7.0` and `~> 2.0`)
 - [Optional] Redis Server (between `~> 7.0` and `~> 2.0`)
 - [Optional] Redis client gem (between `~> 5.0` and `~> 3.0`)
@@ -36,8 +36,8 @@ Setup
 ### Rails Application Use
 
 1. Configure Rubygem
-   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.5.1'</pre>
-   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.5.1'</pre>
+   - With `rails` between `~> 7.0` and `~> 2.0`: Add the following to Gemfile <pre>gem 'abstract_feature_branch', '~> 1.6.0'</pre>
+   - With `rails` `~> 2.0` only: Add the following to config/environment.rb <pre>config.gem 'abstract_feature_branch', :version => '1.6.0'</pre>
 2. Generate <code>config/initializers/abstract_feature_branch.rb</code>, <code>lib/tasks/abstract_feature_branch.rake</code>, <code>config/features.yml</code> and <code>config/features.local.yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:install</pre>
 3. [Optional] Generate <code>config/features/[context_path].yml</code> in your Rails app directory by running <pre>rails g abstract_feature_branch:context context_path</pre> (more details under [**instructions**](#instructions))
 4. [Optional] Customize configuration in <code>config/initializers/abstract_feature_branch.rb</code> (can be useful for changing location of feature files in Rails application, configuring Redis with a Redis or ConnectionPool instance to use for overrides, and [scoped feature enablement](#scoped-feature-enablement) (e.g. per-user), or troubleshooting a specific Rails environment feature configuration)
@@ -46,7 +46,7 @@ Setup
 
 ### Ruby Application General Use
 
-1. <pre>gem install abstract_feature_branch -v 1.5.1</pre>
+1. <pre>gem install abstract_feature_branch -v 1.6.0</pre>
 2. Add code <code>require 'abstract_feature_branch'</code>
 3. Create <code>config/features.yml</code> under <code>AbstractFeatureBranch.application_root</code> and fill it with content similar to that of the sample <code>config/features.yml</code> mentioned under [**instructions**](#instructions).
 4. [Optional] Create <code>config/features.local.yml</code> under <code>AbstractFeatureBranch.application_root</code>  (more details under [**instructions**](#instructions))
@@ -112,7 +112,9 @@ multi-line logic:
 single-line logic:
 >     feature_branch(:feature1) { # perform logic }
 
-Note that <code>feature_branch</code> returns nil and does not execute the block if the feature is disabled or non-existent.
+Note that <code>feature_branch</code> returns `nil` and does not execute the block if the feature is disabled or non-existent.
+
+`feature_branch` supports multi-threaded code (i.e. usage from multiple parallel threads, as possible in JRuby).
 
 - Imperatively check if a feature is enabled or not:
 
@@ -122,7 +124,9 @@ Note that <code>feature_branch</code> returns nil and does not execute the block
 >       # perform alternate logic
 >     end
 
-Note that <code>feature_enabled?</code> returns false if the feature is disabled and nil if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
+Note that <code>feature_enabled?</code> returns `false` if the feature is disabled and `nil` if the feature is non-existent (practically the same effect, but nil can sometimes be useful to detect if a feature is referenced).
+
+`feature_enabled?` supports multi-threaded code (i.e. usage from multiple parallel threads, as possible in JRuby).
 
 - List all configured features for a particular environment:
 

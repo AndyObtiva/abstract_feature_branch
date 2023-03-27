@@ -33,6 +33,10 @@ describe 'feature_branch object extensions' do
   end
   describe '#feature_branch' do
     context 'per user with feature_store_live_fetching false' do
+      # TODO add tests for feature_store_per_user_live_fetching overriding feature_store_live_fetching
+      # TODO positively
+      # TODO negatively
+      # TODO when not set (nil) [already done]
       it 'feature branches correctly after storing feature configuration per user in a separate process (ensuring persistence)' do
         AbstractFeatureBranch.configuration.feature_store_live_fetching = false
         AbstractFeatureBranch.load_application_features
@@ -51,7 +55,7 @@ describe 'feature_branch object extensions' do
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
         
-        AbstractFeatureBranch.toggled_features_for_scope(scope).should == ['feature3', 'feature6']
+        AbstractFeatureBranch.toggled_features_for_scope(scope).should =~ ['feature3', 'feature6']
         AbstractFeatureBranch.toggled_features_for_scope('unusedscope').should == []
         AbstractFeatureBranch.scopes_for_feature('feature3').should == [scope.to_s]
         AbstractFeatureBranch.scopes_for_feature('feature6').should == [scope.to_s]
@@ -181,7 +185,7 @@ describe 'feature_branch object extensions' do
         RUBY_CODE
         system "ruby -e \"#{ruby_code}\""
         
-        AbstractFeatureBranch.toggled_features_for_scope(scope).should == ['feature3', 'feature6']
+        AbstractFeatureBranch.toggled_features_for_scope(scope).should =~ ['feature3', 'feature6']
         AbstractFeatureBranch.toggled_features_for_scope('unusedscope').should == []
         AbstractFeatureBranch.scopes_for_feature('feature3').should == [scope.to_s]
         AbstractFeatureBranch.scopes_for_feature('feature6').should == [scope.to_s]
