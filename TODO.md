@@ -9,6 +9,20 @@
 
 - Web user interface for configuring Redis Overrides (tech details: could be implemented as a [Rails engine](https://guides.rubyonrails.org/engines.html) gem)
 - Web user interface for configuring Environment Variable Overrides (tech details: could be implemented as a [Rails engine](https://guides.rubyonrails.org/engines.html) gem; configured data would disappear once server is restarted, which is by design when using Environment Variable Overrides)
+- Support a Rails Helper or Partial to pull in all feature flags (making the variable name customizable):
+<% AbstractFeatureBranch.application_features.each do |feature, value| %>
+  <%= tag :meta, name: "feature_#{feature}", content: value %>
+<% end %>
+
+<script>
+  window.abstract_feature_branch_features = {}
+  document.head.querySelectorAll('meta[name^=feature_]').forEach((element) => {
+    const feature = element.name.match(/^feature_(.*)$/)[1]
+    const value = element.content.toLowerCase() == 'true'
+    window.abstract_feature_branch_features[feature] = value
+  })
+</script>
+
 - Support a Rails API for retrieving feature flags to simplify consumption of feature flags in SPAs with JavaScript Ajax/fetch calls
 - Support a Rails Helper for embedding all feature flags in a document element to simplify their consumption in JavaScript code
 - Support a Rails JavaScript object API for retrieving feature flags conveniently in JavaScript from feature flag document element
