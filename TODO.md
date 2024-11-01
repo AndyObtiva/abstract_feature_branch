@@ -5,6 +5,8 @@
 - Fix error regarding failed Hash merge on features[environment] caused by code not being safe for multi-threading
 - Write tests to confirm that AbstractFeatureBranch is thread-safe
 
+- Support `feature_disabled?` alternative to `feature_enabled?` to offer better readability than `!feature_enabled?(:some_feature)`
+- Support `disabled_feature_branch(:some_feature) do; end` as the opposite of `feature_branch(:some_feature) do; end`
 - Support new configuration option `AbstractFeatureBranch.feature_store_per_user_live_fetching` to have the ability to enable per-user only live loading from feature store (i.e. Redis) by taking precedence over the `AbstractFeatureBranch.feature_store_live_fetching` configuration option (which affects both general and per-user feature loading)
 
 - Web user interface for configuring Redis Overrides (tech details: could be implemented as a [Rails engine](https://guides.rubyonrails.org/engines.html) gem)
